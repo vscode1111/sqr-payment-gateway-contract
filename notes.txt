@@ -1,0 +1,1 @@
+event MetadataUpdate(uint256 _tokenId);

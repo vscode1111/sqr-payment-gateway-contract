@@ -1,0 +1,14 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "prettier.documentSelectors": ["**/*.sol"],
+  "solidity.formatter": "prettier",
+  "workbench.colorCustomizations": {
+    "tab.activeBackground": "#0c007a",
+    "tab.hoverBackground": "#1500d3",
+    "tab.activeBorderTop": "#33d402",
+    "activityBar.background": "#1B340F",
+    "titleBar.activeBackground": "#264816",
+    "titleBar.activeForeground": "#F6FCF3"
+  }
+}
