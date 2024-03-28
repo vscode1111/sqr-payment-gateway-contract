@@ -1,7 +1,8 @@
 import {
   ChangeBalanceLimitEvent,
   DepositEvent,
-  EmergencyWithdrawEvent,
+  ForceWithdrawEvent,
+  WithdrawEvent,
 } from '~typechain-types/contracts/SQRPaymentGateway';
 import { ContextBase } from '~types';
 
@@ -21,5 +22,6 @@ export type ChangeBalanceLimitArgs = ChangeBalanceLimitEvent.Event & EventArgs<[
 
 export type DepositEventArgs = DepositEvent.Event & EventArgs<[string, number]>;
 
-export type EmergencyWithdrawEventArgs = EmergencyWithdrawEvent.Event &
-  EventArgs<[string, string, number]>;
+export type WithdrawEventArgs = WithdrawEvent.Event & EventArgs<[string, string, number]>;
+
+export type ForceWithdrawEventArgs = ForceWithdrawEvent.Event & EventArgs<[string, string, number]>;

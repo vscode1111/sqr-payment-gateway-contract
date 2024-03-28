@@ -82,6 +82,8 @@ export function getTokenArgs(newOnwer: string): DeployTokenArgs {
 const userInitBalance = toWei(10_000, sqrDecimals);
 const deposit1 = toWei(100, sqrDecimals) / priceDiv;
 const extraDeposit1 = toWei(2500, sqrDecimals) / priceDiv;
+const withdraw1 = toWei(30, sqrDecimals) / priceDiv;
+const extraWithdraw1 = toWei(3000, sqrDecimals) / priceDiv;
 
 const now1 = dayjs();
 
@@ -90,6 +92,8 @@ const userId2 = uuidv4();
 
 const depositTransationId1 = uuidv4();
 const depositTransationId2 = uuidv4();
+const withdrawTransationId1 = uuidv4();
+const withdrawTransationId2 = uuidv4();
 
 export const seedData = {
   zero: toWei(0),
@@ -100,6 +104,13 @@ export const seedData = {
   deposit3: deposit1 / userDiv / userDiv,
   extraDeposit1,
   extraDeposit2: extraDeposit1 / userDiv,
+  extraDeposit3: extraDeposit1 / userDiv / userDiv,
+  withdraw1,
+  withdraw2: withdraw1 / userDiv,
+  withdraw3: withdraw1 / userDiv / userDiv,
+  extraWithdraw1,
+  extraWithdraw2: extraWithdraw1 / userDiv,
+  extraWithdraw3: extraWithdraw1 / userDiv / userDiv,
   balanceLimit: toWei(100, sqrDecimals),
   allowance: toWei(1000000, sqrDecimals),
   balanceDelta: toWei(0.01, sqrDecimals),
@@ -108,4 +119,6 @@ export const seedData = {
   userId2,
   depositTransationId1,
   depositTransationId2,
+  withdrawTransationId1,
+  withdrawTransationId2,
 };

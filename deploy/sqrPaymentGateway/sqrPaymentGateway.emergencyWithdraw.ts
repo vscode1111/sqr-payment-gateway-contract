@@ -8,7 +8,9 @@ import { getAddressesFromHre, getContext } from '~utils';
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<void> => {
   await callWithTimerHre(async () => {
     const { sqrPaymentGatewayAddress } = getAddressesFromHre(hre);
-    console.log(`${SQR_PAYMENT_GATEWAY_NAME} ${sqrPaymentGatewayAddress} is withdrawing to user...`);
+    console.log(
+      `${SQR_PAYMENT_GATEWAY_NAME} ${sqrPaymentGatewayAddress} is withdrawing to user...`,
+    );
     const sqrTokenAddress = contractConfig.sqrToken;
     const context = await getContext(sqrTokenAddress, sqrPaymentGatewayAddress);
     const { user3Address, owner2SQRPaymentGateway, user1SQRToken } = context;
@@ -26,8 +28,8 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
 
     console.table(params);
     await waitTx(
-      owner2SQRPaymentGateway.emergencyWithdraw(params.token, params.to, params.amount),
-      'emergencyWithdraw',
+      owner2SQRPaymentGateway.forceWithdraw(params.token, params.to, params.amount),
+      'forceWithdraw',
     );
   }, hre);
 };

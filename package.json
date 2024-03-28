@@ -1,7 +1,7 @@
 {
-  "name": "msq-paymentGateway-contract",
+  "name": "sqr-payment-gateway-contract",
   "description": "Solidity smart contracts for SQR paymentGateway functionality",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "scripts": {
     "clean": "shx rm -rf ./dist ./artifacts ./cache ./coverage ./typechain-types ./coverage.json && yarn typechain",
     "commit": "git-cz",

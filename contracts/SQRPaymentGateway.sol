@@ -41,13 +41,15 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   IPermitToken public sqrToken;
   address public coldWallet;
   uint256 public balanceLimit;
-  uint256 public totalBalance;
+  uint256 public depositTotal;
+  uint256 public withdrawTotal;
 
   mapping(bytes32 => FundItem) private _balances;
   mapping(bytes32 => TransactionItem) private _transactionIds;
 
   struct FundItem {
-    uint256 balance;
+    uint256 depositTotal;
+    uint256 withdrawTotal;
   }
 
   struct TransactionItem {
@@ -58,7 +60,9 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
 
   event Deposit(address indexed account, uint256 amount);
 
-  event EmergencyWithdraw(address indexed token, address indexed to, uint256 amount);
+  event Withdraw(address indexed account, address indexed to, uint256 amount);
+
+  event ForceWithdraw(address indexed token, address indexed to, uint256 amount);
 
   //Functions-------------------------------------------
 
@@ -77,7 +81,7 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
 
   function balanceOf(string memory userId) external view returns (uint256) {
     FundItem storage fund = _balances[getHash(userId)];
-    return fund.balance;
+    return fund.depositTotal;
   }
 
   function getHash(string memory value) private pure returns (bytes32) {
@@ -108,23 +112,22 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   function _deposit(
     string memory userId,
     string memory transactionId,
+    address from,
     uint256 amount,
     uint32 timestampLimit
   ) private nonReentrant {
     require(amount > 0, "Amount must be greater than zero");
     require(block.timestamp <= timestampLimit, "Timeout blocker");
 
-    address sender = _msgSender();
+    require(sqrToken.allowance(from, address(this)) >= amount, "User must allow to use of funds");
 
-    require(sqrToken.allowance(sender, address(this)) >= amount, "User must allow to use of funds");
-
-    require(sqrToken.balanceOf(sender) >= amount, "User must have funds");
+    require(sqrToken.balanceOf(from) >= amount, "User must have funds");
 
     _setTransactionId(amount, transactionId);
 
     FundItem storage fund = _balances[getHash(userId)];
-    fund.balance += amount;
-    totalBalance += amount;
+    fund.depositTotal += amount;
+    depositTotal += amount;
 
     uint256 contractBalance = getBalance();
     uint256 supposedBalance = contractBalance + amount;
@@ -142,29 +145,42 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
       }
 
       if (userToContractAmount > 0) {
-        sqrToken.safeTransferFrom(sender, address(this), userToContractAmount);
+        sqrToken.safeTransferFrom(from, address(this), userToContractAmount);
       }
       if (userToColdWalletAmount > 0) {
-        sqrToken.safeTransferFrom(sender, coldWallet, userToColdWalletAmount);
+        sqrToken.safeTransferFrom(from, coldWallet, userToColdWalletAmount);
       }
       if (contractToColdWalletAmount > 0) {
         sqrToken.safeTransfer(coldWallet, contractToColdWalletAmount);
       }
     } else {
-      sqrToken.safeTransferFrom(sender, address(this), amount);
+      sqrToken.safeTransferFrom(from, address(this), amount);
     }
 
-    emit Deposit(sender, amount);
+    emit Deposit(from, amount);
   }
 
-  function verifyStakeSignature(
+  function deposit(
     string memory userId,
     string memory transactionId,
+    address from,
+    uint256 amount,
+    uint32 timestampLimit
+  ) external onlyOwner {
+    _deposit(userId, transactionId, from, amount, timestampLimit);
+  }
+
+  function verifyDepositSignature(
+    string memory userId,
+    string memory transactionId,
+    address from,
     uint256 amount,
     uint32 timestampLimit,
     bytes memory signature
   ) private view returns (bool) {
-    bytes32 messageHash = keccak256(abi.encode(userId, transactionId, amount, timestampLimit));
+    bytes32 messageHash = keccak256(
+      abi.encode(userId, transactionId, from, amount, timestampLimit)
+    );
     address recover = messageHash.toEthSignedMessageHash().recover(signature);
     return recover == owner();
   }
@@ -172,20 +188,83 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   function depositSig(
     string memory userId,
     string memory transactionId,
+    address from,
     uint256 amount,
     uint32 timestampLimit,
     bytes memory signature
   ) external {
     require(
-      verifyStakeSignature(userId, transactionId, amount, timestampLimit, signature),
+      verifyDepositSignature(userId, transactionId, from, amount, timestampLimit, signature),
       "Invalid signature"
     );
-    _deposit(userId, transactionId, amount, timestampLimit);
+    _deposit(userId, transactionId, from, amount, timestampLimit);
   }
 
-  function emergencyWithdraw(address token, address to, uint256 amount) external onlyOwner {
+  function _withdraw(
+    string memory userId,
+    string memory transactionId,
+    address to,
+    uint256 amount,
+    uint32 timestampLimit
+  ) private nonReentrant {
+    require(amount > 0, "Amount must be greater than zero");
+    require(block.timestamp <= timestampLimit, "Timeout blocker");
+    require(sqrToken.balanceOf(address(this)) >= amount, "Contract must have sufficient funds");
+
+    _setTransactionId(amount, transactionId);
+
+    address sender = _msgSender();
+
+    FundItem storage fund = _balances[getHash(userId)];
+    fund.withdrawTotal += amount;
+    withdrawTotal += amount;
+
+    sqrToken.safeTransfer(to, amount);
+
+    emit Withdraw(sender, to, amount);
+  }
+
+  function withdraw(
+    string memory userId,
+    string memory transactionId,
+    address to,
+    uint256 amount,
+    uint32 timestampLimit
+  ) external onlyOwner {
+    _withdraw(userId, transactionId, to, amount, timestampLimit);
+  }
+
+  function verifyWithdrawSignature(
+    string memory userId,
+    string memory transactionId,
+    address to,
+    uint256 amount,
+    uint32 timestampLimit,
+    bytes memory signature
+  ) private view returns (bool) {
+    bytes32 messageHash = keccak256(abi.encode(userId, transactionId, to, amount, timestampLimit));
+    address recover = messageHash.toEthSignedMessageHash().recover(signature);
+    return recover == owner();
+  }
+
+  function withdrawSig(
+    string memory userId,
+    string memory transactionId,
+    address to,
+    uint256 amount,
+    uint32 timestampLimit,
+    bytes memory signature
+  ) external {
+    require(
+      verifyWithdrawSignature(userId, transactionId, to, amount, timestampLimit, signature),
+      "Invalid signature"
+    );
+    _withdraw(userId, transactionId, to, amount, timestampLimit);
+  }
+
+  function forceWithdraw(address token, address to, uint256 amount) external onlyOwner {
     IPermitToken permitToken = IPermitToken(token);
     permitToken.safeTransfer(to, amount);
-    emit EmergencyWithdraw(token, to, amount);
+    emit ForceWithdraw(token, to, amount);
   }
 }

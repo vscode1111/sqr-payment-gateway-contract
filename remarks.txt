@@ -1,1 +1,10 @@
 slither contracts/SQRPaymentGateway.sol --solc-remaps '@openzeppelin=node_modules/@openzeppelin' --exclude naming-convention,external-function,low-level-calls
+
+(contracts/SQRPaymentGateway.sol#112-161)  uses arbitrary from in transferFrom
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#arbitrary-from-in-transferfrom
+
+import {Pausable} from "@openzeppelin/contracts/security/Pausable.sol";
+https://github.com/ContractLabs/payment-gateway/blob/main/contracts/PaymentGateway.sol#L93
+
+require(acceptedTokens[_token], "Token not supported");
+https://bscscan.com/address/0xbae4a73f353581a524a5bbe3ef54736e3ad6d4ea#code
