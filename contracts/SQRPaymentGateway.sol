@@ -1,15 +1,17 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.20;
 
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import {IPermitToken} from "./interfaces/IPermitToken.sol";
+import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable {
-  using SafeERC20 for IPermitToken;
+  using SafeERC20 for IERC20;
+  using MessageHashUtils for bytes32;
   using ECDSA for bytes32;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
@@ -19,18 +21,18 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
 
   function initialize(
     address _newOwner,
-    address _sqrToken,
+    address _erc20Token,
     address _coldWallet,
     uint256 _balanceLimit
   ) public initializer {
     require(_newOwner != address(0), "New owner address can't be zero");
-    require(_sqrToken != address(0), "SQR token address can't be zero");
+    require(_erc20Token != address(0), "ERC20 token address can't be zero");
     require(_coldWallet != address(0), "Cold wallet address can't be zero");
 
-    __Ownable_init();
+    __Ownable_init(_newOwner);
     __UUPSUpgradeable_init();
-    _transferOwnership(_newOwner);
-    sqrToken = IPermitToken(_sqrToken);
+    // _transferOwnership(_newOwner);
+    erc20Token = IERC20(_erc20Token);
     coldWallet = _coldWallet;
     balanceLimit = _balanceLimit;
   }
@@ -38,7 +40,7 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
   //Variables, structs, modifiers, events------------------------
-  IPermitToken public sqrToken;
+  IERC20 public erc20Token;
   address public coldWallet;
   uint256 public balanceLimit;
   uint256 public depositTotal;
@@ -76,7 +78,7 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   }
 
   function getBalance() public view returns (uint256) {
-    return sqrToken.balanceOf(address(this));
+    return erc20Token.balanceOf(address(this));
   }
 
   function balanceOf(string memory userId) external view returns (uint256) {
@@ -119,9 +121,9 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
     require(amount > 0, "Amount must be greater than zero");
     require(block.timestamp <= timestampLimit, "Timeout blocker");
 
-    require(sqrToken.allowance(from, address(this)) >= amount, "User must allow to use of funds");
+    require(erc20Token.allowance(from, address(this)) >= amount, "User must allow to use of funds");
 
-    require(sqrToken.balanceOf(from) >= amount, "User must have funds");
+    require(erc20Token.balanceOf(from) >= amount, "User must have funds");
 
     _setTransactionId(amount, transactionId);
 
@@ -145,16 +147,16 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
       }
 
       if (userToContractAmount > 0) {
-        sqrToken.safeTransferFrom(from, address(this), userToContractAmount);
+        erc20Token.safeTransferFrom(from, address(this), userToContractAmount);
       }
       if (userToColdWalletAmount > 0) {
-        sqrToken.safeTransferFrom(from, coldWallet, userToColdWalletAmount);
+        erc20Token.safeTransferFrom(from, coldWallet, userToColdWalletAmount);
       }
       if (contractToColdWalletAmount > 0) {
-        sqrToken.safeTransfer(coldWallet, contractToColdWalletAmount);
+        erc20Token.safeTransfer(coldWallet, contractToColdWalletAmount);
       }
     } else {
-      sqrToken.safeTransferFrom(from, address(this), amount);
+      erc20Token.safeTransferFrom(from, address(this), amount);
     }
 
     emit Deposit(from, amount);
@@ -209,7 +211,7 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   ) private nonReentrant {
     require(amount > 0, "Amount must be greater than zero");
     require(block.timestamp <= timestampLimit, "Timeout blocker");
-    require(sqrToken.balanceOf(address(this)) >= amount, "Contract must have sufficient funds");
+    require(erc20Token.balanceOf(address(this)) >= amount, "Contract must have sufficient funds");
 
     _setTransactionId(amount, transactionId);
 
@@ -219,7 +221,7 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
     fund.withdrawTotal += amount;
     withdrawTotal += amount;
 
-    sqrToken.safeTransfer(to, amount);
+    erc20Token.safeTransfer(to, amount);
 
     emit Withdraw(sender, to, amount);
   }
@@ -263,8 +265,8 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   }
 
   function forceWithdraw(address token, address to, uint256 amount) external onlyOwner {
-    IPermitToken permitToken = IPermitToken(token);
-    permitToken.safeTransfer(to, amount);
+    IERC20 _token = IERC20(token);
+    _token.safeTransfer(to, amount);
     emit ForceWithdraw(token, to, amount);
   }
 }

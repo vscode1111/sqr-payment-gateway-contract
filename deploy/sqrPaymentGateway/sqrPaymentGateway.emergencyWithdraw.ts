@@ -11,17 +11,17 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
     console.log(
       `${SQR_PAYMENT_GATEWAY_NAME} ${sqrPaymentGatewayAddress} is withdrawing to user...`,
     );
-    const sqrTokenAddress = contractConfig.sqrToken;
-    const context = await getContext(sqrTokenAddress, sqrPaymentGatewayAddress);
-    const { user3Address, owner2SQRPaymentGateway, user1SQRToken } = context;
+    const erc20TokenAddress = contractConfig.erc20Token;
+    const context = await getContext(erc20TokenAddress, sqrPaymentGatewayAddress);
+    const { user3Address, owner2SQRPaymentGateway, user1ERC20Token } = context;
 
-    const decimals = Number(await user1SQRToken.decimals());
+    const decimals = Number(await user1ERC20Token.decimals());
 
     const amount = await owner2SQRPaymentGateway.getBalance();
     console.log(`${toNumberDecimals(amount, decimals)} SQR in contract`);
 
     const params = {
-      token: sqrTokenAddress,
+      token: erc20TokenAddress,
       to: user3Address,
       amount,
     };

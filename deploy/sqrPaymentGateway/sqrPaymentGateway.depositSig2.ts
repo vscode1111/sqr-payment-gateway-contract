@@ -10,19 +10,20 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
   await callWithTimerHre(async () => {
     const { sqrPaymentGatewayAddress } = getAddressesFromHre(hre);
     console.log(`${SQR_PAYMENT_GATEWAY_NAME} ${sqrPaymentGatewayAddress} is depositing...`);
-    const sqrTokenAddress = contractConfig.sqrToken;
-    const context = await getContext(sqrTokenAddress, sqrPaymentGatewayAddress);
-    const { owner2, user2Address, user2SQRToken, user2SQRPaymentGateway } = context;
+    const erc20TokenAddress = contractConfig.erc20Token;
+    const context = await getContext(erc20TokenAddress, sqrPaymentGatewayAddress);
+    const { owner2, user2Address, user2ERC20Token, user2SQRPaymentGateway } = context;
 
-    const decimals = Number(await user2SQRToken.decimals());
+    const decimals = Number(await user2ERC20Token.decimals());
 
-    const currentAllowance = await user2SQRToken.allowance(user2Address, sqrPaymentGatewayAddress);
+    const currentAllowance = await user2ERC20Token.allowance(user2Address, sqrPaymentGatewayAddress);
     console.log(`${toNumberDecimals(currentAllowance, decimals)} SQR was allowed`);
 
     const params = {
       userId: deployData.userId2,
       transationId: seedData.depositTransationId2,
       amount: seedData.deposit2,
+      account: user2Address,
       timestamptLimit: seedData.nowPlus1m,
       signature: '',
     };
@@ -31,15 +32,19 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
       owner2,
       params.userId,
       params.transationId,
+      user2Address,
       params.amount,
       params.timestamptLimit,
     );
 
     if (params.amount > currentAllowance) {
       const askAllowance = seedData.allowance;
-      await waitTx(user2SQRToken.approve(sqrPaymentGatewayAddress, askAllowance), 'approve');
+      await waitTx(user2ERC20Token.approve(sqrPaymentGatewayAddress, askAllowance), 'approve');
       console.log(
-        `${toNumberDecimals(askAllowance, decimals)} SQR was approved to ${sqrPaymentGatewayAddress}`,
+        `${toNumberDecimals(
+          askAllowance,
+          decimals,
+        )} SQR was approved to ${sqrPaymentGatewayAddress}`,
       );
     }
 
@@ -49,6 +54,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
       user2SQRPaymentGateway.depositSig(
         params.userId,
         params.transationId,
+        params.account,
         params.amount,
         params.timestamptLimit,
         params.signature,

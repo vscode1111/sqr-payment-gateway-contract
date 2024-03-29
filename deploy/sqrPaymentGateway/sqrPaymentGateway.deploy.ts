@@ -19,7 +19,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
     console.log(`Deploying...`);
     const { sqrPaymentGatewayAddress } = await getSQRPaymentGatewayContext(await getUsers(), {
       newOwner: contractConfig.newOwner,
-      sqrToken: contractConfig.sqrToken,
+      erc20Token: contractConfig.erc20Token,
       coldWallet: contractConfig.coldWallet,
       balanceLimit: contractConfig.balanceLimit,
     });

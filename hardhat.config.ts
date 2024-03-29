@@ -53,10 +53,9 @@ const config: HardhatUserConfig = {
     },
   },
   gasReporter: {
-    currency: 'USD',
     enabled: false,
+    currency: 'USD',
     excludeContracts: [],
-    src: './contracts',
   },
   networks: {
     hardhat: {
@@ -81,7 +80,7 @@ const config: HardhatUserConfig = {
     tests: './test',
   },
   solidity: {
-    version: '0.8.19',
+    version: '0.8.20',
     settings: {
       metadata: {
         bytecodeHash: 'none',

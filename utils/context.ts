@@ -2,18 +2,18 @@ import { DeployProxyOptions } from '@openzeppelin/hardhat-upgrades/dist/utils';
 import { ethers, upgrades } from 'hardhat';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { getNetworkName } from '~common';
-import { SQR_PAYMENT_GATEWAY_NAME, SQR_TOKEN_NAME, TOKENS } from '~constants';
+import { SQR_PAYMENT_GATEWAY_NAME, ERC20_TOKEN_NAME, TOKENS } from '~constants';
 import { ContractConfig, getContractArgs, getTokenArgs } from '~seeds';
 import { SQRPaymentGateway } from '~typechain-types/contracts/SQRPaymentGateway';
-import { SQRToken } from '~typechain-types/contracts/SQRToken';
+import { ERC20Token } from '~typechain-types/contracts/ERC20Token';
 import { SQRPaymentGateway__factory } from '~typechain-types/factories/contracts/SQRPaymentGateway__factory';
-import { SQRToken__factory } from '~typechain-types/factories/contracts/SQRToken__factory';
+import { ERC20Token__factory } from '~typechain-types/factories/contracts/ERC20Token__factory';
 import {
   Addresses,
   ContextBase,
   DeployNetworks,
   SQRPaymentGatewayContext,
-  SQRTokenContext,
+  ERC20TokenContext,
   Users,
 } from '~types';
 
@@ -59,41 +59,41 @@ export async function getUsers(): Promise<Users> {
   };
 }
 
-export async function getSQRTokenContext(
+export async function getERC20TokenContext(
   users: Users,
   deployData?: string | { newOnwer: string },
-): Promise<SQRTokenContext> {
+): Promise<ERC20TokenContext> {
   const { owner, user1, user2, user3, owner2, owner2Address, coldWallet } = users;
 
-  const testSQRTokenFactory = (await ethers.getContractFactory(
-    SQR_TOKEN_NAME,
-  )) as unknown as SQRToken__factory;
+  const testERC20TokenFactory = (await ethers.getContractFactory(
+    ERC20_TOKEN_NAME,
+  )) as unknown as ERC20Token__factory;
 
-  let ownerSQRToken: SQRToken;
+  let ownerERC20Token: ERC20Token;
 
   if (typeof deployData === 'string') {
-    ownerSQRToken = testSQRTokenFactory.connect(owner).attach(deployData) as SQRToken;
+    ownerERC20Token = testERC20TokenFactory.connect(owner).attach(deployData) as ERC20Token;
   } else {
     const newOnwer = deployData?.newOnwer ?? owner2Address;
-    ownerSQRToken = await testSQRTokenFactory.connect(owner).deploy(...getTokenArgs(newOnwer));
+    ownerERC20Token = await testERC20TokenFactory.connect(owner).deploy(...getTokenArgs(newOnwer));
   }
 
-  const sqrTokenAddress = await ownerSQRToken.getAddress();
+  const erc20TokenAddress = await ownerERC20Token.getAddress();
 
-  const user1SQRToken = ownerSQRToken.connect(user1);
-  const user2SQRToken = ownerSQRToken.connect(user2);
-  const user3SQRToken = ownerSQRToken.connect(user3);
-  const owner2SQRToken = ownerSQRToken.connect(owner2);
-  const coldWalletSQRToken = ownerSQRToken.connect(coldWallet);
+  const user1ERC20Token = ownerERC20Token.connect(user1);
+  const user2ERC20Token = ownerERC20Token.connect(user2);
+  const user3ERC20Token = ownerERC20Token.connect(user3);
+  const owner2ERC20Token = ownerERC20Token.connect(owner2);
+  const coldWalletERC20Token = ownerERC20Token.connect(coldWallet);
 
   return {
-    sqrTokenAddress,
-    ownerSQRToken,
-    user1SQRToken,
-    user2SQRToken,
-    user3SQRToken,
-    owner2SQRToken,
-    coldWalletSQRToken,
+    erc20TokenAddress,
+    ownerERC20Token,
+    user1ERC20Token,
+    user2ERC20Token,
+    user3ERC20Token,
+    owner2ERC20Token,
+    coldWalletERC20Token,
   };
 }
 
@@ -122,7 +122,7 @@ export async function getSQRPaymentGatewayContext(
       sqrPaymentGatewayFactory,
       getContractArgs(
         deployData?.newOwner ?? '',
-        deployData?.sqrToken ?? '',
+        deployData?.erc20Token ?? '',
         deployData?.coldWallet ?? '',
         deployData?.balanceLimit ?? BigInt(0),
       ),
@@ -152,11 +152,11 @@ export async function getSQRPaymentGatewayContext(
 }
 
 export async function getContext(
-  sqrTokenAddress: string,
+  erc20TokenAddress: string,
   sqrPaymentGatewayAddress: string,
 ): Promise<ContextBase> {
   const users = await getUsers();
-  const sqrTokenContext = await getSQRTokenContext(users, sqrTokenAddress);
+  const erc20TokenContext = await getERC20TokenContext(users, erc20TokenAddress);
   const sqrPaymentGatewayContext = await getSQRPaymentGatewayContext(
     users,
     sqrPaymentGatewayAddress,
@@ -164,7 +164,7 @@ export async function getContext(
 
   return {
     ...users,
-    ...sqrTokenContext,
+    ...erc20TokenContext,
     ...sqrPaymentGatewayContext,
   };
 }

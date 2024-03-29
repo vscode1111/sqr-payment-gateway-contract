@@ -1,6 +1,6 @@
 import { Signer } from 'ethers';
 import { SQRPaymentGateway } from '~typechain-types/contracts/SQRPaymentGateway';
-import { SQRToken } from '~typechain-types/contracts/SQRToken';
+import { ERC20Token } from '~typechain-types/contracts/ERC20Token';
 import { SQRPaymentGateway__factory } from '~typechain-types/factories/contracts/SQRPaymentGateway__factory';
 
 export interface Users {
@@ -18,14 +18,14 @@ export interface Users {
   coldWalletAddress: string;
 }
 
-export interface SQRTokenContext {
-  sqrTokenAddress: string;
-  ownerSQRToken: SQRToken;
-  user1SQRToken: SQRToken;
-  user2SQRToken: SQRToken;
-  user3SQRToken: SQRToken;
-  owner2SQRToken: SQRToken;
-  coldWalletSQRToken: SQRToken;
+export interface ERC20TokenContext {
+  erc20TokenAddress: string;
+  ownerERC20Token: ERC20Token;
+  user1ERC20Token: ERC20Token;
+  user2ERC20Token: ERC20Token;
+  user3ERC20Token: ERC20Token;
+  owner2ERC20Token: ERC20Token;
+  coldWalletERC20Token: ERC20Token;
 }
 
 export interface SQRPaymentGatewayContext {
@@ -40,4 +40,4 @@ export interface SQRPaymentGatewayContext {
   coldWalletSQRPaymentGateway: SQRPaymentGateway;
 }
 
-export type ContextBase = Users & SQRTokenContext & SQRPaymentGatewayContext;
+export type ContextBase = Users & ERC20TokenContext & SQRPaymentGatewayContext;

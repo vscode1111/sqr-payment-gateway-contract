@@ -3,21 +3,26 @@ import { ZeroAddress } from 'ethers';
 import { waitTx } from '~common';
 import { contractConfig, seedData } from '~seeds';
 import { getSQRPaymentGatewayContext, getUsers } from '~utils';
-import { ChangeBalanceLimitArgs, errorMessage } from '.';
+import { ChangeBalanceLimitArgs, custromError, errorMessage } from '.';
 import { findEvent } from './utils';
 
 export function shouldBehaveCorrectControl(): void {
   describe('control', () => {
     it('user1 tries to change balanceLimit', async function () {
-      await expect(this.user1SQRPaymentGateway.changeBalanceLimit(seedData.balanceLimit)).revertedWith(
-        errorMessage.onlyOwner,
-      );
+      await expect(this.user1SQRPaymentGateway.changeBalanceLimit(seedData.balanceLimit))
+        .revertedWithCustomError(
+          this.user1SQRPaymentGateway,
+          custromError.ownableUnauthorizedAccount,
+        )
+        .withArgs(this.user1Address);
     });
 
     it('owner2 changes balanceLimit', async function () {
       await this.owner2SQRPaymentGateway.changeBalanceLimit(seedData.balanceLimit);
 
-      const receipt = await waitTx(this.owner2SQRPaymentGateway.changeBalanceLimit(seedData.balanceLimit));
+      const receipt = await waitTx(
+        this.owner2SQRPaymentGateway.changeBalanceLimit(seedData.balanceLimit),
+      );
       const eventLog = findEvent<ChangeBalanceLimitArgs>(receipt);
       expect(eventLog).not.undefined;
       const [account, amount] = eventLog?.args;
@@ -42,9 +47,9 @@ export function shouldBehaveCorrectControl(): void {
       await expect(
         getSQRPaymentGatewayContext(users, {
           ...contractConfig,
-          sqrToken: ZeroAddress,
+          erc20Token: ZeroAddress,
         }),
-      ).revertedWith(errorMessage.sqrTokeAddressCantBeZero);
+      ).revertedWith(errorMessage.erc20TokeAddressCantBeZero);
     });
 
     it('owner tries to deploy with zero cold wallet address', async function () {

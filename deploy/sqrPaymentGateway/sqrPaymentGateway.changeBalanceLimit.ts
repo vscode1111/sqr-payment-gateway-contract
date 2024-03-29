@@ -10,8 +10,8 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
   await callWithTimerHre(async () => {
     const { sqrPaymentGatewayAddress } = getAddressesFromHre(hre);
     console.log(`${SQR_PAYMENT_GATEWAY_NAME} ${sqrPaymentGatewayAddress} is withdrawing to user...`);
-    const sqrTokenAddress = contractConfig.sqrToken;
-    const context = await getContext(sqrTokenAddress, sqrPaymentGatewayAddress);
+    const erc20TokenAddress = contractConfig.erc20Token;
+    const context = await getContext(erc20TokenAddress, sqrPaymentGatewayAddress);
     const { owner2SQRPaymentGateway } = context;
 
     const params = {

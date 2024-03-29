@@ -5,7 +5,7 @@ export function getContractArgsEx() {
   return verifyArgsRequired
     ? getContractArgs(
         contractConfig.newOwner,
-        contractConfig.sqrToken,
+        contractConfig.erc20Token,
         contractConfig.coldWallet,
         contractConfig.balanceLimit,
       )
