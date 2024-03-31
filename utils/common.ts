@@ -7,13 +7,14 @@ export async function signMessageForDeposit(
   transactionId: string,
   account: string,
   amount: bigint,
+  nonce: number,
   timestampLimit: number,
 ) {
   return signEncodedMessage(
     signer,
-    // userId,  transactionId, account, amount, timestampLimit
-    ['string', 'string', 'address', 'uint256', 'uint32'],
-    [userId, transactionId, account, amount, timestampLimit],
+    // userId,  transactionId, account, amount, nonce, timestampLimit
+    ['string', 'string', 'address', 'uint256', 'uint32', 'uint32'],
+    [userId, transactionId, account, amount, nonce, timestampLimit],
   );
 }
 
@@ -23,12 +24,13 @@ export async function signMessageForWithdraw(
   transactionId: string,
   to: string,
   amount: bigint,
+  nonce: number,
   timestampLimit: number,
 ) {
   return signEncodedMessage(
     signer,
-    // userId,  transactionId, to, amount, timestampLimit
-    ['string', 'string', 'address', 'uint256', 'uint32'],
-    [userId, transactionId, to, amount, timestampLimit],
+    // userId,  transactionId, to, amount, nonce, timestampLimit
+    ['string', 'string', 'address', 'uint256', 'uint32', 'uint32'],
+    [userId, transactionId, to, amount, nonce, timestampLimit],
   );
 }

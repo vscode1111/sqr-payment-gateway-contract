@@ -16,14 +16,21 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
 
     const decimals = Number(await user2ERC20Token.decimals());
 
-    const currentAllowance = await user2ERC20Token.allowance(user2Address, sqrPaymentGatewayAddress);
+    const currentAllowance = await user2ERC20Token.allowance(
+      user2Address,
+      sqrPaymentGatewayAddress,
+    );
     console.log(`${toNumberDecimals(currentAllowance, decimals)} SQR was allowed`);
+
+    const userId = deployData.userId1;
+    const nonce = await user2SQRPaymentGateway.getDepositNonce(userId);
 
     const params = {
       userId: deployData.userId2,
       transationId: seedData.depositTransationId2,
       amount: seedData.deposit2,
       account: user2Address,
+      nonce: Number(nonce),
       timestamptLimit: seedData.nowPlus1m,
       signature: '',
     };
@@ -34,6 +41,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
       params.transationId,
       user2Address,
       params.amount,
+      params.nonce,
       params.timestamptLimit,
     );
 

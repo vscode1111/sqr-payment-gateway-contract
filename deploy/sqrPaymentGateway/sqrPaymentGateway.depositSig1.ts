@@ -4,6 +4,7 @@ import { callWithTimerHre, toNumberDecimals, waitTx } from '~common';
 import { SQR_PAYMENT_GATEWAY_NAME } from '~constants';
 import { contractConfig, seedData } from '~seeds';
 import { getAddressesFromHre, getContext, signMessageForDeposit } from '~utils';
+import { deployData } from './deployData';
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<void> => {
   await callWithTimerHre(async () => {
@@ -21,12 +22,15 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
     );
     console.log(`${toNumberDecimals(currentAllowance, decimals)} SQR was allowed`);
 
+    const userId = deployData.userId1;
+    const nonce = await user1SQRPaymentGateway.getDepositNonce(userId);
+
     const params = {
-      // userId: deployData.userId1,
-      userId: '1065471',
+      userId,
       transationId: seedData.depositTransationId1,
       account: user1Address,
       amount: seedData.deposit1,
+      nonce: Number(nonce),
       timestamptLimit: seedData.nowPlus1m,
       signature: '',
     };
@@ -37,6 +41,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
       params.transationId,
       params.account,
       params.amount,
+      params.nonce,
       params.timestamptLimit,
     );
 

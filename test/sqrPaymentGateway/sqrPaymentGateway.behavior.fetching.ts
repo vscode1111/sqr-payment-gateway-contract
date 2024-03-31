@@ -14,8 +14,8 @@ export function shouldBehaveCorrectFetching(): void {
     it('should be correct balances', async function () {
       expect(await getERC20TokenBalance(this, this.owner2Address)).eq(seedData.totalAccountBalance);
       expect(await this.ownerSQRPaymentGateway.getBalance()).eq(seedData.zero);
-      expect(await this.ownerSQRPaymentGateway.depositTotal()).eq(seedData.zero);
-      expect(await this.ownerSQRPaymentGateway.withdrawTotal()).eq(seedData.zero);
+      expect(await this.ownerSQRPaymentGateway.totalDeposited()).eq(seedData.zero);
+      expect(await this.ownerSQRPaymentGateway.totalWithdrew()).eq(seedData.zero);
     });
   });
 }

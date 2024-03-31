@@ -14,6 +14,8 @@ dotenvConfig({
   path: resolve(__dirname, dotenvConfigPath),
 });
 
+const isCoverage = process.env.COVERAGE;
+
 function getAccounts() {
   return [
     `0x${getEnv('OWNER_PRIVATE_KEY')}`,
@@ -46,7 +48,7 @@ function getChainConfig(
 export const defaultNetwork: keyof DeployNetworks = 'bsc';
 
 const config: HardhatUserConfig = {
-  defaultNetwork,
+  defaultNetwork: isCoverage ? 'hardhat' : defaultNetwork,
   etherscan: {
     apiKey: {
       bsc: getEnv('BSC_SCAN_API_KEY'),
@@ -80,7 +82,7 @@ const config: HardhatUserConfig = {
     tests: './test',
   },
   solidity: {
-    version: '0.8.20',
+    version: '0.8.21',
     settings: {
       metadata: {
         bytecodeHash: 'none',

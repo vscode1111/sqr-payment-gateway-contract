@@ -17,6 +17,13 @@ export function shouldBehaveCorrectFunding(): void {
       await checkTotalSQRBalance(this);
     });
 
+    it(INITIAL_POSITIVE_CHECK_TEST_TITLE, async function () {
+      expect(await this.user1SQRPaymentGateway.getDepositNonce(seedData.userId1)).eq(0);
+      expect(await this.user2SQRPaymentGateway.getDepositNonce(seedData.userId2)).eq(0);
+      expect(await this.user1SQRPaymentGateway.getWithdrawNonce(seedData.userId1)).eq(0);
+      expect(await this.user2SQRPaymentGateway.getWithdrawNonce(seedData.userId2)).eq(0);
+    });
+
     it('user1 tries to call depositSig with zero amount', async function () {
       const signature = await signMessageForDeposit(
         this.owner2,
@@ -24,6 +31,7 @@ export function shouldBehaveCorrectFunding(): void {
         seedData.depositTransationId1,
         this.user1Address,
         seedData.zero,
+        seedData.depositNonce1_0,
         seedData.nowPlus1m,
       );
 
@@ -46,6 +54,7 @@ export function shouldBehaveCorrectFunding(): void {
         seedData.depositTransationId1,
         this.user1Address,
         seedData.deposit1,
+        seedData.depositNonce1_0,
         seedData.nowPlus1m,
       );
 
@@ -70,6 +79,7 @@ export function shouldBehaveCorrectFunding(): void {
         seedData.depositTransationId1,
         this.user1Address,
         seedData.deposit1,
+        seedData.depositNonce1_0,
         seedData.nowPlus1m,
       );
 
@@ -92,6 +102,7 @@ export function shouldBehaveCorrectFunding(): void {
         seedData.depositTransationId1,
         this.user1Address,
         seedData.deposit1,
+        seedData.depositNonce1_0,
         seedData.nowPlus1m,
       );
 
@@ -116,6 +127,7 @@ export function shouldBehaveCorrectFunding(): void {
         seedData.depositTransationId1,
         this.user1Address,
         seedData.deposit1,
+        seedData.depositNonce1_0,
         seedData.nowPlus1m,
       );
 
@@ -138,6 +150,7 @@ export function shouldBehaveCorrectFunding(): void {
         seedData.depositTransationId2,
         this.user2Address,
         seedData.deposit2,
+        seedData.depositNonce2_0,
         seedData.nowPlus1m,
       );
 
@@ -174,6 +187,7 @@ export function shouldBehaveCorrectFunding(): void {
           '123',
           this.user1Address,
           seedData.deposit1,
+          seedData.depositNonce1_0,
           seedData.nowPlus1m,
         );
 
@@ -196,6 +210,7 @@ export function shouldBehaveCorrectFunding(): void {
           seedData.depositTransationId1,
           this.user1Address,
           seedData.deposit1,
+          seedData.depositNonce1_0,
           seedData.nowPlus1m,
         );
 
@@ -224,6 +239,7 @@ export function shouldBehaveCorrectFunding(): void {
             seedData.depositTransationId1,
             this.user1Address,
             seedData.extraDeposit1,
+            seedData.depositNonce1_0,
             seedData.nowPlus1m,
           ),
         )
@@ -239,11 +255,14 @@ export function shouldBehaveCorrectFunding(): void {
 
         await this.user1ERC20Token.approve(this.sqrPaymentGatewayAddress, seedData.extraDeposit1);
 
+        const nonce = await this.user2SQRPaymentGateway.getDepositNonce(seedData.userId1);
+
         await this.owner2SQRPaymentGateway.deposit(
           seedData.userId1,
           seedData.depositTransationId1,
           this.user1Address,
           seedData.extraDeposit1,
+          nonce,
           seedData.nowPlus1m,
         );
 
@@ -265,9 +284,8 @@ export function shouldBehaveCorrectFunding(): void {
         );
 
         const fundItem = await this.user1SQRPaymentGateway.fetchFundItem(seedData.userId1);
-        expect(fundItem.depositTotal).eq(seedData.extraDeposit1);
-
-        expect(await this.owner2SQRPaymentGateway.depositTotal()).eq(seedData.extraDeposit1);
+        expect(fundItem.depositedAmount).eq(seedData.extraDeposit1);
+        expect(await this.owner2SQRPaymentGateway.totalDeposited()).eq(seedData.extraDeposit1);
       });
 
       it('user1 deposited extrafunds', async function () {
@@ -281,6 +299,7 @@ export function shouldBehaveCorrectFunding(): void {
           seedData.depositTransationId1,
           this.user1Address,
           seedData.extraDeposit1,
+          seedData.depositNonce1_0,
           seedData.nowPlus1m,
         );
 
@@ -311,9 +330,9 @@ export function shouldBehaveCorrectFunding(): void {
         );
 
         const fundItem = await this.user1SQRPaymentGateway.fetchFundItem(seedData.userId1);
-        expect(fundItem.depositTotal).eq(seedData.extraDeposit1);
+        expect(fundItem.depositedAmount).eq(seedData.extraDeposit1);
 
-        expect(await this.owner2SQRPaymentGateway.depositTotal()).eq(seedData.extraDeposit1);
+        expect(await this.owner2SQRPaymentGateway.totalDeposited()).eq(seedData.extraDeposit1);
       });
 
       it('user1 deposits when user2 tranfered tokens to contract directly', async function () {
@@ -327,6 +346,7 @@ export function shouldBehaveCorrectFunding(): void {
           seedData.depositTransationId1,
           this.user1Address,
           seedData.deposit1,
+          seedData.depositNonce1_0,
           seedData.nowPlus1m,
         );
 
@@ -352,9 +372,9 @@ export function shouldBehaveCorrectFunding(): void {
         );
 
         const fundItem = await this.user1SQRPaymentGateway.fetchFundItem(seedData.userId1);
-        expect(fundItem.depositTotal).eq(seedData.deposit1);
+        expect(fundItem.depositedAmount).eq(seedData.deposit1);
 
-        expect(await this.owner2SQRPaymentGateway.depositTotal()).eq(seedData.deposit1);
+        expect(await this.owner2SQRPaymentGateway.totalDeposited()).eq(seedData.deposit1);
 
         const transactionItem = await this.user1SQRPaymentGateway.fetchTransactionItem(
           seedData.depositTransationId1,
@@ -364,12 +384,15 @@ export function shouldBehaveCorrectFunding(): void {
 
       describe('user1 deposited funds', () => {
         beforeEach(async function () {
+          const nonce = await this.user1SQRPaymentGateway.getDepositNonce(seedData.userId1);
+
           const signature = await signMessageForDeposit(
             this.owner2,
             seedData.userId1,
             seedData.depositTransationId1,
             this.user1Address,
             seedData.deposit1,
+            Number(nonce),
             seedData.nowPlus1m,
           );
 
@@ -393,14 +416,19 @@ export function shouldBehaveCorrectFunding(): void {
           );
 
           const fundItem = await this.user1SQRPaymentGateway.fetchFundItem(seedData.userId1);
-          expect(fundItem.depositTotal).eq(seedData.deposit1);
+          expect(fundItem.depositedAmount).eq(seedData.deposit1);
 
-          expect(await this.owner2SQRPaymentGateway.depositTotal()).eq(seedData.deposit1);
+          expect(await this.owner2SQRPaymentGateway.totalDeposited()).eq(seedData.deposit1);
 
           const transactionItem = await this.user1SQRPaymentGateway.fetchTransactionItem(
             seedData.depositTransationId1,
           );
           expect(transactionItem.amount).eq(seedData.deposit1);
+
+          expect(await this.user1SQRPaymentGateway.getDepositNonce(seedData.userId1)).eq(1);
+          expect(await this.user2SQRPaymentGateway.getDepositNonce(seedData.userId2)).eq(0);
+          expect(await this.user1SQRPaymentGateway.getWithdrawNonce(seedData.userId1)).eq(0);
+          expect(await this.user2SQRPaymentGateway.getWithdrawNonce(seedData.userId2)).eq(0);
         });
 
         it('user1 tries to call depositSig with the same transationId', async function () {
@@ -412,6 +440,7 @@ export function shouldBehaveCorrectFunding(): void {
             seedData.depositTransationId1,
             this.user1Address,
             seedData.deposit1,
+            seedData.depositNonce1_1,
             seedData.nowPlus1m,
           );
 
@@ -459,9 +488,9 @@ export function shouldBehaveCorrectFunding(): void {
           expect(await this.owner2SQRPaymentGateway.balanceOf(seedData.userId2)).eq(seedData.zero);
 
           const fundItem = await this.user1SQRPaymentGateway.fetchFundItem(seedData.userId1);
-          expect(fundItem.depositTotal).eq(seedData.deposit1);
+          expect(fundItem.depositedAmount).eq(seedData.deposit1);
 
-          expect(await this.owner2SQRPaymentGateway.depositTotal()).eq(seedData.deposit1);
+          expect(await this.owner2SQRPaymentGateway.totalDeposited()).eq(seedData.deposit1);
         });
 
         it('user1 tries to call forceWithdraw without permission', async function () {
@@ -488,6 +517,7 @@ export function shouldBehaveCorrectFunding(): void {
             seedData.withdrawTransationId1,
             this.user1Address,
             seedData.extraWithdraw1,
+            seedData.withdrawNonce1_0,
             seedData.nowPlus1m,
           );
 
@@ -512,6 +542,7 @@ export function shouldBehaveCorrectFunding(): void {
             seedData.withdrawTransationId1,
             this.user1Address,
             seedData.extraWithdraw1,
+            seedData.withdrawNonce1_0,
             seedData.nowPlus1m,
           );
 
@@ -534,6 +565,7 @@ export function shouldBehaveCorrectFunding(): void {
             seedData.withdrawTransationId1,
             this.user1Address,
             seedData.zero,
+            seedData.withdrawNonce1_0,
             seedData.nowPlus1m,
           );
 
@@ -556,6 +588,7 @@ export function shouldBehaveCorrectFunding(): void {
             seedData.withdrawTransationId1,
             this.user1Address,
             seedData.extraWithdraw1,
+            seedData.withdrawNonce1_0,
             seedData.nowPlus1m,
           );
 
@@ -578,6 +611,7 @@ export function shouldBehaveCorrectFunding(): void {
               seedData.withdrawTransationId1,
               this.user1Address,
               seedData.extraWithdraw1,
+              seedData.withdrawNonce1_0,
               seedData.nowPlus1m,
             ),
           )
@@ -595,6 +629,7 @@ export function shouldBehaveCorrectFunding(): void {
               seedData.withdrawTransationId1,
               this.user1Address,
               seedData.extraWithdraw1,
+              seedData.withdrawNonce1_0,
               seedData.nowPlus1m,
             ),
           ).revertedWith(errorMessage.contractMustHaveSufficientFunds);
@@ -607,6 +642,7 @@ export function shouldBehaveCorrectFunding(): void {
             '123',
             this.user1Address,
             seedData.deposit1,
+            seedData.withdrawNonce1_0,
             seedData.nowPlus1m,
           );
 
@@ -629,6 +665,7 @@ export function shouldBehaveCorrectFunding(): void {
             seedData.withdrawTransationId1,
             this.user1Address,
             seedData.withdraw1,
+            seedData.withdrawNonce1_0,
             seedData.nowPlus1m,
           );
 
@@ -659,6 +696,7 @@ export function shouldBehaveCorrectFunding(): void {
               seedData.withdrawTransationId1,
               this.user1Address,
               seedData.withdraw1,
+              seedData.withdrawNonce1_0,
               seedData.nowPlus1m,
             );
 
@@ -674,9 +712,8 @@ export function shouldBehaveCorrectFunding(): void {
 
           it(INITIAL_POSITIVE_CHECK_TEST_TITLE, async function () {
             const fundItem = await this.user1SQRPaymentGateway.fetchFundItem(seedData.userId1);
-            expect(fundItem.withdrawTotal).eq(seedData.withdraw1);
-
-            expect(await this.owner2SQRPaymentGateway.withdrawTotal()).eq(seedData.withdraw1);
+            expect(fundItem.withdrewAmount).eq(seedData.withdraw1);
+            expect(await this.owner2SQRPaymentGateway.totalWithdrew()).eq(seedData.withdraw1);
           });
 
           it('user1 tries to call withdrawSig with the same transationId', async function () {
@@ -686,6 +723,7 @@ export function shouldBehaveCorrectFunding(): void {
               seedData.withdrawTransationId1,
               this.user1Address,
               seedData.withdraw1,
+              seedData.withdrawNonce1_1,
               seedData.nowPlus1m,
             );
 

@@ -121,4 +121,12 @@ export const seedData = {
   depositTransationId2,
   withdrawTransationId1,
   withdrawTransationId2,
+  depositNonce1_0: 0,
+  depositNonce1_1: 1,
+  depositNonce2_0: 0,
+  depositNonce3_0: 0,
+  withdrawNonce1_0: 0,
+  withdrawNonce1_1: 1,
+  withdrawNonce2_0: 0,
+  withdrawNonce3_0: 0,
 };
