@@ -25,9 +25,15 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
     address _coldWallet,
     uint256 _balanceLimit
   ) public initializer {
-    require(_newOwner != address(0), "New owner address can't be zero");
-    require(_erc20Token != address(0), "ERC20 token address can't be zero");
-    require(_coldWallet != address(0), "Cold wallet address can't be zero");
+    if (_newOwner == address(0)) {
+      revert NewOwnerNotZeroAddress();
+    }
+    if (_erc20Token == address(0)) {
+      revert ERC20TokenNotZeroAddress();
+    }
+    if (_coldWallet == address(0)) {
+      revert ColdWalletNotZeroAddress();
+    }
 
     __Ownable_init(_newOwner);
     __UUPSUpgradeable_init();
@@ -38,7 +44,7 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
-  //Variables, structs, modifiers, events------------------------
+  //Variables, structs, errors, modifiers, events------------------------
 
   IERC20 public erc20Token;
   address public coldWallet;
@@ -60,8 +66,29 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
     uint256 amount;
   }
 
+  error NewOwnerNotZeroAddress();
+  error ERC20TokenNotZeroAddress();
+  error ColdWalletNotZeroAddress();
+  error TimeoutBlocker();
+  error AmountNotZero();
+  error InvalidSignature();
+  error UsedTransactionId();
+  error ContractMustHaveSufficientFunds();
+  error UserMustAllowToUseFunds();
+  error UserMustHaveFunds();
+  error InvalidNonce();
+
   modifier timeoutBlocker(uint32 timestampLimit) {
-    require(block.timestamp <= timestampLimit, "Timeout blocker");
+    if (block.timestamp > timestampLimit) {
+      revert TimeoutBlocker();
+    }
+    _;
+  }
+
+  modifier amountChecker(uint256 amount) {
+    if (amount == 0) {
+      revert AmountNotZero();
+    }
     _;
   }
 
@@ -119,7 +146,9 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
     (bytes32 transactionIdHash, TransactionItem memory transactionItem) = getTransactionItem(
       transactionId
     );
-    require(transactionItem.amount == 0, "This transactionId was used before");
+    if (transactionItem.amount != 0) {
+      revert UsedTransactionId();
+    }
     _transactionIds[transactionIdHash] = TransactionItem(amount);
   }
 
@@ -132,21 +161,23 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
     uint256 amount,
     uint32 nonce,
     uint32 timestampLimit
-  ) private nonReentrant timeoutBlocker(timestampLimit) {
-    require(amount > 0, "Amount must be greater than zero");
+  ) private nonReentrant amountChecker(amount) timeoutBlocker(timestampLimit) {
+    if (erc20Token.allowance(account, address(this)) < amount) {
+      revert UserMustAllowToUseFunds();
+    }
 
-    require(
-      erc20Token.allowance(account, address(this)) >= amount,
-      "User must allow to use of funds"
-    );
-
-    require(erc20Token.balanceOf(account) >= amount, "User must have funds");
+    if (erc20Token.balanceOf(account) < amount) {
+      revert UserMustHaveFunds();
+    }
 
     _setTransactionId(amount, transactionId);
 
     bytes32 userHash = getHash(userId);
 
-    require(_depositNonces[userHash] == nonce, "Nonce isn't correct");
+    if (_depositNonces[userHash] != nonce) {
+      revert InvalidNonce();
+    }
+
     _depositNonces[userHash] += 1;
 
     FundItem storage fund = _balances[userHash];
@@ -220,8 +251,8 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
     bytes memory signature
   ) external {
     uint32 nonce = getDepositNonce(userId);
-    require(
-      verifyDepositSignature(
+    if (
+      !verifyDepositSignature(
         userId,
         transactionId,
         account,
@@ -229,9 +260,10 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
         nonce,
         timestampLimit,
         signature
-      ),
-      "Invalid signature"
-    );
+      )
+    ) {
+      revert InvalidSignature();
+    }
     _deposit(userId, transactionId, account, amount, nonce, timestampLimit);
   }
 
@@ -242,15 +274,19 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
     uint256 amount,
     uint32 nonce,
     uint32 timestampLimit
-  ) private nonReentrant timeoutBlocker(timestampLimit) {
-    require(amount > 0, "Amount must be greater than zero");
-    require(erc20Token.balanceOf(address(this)) >= amount, "Contract must have sufficient funds");
+  ) private nonReentrant amountChecker(amount) timeoutBlocker(timestampLimit) {
+    if (erc20Token.balanceOf(address(this)) < amount) {
+      revert ContractMustHaveSufficientFunds();
+    }
 
     _setTransactionId(amount, transactionId);
 
     bytes32 userHash = getHash(userId);
 
-    require(_withdrawNonces[userHash] == nonce, "Nonce isn't correct");
+    if (_withdrawNonces[userHash] != nonce) {
+      revert InvalidNonce();
+    }
+
     _withdrawNonces[userHash] += 1;
 
     FundItem storage fund = _balances[userHash];
@@ -298,10 +334,11 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
     bytes memory signature
   ) external {
     uint32 nonce = getWithdrawNonce(userId);
-    require(
-      verifyWithdrawSignature(userId, transactionId, to, amount, nonce, timestampLimit, signature),
-      "Invalid signature"
-    );
+    if (
+      !verifyWithdrawSignature(userId, transactionId, to, amount, nonce, timestampLimit, signature)
+    ) {
+      revert InvalidSignature();
+    }
     _withdraw(userId, transactionId, to, amount, nonce, timestampLimit);
   }
 

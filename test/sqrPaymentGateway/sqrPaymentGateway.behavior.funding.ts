@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { INITIAL_POSITIVE_CHECK_TEST_TITLE, waitTx } from '~common';
 import { seedData } from '~seeds';
 import { signMessageForDeposit, signMessageForWithdraw } from '~utils';
-import { custromError, errorMessage } from './testData';
+import { custromError } from './testData';
 import { DepositEventArgs, ForceWithdrawEventArgs, WithdrawEventArgs } from './types';
 import { checkTotalSQRBalance, findEvent, getERC20TokenBalance } from './utils';
 
@@ -44,7 +44,7 @@ export function shouldBehaveCorrectFunding(): void {
           seedData.nowPlus1m,
           signature,
         ),
-      ).revertedWith(errorMessage.amountMustBeGreaterThanZero);
+      ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.amountNotZero);
     });
 
     it('user1 tries to call depositSig without allowance', async function () {
@@ -67,7 +67,7 @@ export function shouldBehaveCorrectFunding(): void {
           seedData.nowPlus1m,
           signature,
         ),
-      ).revertedWith(errorMessage.userMustAllowToUseOfFund);
+      ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.userMustAllowToUseFunds);
     });
 
     it('user1 tries to call depositSig in timeout case 1m', async function () {
@@ -92,7 +92,7 @@ export function shouldBehaveCorrectFunding(): void {
           seedData.nowPlus1m,
           signature,
         ),
-      ).revertedWith(errorMessage.timeoutBlocker);
+      ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.timeoutBlocker);
     });
 
     it('user1 tries to call depositSig with wrong signature', async function () {
@@ -115,7 +115,7 @@ export function shouldBehaveCorrectFunding(): void {
           seedData.nowPlus1m,
           wrongSignature,
         ),
-      ).revertedWith(errorMessage.invalidSignature);
+      ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.invalidSignature);
     });
 
     it('user1 tries to call depositSig with allowance but no funds', async function () {
@@ -140,7 +140,7 @@ export function shouldBehaveCorrectFunding(): void {
           seedData.nowPlus1m,
           signature,
         ),
-      ).revertedWith(errorMessage.userMustHaveFunds);
+      ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.userMustHaveFunds);
     });
 
     it('user2 tries to call depositSig without allowance', async function () {
@@ -163,7 +163,7 @@ export function shouldBehaveCorrectFunding(): void {
           seedData.nowPlus1m,
           signature,
         ),
-      ).revertedWith(errorMessage.userMustAllowToUseOfFund);
+      ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.userMustAllowToUseFunds);
     });
 
     describe('user1 and user2 have tokens and approved contract to use these', () => {
@@ -200,7 +200,7 @@ export function shouldBehaveCorrectFunding(): void {
             seedData.nowPlus1m,
             wrongSignature,
           ),
-        ).revertedWith(errorMessage.invalidSignature);
+        ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.invalidSignature);
       });
 
       it('user1 is allowed to deposit (check event)', async function () {
@@ -232,7 +232,7 @@ export function shouldBehaveCorrectFunding(): void {
         expect(amount).eq(seedData.deposit1);
       });
 
-      it('user1 tries to call deposite without permission', async function () {
+      it('user1 tries to call deposit without permission', async function () {
         await expect(
           this.user1SQRPaymentGateway.deposit(
             seedData.userId1,
@@ -244,13 +244,26 @@ export function shouldBehaveCorrectFunding(): void {
           ),
         )
           .revertedWithCustomError(
-            this.user1SQRPaymentGateway,
+            this.owner2SQRPaymentGateway,
             custromError.ownableUnauthorizedAccount,
           )
           .withArgs(this.user1Address);
       });
 
-      it('owner2 deposited funds', async function () {
+      it('owner2 tries to call deposit with invalid nonce', async function () {
+        await expect(
+          this.owner2SQRPaymentGateway.deposit(
+            seedData.userId1,
+            seedData.depositTransationId1,
+            this.user1Address,
+            seedData.deposit1,
+            seedData.invalidNonce,
+            seedData.nowPlus1m,
+          ),
+        ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.invalidNonce);
+      });
+
+      it('owner2 depositd funds', async function () {
         expect(await getERC20TokenBalance(this, this.coldWalletAddress)).eq(seedData.zero);
 
         await this.user1ERC20Token.approve(this.sqrPaymentGatewayAddress, seedData.extraDeposit1);
@@ -288,7 +301,7 @@ export function shouldBehaveCorrectFunding(): void {
         expect(await this.owner2SQRPaymentGateway.totalDeposited()).eq(seedData.extraDeposit1);
       });
 
-      it('user1 deposited extrafunds', async function () {
+      it('user1 depositd extrafunds', async function () {
         expect(await getERC20TokenBalance(this, this.coldWalletAddress)).eq(seedData.zero);
 
         await this.user1ERC20Token.approve(this.sqrPaymentGatewayAddress, seedData.extraDeposit1);
@@ -382,7 +395,7 @@ export function shouldBehaveCorrectFunding(): void {
         expect(transactionItem.amount).eq(seedData.deposit1);
       });
 
-      describe('user1 deposited funds', () => {
+      describe('user1 depositd funds', () => {
         beforeEach(async function () {
           const nonce = await this.user1SQRPaymentGateway.getDepositNonce(seedData.userId1);
 
@@ -453,7 +466,7 @@ export function shouldBehaveCorrectFunding(): void {
               seedData.nowPlus1m,
               signature,
             ),
-          ).revertedWith(errorMessage.transactionIdWasUsedBefore);
+          ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.usedTransactionId);
         });
 
         it('owner2 call forceWithdraw (check event)', async function () {
@@ -504,7 +517,7 @@ export function shouldBehaveCorrectFunding(): void {
             ),
           )
             .revertedWithCustomError(
-              this.user1SQRPaymentGateway,
+              this.owner2SQRPaymentGateway,
               custromError.ownableUnauthorizedAccount,
             )
             .withArgs(this.user1Address);
@@ -530,7 +543,7 @@ export function shouldBehaveCorrectFunding(): void {
               seedData.nowPlus1m,
               signature,
             ),
-          ).revertedWith(errorMessage.invalidSignature);
+          ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.invalidSignature);
         });
 
         it('user1 tries to call depositSig in timeout case 1m', async function () {
@@ -555,7 +568,7 @@ export function shouldBehaveCorrectFunding(): void {
               seedData.nowPlus1m,
               signature,
             ),
-          ).revertedWith(errorMessage.timeoutBlocker);
+          ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.timeoutBlocker);
         });
 
         it('user1 tries to call withdrawSig with zero amount', async function () {
@@ -578,7 +591,7 @@ export function shouldBehaveCorrectFunding(): void {
               seedData.nowPlus1m,
               signature,
             ),
-          ).revertedWith(errorMessage.amountMustBeGreaterThanZero);
+          ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.amountNotZero);
         });
 
         it('user1 tries to call withdrawSig from contract without required funds', async function () {
@@ -601,10 +614,13 @@ export function shouldBehaveCorrectFunding(): void {
               seedData.nowPlus1m,
               signature,
             ),
-          ).revertedWith(errorMessage.contractMustHaveSufficientFunds);
+          ).revertedWithCustomError(
+            this.owner2SQRPaymentGateway,
+            custromError.contractMustHaveSufficientFunds,
+          );
         });
 
-        it('user1 tries to call withdraw from contract without permission', async function () {
+        it('user1 tries to call withdraw without permission', async function () {
           await expect(
             this.user1SQRPaymentGateway.withdraw(
               seedData.userId1,
@@ -616,10 +632,23 @@ export function shouldBehaveCorrectFunding(): void {
             ),
           )
             .revertedWithCustomError(
-              this.user1SQRPaymentGateway,
+              this.owner2SQRPaymentGateway,
               custromError.ownableUnauthorizedAccount,
             )
             .withArgs(this.user1Address);
+        });
+
+        it('owner2 tries to call withdraw with invalid nonce', async function () {
+          await expect(
+            this.owner2SQRPaymentGateway.withdraw(
+              seedData.userId1,
+              seedData.withdrawTransationId1,
+              this.user1Address,
+              seedData.withdraw1,
+              seedData.invalidNonce,
+              seedData.nowPlus1m,
+            ),
+          ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.invalidNonce);
         });
 
         it('user1 tries to call withdraw from contract without required funds', async function () {
@@ -632,7 +661,10 @@ export function shouldBehaveCorrectFunding(): void {
               seedData.withdrawNonce1_0,
               seedData.nowPlus1m,
             ),
-          ).revertedWith(errorMessage.contractMustHaveSufficientFunds);
+          ).revertedWithCustomError(
+            this.owner2SQRPaymentGateway,
+            custromError.contractMustHaveSufficientFunds,
+          );
         });
 
         it('check hash collision for signMessageForWithdraw', async function () {
@@ -655,7 +687,7 @@ export function shouldBehaveCorrectFunding(): void {
               seedData.nowPlus1m,
               wrongSignature,
             ),
-          ).revertedWith(errorMessage.invalidSignature);
+          ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.invalidSignature);
         });
 
         it('user1 is allowed to withraw (check event)', async function () {
@@ -736,7 +768,7 @@ export function shouldBehaveCorrectFunding(): void {
                 seedData.nowPlus1m,
                 signature,
               ),
-            ).revertedWith(errorMessage.transactionIdWasUsedBefore);
+            ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.usedTransactionId);
           });
         });
       });

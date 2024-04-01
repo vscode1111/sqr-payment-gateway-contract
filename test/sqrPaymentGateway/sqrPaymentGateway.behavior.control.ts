@@ -3,7 +3,7 @@ import { ZeroAddress } from 'ethers';
 import { waitTx } from '~common';
 import { contractConfig, seedData } from '~seeds';
 import { getSQRPaymentGatewayContext, getUsers } from '~utils';
-import { ChangeBalanceLimitArgs, custromError, errorMessage } from '.';
+import { ChangeBalanceLimitArgs, custromError } from '.';
 import { findEvent } from './utils';
 
 export function shouldBehaveCorrectControl(): void {
@@ -39,7 +39,7 @@ export function shouldBehaveCorrectControl(): void {
           ...contractConfig,
           newOwner: ZeroAddress,
         }),
-      ).revertedWith(errorMessage.newOwnerAddressCantBeZero);
+      ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.newOwnerNotZeroAddress);
     });
 
     it('owner tries to deploy with zero SQR token address', async function () {
@@ -49,7 +49,10 @@ export function shouldBehaveCorrectControl(): void {
           ...contractConfig,
           erc20Token: ZeroAddress,
         }),
-      ).revertedWith(errorMessage.erc20TokeAddressCantBeZero);
+      ).revertedWithCustomError(
+        this.owner2SQRPaymentGateway,
+        custromError.erc20TokenNotZeroAddress,
+      );
     });
 
     it('owner tries to deploy with zero cold wallet address', async function () {
@@ -59,7 +62,10 @@ export function shouldBehaveCorrectControl(): void {
           ...contractConfig,
           coldWallet: ZeroAddress,
         }),
-      ).revertedWith(errorMessage.coldWalletAddressCantBeZero);
+      ).revertedWithCustomError(
+        this.owner2SQRPaymentGateway,
+        custromError.coldWalletNotZeroAddress,
+      );
     });
   });
 }
