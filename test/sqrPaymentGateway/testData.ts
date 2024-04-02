@@ -15,4 +15,6 @@ export const custromError = {
   achievedWithdrawGoal: 'AchievedWithdrawGoal',
   tooEarly: 'TooEarly',
   tooLate: 'TooLate',
+  startDateMustBeGreaterThanCurrentTime: 'StartDateMustBeGreaterThanCurrentTime',
+  closeDateMustBeGreaterThanCurrentTime: 'CloseDateMustBeGreaterThanCurrentTime',
 };

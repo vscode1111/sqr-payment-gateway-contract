@@ -9,7 +9,7 @@ import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/Messa
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable {
   using SafeERC20 for IERC20;
@@ -24,19 +24,29 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   function initialize(
     address _newOwner,
     address _erc20Token,
-    uint256 _depositGoal,
-    uint256 _withdrawGoal,
-    uint32 _startDate,
-    uint32 _closeDate,
+    uint256 _depositGoal, //0 - skip
+    uint256 _withdrawGoal, //0 - skip
+    uint32 _startDate, //0 - skip
+    uint32 _closeDate, //0 - skip
     address _coldWallet,
     uint256 _balanceLimit
   ) public initializer {
     if (_newOwner == address(0)) {
       revert NewOwnerNotZeroAddress();
     }
+
     if (_erc20Token == address(0)) {
       revert ERC20TokenNotZeroAddress();
     }
+
+    if (0 < _startDate && _startDate < uint32(block.timestamp)) {
+      revert StartDateMustBeGreaterThanCurrentTime();
+    }
+
+    if (0 < _closeDate && _closeDate < uint32(block.timestamp)) {
+      revert CloseDateMustBeGreaterThanCurrentTime();
+    }
+
     if (_coldWallet == address(0)) {
       revert ColdWalletNotZeroAddress();
     }
@@ -83,6 +93,8 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
 
   error NewOwnerNotZeroAddress();
   error ERC20TokenNotZeroAddress();
+  error StartDateMustBeGreaterThanCurrentTime();
+  error CloseDateMustBeGreaterThanCurrentTime();
   error ColdWalletNotZeroAddress();
   error TimeoutBlocker();
   error AmountNotZero();

@@ -4,10 +4,14 @@ import { waitTx } from '~common';
 import { contractConfig, seedData } from '~seeds';
 import { getSQRPaymentGatewayContext, getUsers } from '~utils';
 import { ChangeBalanceLimitArgs, custromError } from '.';
-import { findEvent } from './utils';
+import { findEvent, loadSQRPaymentGatewayFixture } from './utils';
 
-export function shouldBehaveCorrectControl(): void {
+export function shouldBehaveCorrectDeployment(): void {
   describe('control', () => {
+    beforeEach(async function () {
+      await loadSQRPaymentGatewayFixture(this);
+    });
+
     it('user1 tries to change balanceLimit', async function () {
       await expect(this.user1SQRPaymentGateway.changeBalanceLimit(seedData.balanceLimit))
         .revertedWithCustomError(
@@ -52,6 +56,32 @@ export function shouldBehaveCorrectControl(): void {
       ).revertedWithCustomError(
         this.owner2SQRPaymentGateway,
         custromError.erc20TokenNotZeroAddress,
+      );
+    });
+
+    it('owner tries to deploy with invalid start date', async function () {
+      const users = await getUsers();
+      await expect(
+        getSQRPaymentGatewayContext(users, {
+          ...contractConfig,
+          startDate: 1,
+        }),
+      ).revertedWithCustomError(
+        this.owner2SQRPaymentGateway,
+        custromError.startDateMustBeGreaterThanCurrentTime,
+      );
+    });
+
+    it('owner tries to deploy with invalid start date', async function () {
+      const users = await getUsers();
+      await expect(
+        getSQRPaymentGatewayContext(users, {
+          ...contractConfig,
+          closeDate: 1,
+        }),
+      ).revertedWithCustomError(
+        this.owner2SQRPaymentGateway,
+        custromError.closeDateMustBeGreaterThanCurrentTime,
       );
     });
 

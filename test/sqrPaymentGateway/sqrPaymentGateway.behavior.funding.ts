@@ -5,11 +5,17 @@ import { contractConfig, seedData } from '~seeds';
 import { addSeconsToUnixTime, signMessageForDeposit, signMessageForWithdraw } from '~utils';
 import { custromError } from './testData';
 import { DepositEventArgs, ForceWithdrawEventArgs, WithdrawEventArgs } from './types';
-import { checkTotalSQRBalance, findEvent, getERC20TokenBalance } from './utils';
+import {
+  checkTotalSQRBalance,
+  findEvent,
+  getERC20TokenBalance,
+  loadSQRPaymentGatewayFixture,
+} from './utils';
 
 export function shouldBehaveCorrectFunding(): void {
   describe('funding', () => {
     beforeEach(async function () {
+      await loadSQRPaymentGatewayFixture(this);
       await checkTotalSQRBalance(this);
     });
 
