@@ -17,16 +17,16 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
     await sleep(pauseTime * 1000);
 
     console.log(`Deploying...`);
-    const { sqrPaymentGatewayAddress } = await getSQRPaymentGatewayContext(await getUsers(), {
-      newOwner: contractConfig.newOwner,
-      erc20Token: contractConfig.erc20Token,
-      coldWallet: contractConfig.coldWallet,
-      balanceLimit: contractConfig.balanceLimit,
-    });
+    const { sqrPaymentGatewayAddress } = await getSQRPaymentGatewayContext(
+      await getUsers(),
+      contractConfig,
+    );
     console.log(`${SQR_PAYMENT_GATEWAY_NAME} deployed to ${sqrPaymentGatewayAddress}`);
     if (verifyRequired) {
       await verifyContract(sqrPaymentGatewayAddress, hre, getContractArgsEx());
-      console.log(`${SQR_PAYMENT_GATEWAY_NAME} deployed and verified to ${sqrPaymentGatewayAddress}`);
+      console.log(
+        `${SQR_PAYMENT_GATEWAY_NAME} deployed and verified to ${sqrPaymentGatewayAddress}`,
+      );
     }
   }, hre);
 };

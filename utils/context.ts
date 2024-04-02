@@ -2,18 +2,18 @@ import { DeployProxyOptions } from '@openzeppelin/hardhat-upgrades/dist/utils';
 import { ethers, upgrades } from 'hardhat';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { getNetworkName } from '~common';
-import { SQR_PAYMENT_GATEWAY_NAME, ERC20_TOKEN_NAME, TOKENS } from '~constants';
+import { ERC20_TOKEN_NAME, SQR_PAYMENT_GATEWAY_NAME, TOKENS } from '~constants';
 import { ContractConfig, getContractArgs, getTokenArgs } from '~seeds';
-import { SQRPaymentGateway } from '~typechain-types/contracts/SQRPaymentGateway';
 import { ERC20Token } from '~typechain-types/contracts/ERC20Token';
-import { SQRPaymentGateway__factory } from '~typechain-types/factories/contracts/SQRPaymentGateway__factory';
+import { SQRPaymentGateway } from '~typechain-types/contracts/SQRPaymentGateway';
 import { ERC20Token__factory } from '~typechain-types/factories/contracts/ERC20Token__factory';
+import { SQRPaymentGateway__factory } from '~typechain-types/factories/contracts/SQRPaymentGateway__factory';
 import {
   Addresses,
   ContextBase,
   DeployNetworks,
-  SQRPaymentGatewayContext,
   ERC20TokenContext,
+  SQRPaymentGatewayContext,
   Users,
 } from '~types';
 
@@ -120,12 +120,7 @@ export async function getSQRPaymentGatewayContext(
   } else {
     ownerSQRPaymentGateway = (await upgrades.deployProxy(
       sqrPaymentGatewayFactory,
-      getContractArgs(
-        deployData?.newOwner ?? '',
-        deployData?.erc20Token ?? '',
-        deployData?.coldWallet ?? '',
-        deployData?.balanceLimit ?? BigInt(0),
-      ),
+      getContractArgs(deployData as ContractConfig),
       OPTIONS,
     )) as unknown as SQRPaymentGateway;
   }

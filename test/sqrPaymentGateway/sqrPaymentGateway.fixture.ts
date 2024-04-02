@@ -1,6 +1,6 @@
 import { contractConfig } from '~seeds';
 import { ContextBase } from '~types';
-import { getSQRPaymentGatewayContext, getERC20TokenContext, getUsers } from '~utils';
+import { getERC20TokenContext, getSQRPaymentGatewayContext, getUsers } from '~utils';
 
 export async function deploySQRPaymentGatewayContractFixture(): Promise<ContextBase> {
   const users = await getUsers();
@@ -13,6 +13,10 @@ export async function deploySQRPaymentGatewayContractFixture(): Promise<ContextB
     newOwner: owner2Address,
     erc20Token: erc20TokenAddress,
     coldWallet: coldWalletAddress,
+    depositGoal: contractConfig.depositGoal,
+    startDate: contractConfig.startDate,
+    closeDate: contractConfig.closeDate,
+    withdrawGoal: contractConfig.withdrawGoal,
     balanceLimit: contractConfig.balanceLimit,
   });
 

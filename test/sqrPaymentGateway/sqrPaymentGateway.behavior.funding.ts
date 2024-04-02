@@ -1,7 +1,8 @@
 import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { INITIAL_POSITIVE_CHECK_TEST_TITLE, waitTx } from '~common';
-import { seedData } from '~seeds';
+import dayjs, { Dayjs } from 'dayjs';
+import { INITIAL_POSITIVE_CHECK_TEST_TITLE, toUnixTime, waitTx } from '~common';
+import { contractConfig, seedData } from '~seeds';
 import { signMessageForDeposit, signMessageForWithdraw } from '~utils';
 import { custromError } from './testData';
 import { DepositEventArgs, ForceWithdrawEventArgs, WithdrawEventArgs } from './types';
@@ -10,6 +11,14 @@ import { checkTotalSQRBalance, findEvent, getERC20TokenBalance } from './utils';
 export function shouldBehaveCorrectFunding(): void {
   describe('funding', () => {
     beforeEach(async function () {
+      await time.increaseTo(
+        toUnixTime(
+          dayjs(contractConfig.startDate * 1000)
+            .add(10, 'seconds')
+            .toDate(),
+        ),
+      );
+
       await checkTotalSQRBalance(this);
     });
 
@@ -32,7 +41,7 @@ export function shouldBehaveCorrectFunding(): void {
         this.user1Address,
         seedData.zero,
         seedData.depositNonce1_0,
-        seedData.nowPlus1m,
+        seedData.startDatePlus1m,
       );
 
       await expect(
@@ -41,13 +50,13 @@ export function shouldBehaveCorrectFunding(): void {
           seedData.depositTransationId1,
           this.user1Address,
           seedData.zero,
-          seedData.nowPlus1m,
+          seedData.startDatePlus1m,
           signature,
         ),
       ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.amountNotZero);
     });
 
-    it('user1 tries to call depositSig without allowance', async function () {
+    it.only('user1 tries to call depositSig without allowance', async function () {
       const signature = await signMessageForDeposit(
         this.owner2,
         seedData.userId1,
@@ -55,7 +64,7 @@ export function shouldBehaveCorrectFunding(): void {
         this.user1Address,
         seedData.deposit1,
         seedData.depositNonce1_0,
-        seedData.nowPlus1m,
+        seedData.startDatePlus1m,
       );
 
       await expect(
@@ -64,14 +73,14 @@ export function shouldBehaveCorrectFunding(): void {
           seedData.depositTransationId1,
           this.user1Address,
           seedData.deposit1,
-          seedData.nowPlus1m,
+          seedData.startDatePlus1m,
           signature,
         ),
       ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.userMustAllowToUseFunds);
     });
 
     it('user1 tries to call depositSig in timeout case 1m', async function () {
-      await time.increaseTo(seedData.nowPlus1m);
+      await time.increaseTo(seedData.startDatePlus1m);
 
       const signature = await signMessageForDeposit(
         this.owner2,
@@ -80,7 +89,7 @@ export function shouldBehaveCorrectFunding(): void {
         this.user1Address,
         seedData.deposit1,
         seedData.depositNonce1_0,
-        seedData.nowPlus1m,
+        seedData.startDatePlus1m,
       );
 
       await expect(
@@ -89,7 +98,7 @@ export function shouldBehaveCorrectFunding(): void {
           seedData.depositTransationId1,
           this.user1Address,
           seedData.deposit1,
-          seedData.nowPlus1m,
+          seedData.startDatePlus1m,
           signature,
         ),
       ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.timeoutBlocker);
@@ -103,7 +112,7 @@ export function shouldBehaveCorrectFunding(): void {
         this.user1Address,
         seedData.deposit1,
         seedData.depositNonce1_0,
-        seedData.nowPlus1m,
+        seedData.startDatePlus1m,
       );
 
       await expect(
@@ -112,7 +121,7 @@ export function shouldBehaveCorrectFunding(): void {
           seedData.depositTransationId1,
           this.user1Address,
           seedData.deposit1,
-          seedData.nowPlus1m,
+          seedData.startDatePlus1m,
           wrongSignature,
         ),
       ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.invalidSignature);
@@ -128,7 +137,7 @@ export function shouldBehaveCorrectFunding(): void {
         this.user1Address,
         seedData.deposit1,
         seedData.depositNonce1_0,
-        seedData.nowPlus1m,
+        seedData.startDatePlus1m,
       );
 
       await expect(
@@ -137,7 +146,7 @@ export function shouldBehaveCorrectFunding(): void {
           seedData.depositTransationId1,
           this.user1Address,
           seedData.deposit1,
-          seedData.nowPlus1m,
+          seedData.startDatePlus1m,
           signature,
         ),
       ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.userMustHaveFunds);
@@ -151,7 +160,7 @@ export function shouldBehaveCorrectFunding(): void {
         this.user2Address,
         seedData.deposit2,
         seedData.depositNonce2_0,
-        seedData.nowPlus1m,
+        seedData.startDatePlus1m,
       );
 
       await expect(
@@ -160,7 +169,7 @@ export function shouldBehaveCorrectFunding(): void {
           seedData.depositTransationId2,
           this.user2Address,
           seedData.deposit2,
-          seedData.nowPlus1m,
+          seedData.startDatePlus1m,
           signature,
         ),
       ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.userMustAllowToUseFunds);
@@ -188,7 +197,7 @@ export function shouldBehaveCorrectFunding(): void {
           this.user1Address,
           seedData.deposit1,
           seedData.depositNonce1_0,
-          seedData.nowPlus1m,
+          seedData.startDatePlus1m,
         );
 
         await expect(
@@ -197,7 +206,7 @@ export function shouldBehaveCorrectFunding(): void {
             '3123',
             this.user1Address,
             seedData.deposit1,
-            seedData.nowPlus1m,
+            seedData.startDatePlus1m,
             wrongSignature,
           ),
         ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.invalidSignature);
@@ -211,7 +220,7 @@ export function shouldBehaveCorrectFunding(): void {
           this.user1Address,
           seedData.deposit1,
           seedData.depositNonce1_0,
-          seedData.nowPlus1m,
+          seedData.startDatePlus1m,
         );
 
         const receipt = await waitTx(
@@ -220,7 +229,7 @@ export function shouldBehaveCorrectFunding(): void {
             seedData.depositTransationId1,
             this.user1Address,
             seedData.deposit1,
-            seedData.nowPlus1m,
+            seedData.startDatePlus1m,
             signature,
           ),
         );
@@ -240,7 +249,7 @@ export function shouldBehaveCorrectFunding(): void {
             this.user1Address,
             seedData.extraDeposit1,
             seedData.depositNonce1_0,
-            seedData.nowPlus1m,
+            seedData.startDatePlus1m,
           ),
         )
           .revertedWithCustomError(
@@ -258,12 +267,12 @@ export function shouldBehaveCorrectFunding(): void {
             this.user1Address,
             seedData.deposit1,
             seedData.invalidNonce,
-            seedData.nowPlus1m,
+            seedData.startDatePlus1m,
           ),
         ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.invalidNonce);
       });
 
-      it('owner2 depositd funds', async function () {
+      it('owner2 deposit funds', async function () {
         expect(await getERC20TokenBalance(this, this.coldWalletAddress)).eq(seedData.zero);
 
         await this.user1ERC20Token.approve(this.sqrPaymentGatewayAddress, seedData.extraDeposit1);
@@ -276,7 +285,7 @@ export function shouldBehaveCorrectFunding(): void {
           this.user1Address,
           seedData.extraDeposit1,
           nonce,
-          seedData.nowPlus1m,
+          seedData.startDatePlus1m,
         );
 
         const balanceLimit = await this.owner2SQRPaymentGateway.balanceLimit();
@@ -301,7 +310,7 @@ export function shouldBehaveCorrectFunding(): void {
         expect(await this.owner2SQRPaymentGateway.totalDeposited()).eq(seedData.extraDeposit1);
       });
 
-      it('user1 depositd extrafunds', async function () {
+      it('user1 deposit extrafunds', async function () {
         expect(await getERC20TokenBalance(this, this.coldWalletAddress)).eq(seedData.zero);
 
         await this.user1ERC20Token.approve(this.sqrPaymentGatewayAddress, seedData.extraDeposit1);
@@ -313,7 +322,7 @@ export function shouldBehaveCorrectFunding(): void {
           this.user1Address,
           seedData.extraDeposit1,
           seedData.depositNonce1_0,
-          seedData.nowPlus1m,
+          seedData.startDatePlus1m,
         );
 
         await this.user1SQRPaymentGateway.depositSig(
@@ -321,7 +330,7 @@ export function shouldBehaveCorrectFunding(): void {
           seedData.depositTransationId1,
           this.user1Address,
           seedData.extraDeposit1,
-          seedData.nowPlus1m,
+          seedData.startDatePlus1m,
           signature,
         );
 
@@ -348,6 +357,33 @@ export function shouldBehaveCorrectFunding(): void {
         expect(await this.owner2SQRPaymentGateway.totalDeposited()).eq(seedData.extraDeposit1);
       });
 
+      it('user1 tries to deposit extra funds', async function () {
+        const extraDeposit = seedData.extraDeposit1 * BigInt(2);
+
+        await this.user1ERC20Token.approve(this.sqrPaymentGatewayAddress, extraDeposit);
+
+        const signature = await signMessageForDeposit(
+          this.owner2,
+          seedData.userId1,
+          seedData.depositTransationId1,
+          this.user1Address,
+          extraDeposit,
+          seedData.depositNonce1_0,
+          seedData.startDatePlus1m,
+        );
+
+        await expect(
+          this.user1SQRPaymentGateway.depositSig(
+            seedData.userId1,
+            seedData.depositTransationId1,
+            this.user1Address,
+            extraDeposit,
+            seedData.startDatePlus1m,
+            signature,
+          ),
+        ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.achievedDepositGoal);
+      });
+
       it('user1 deposits when user2 tranfered tokens to contract directly', async function () {
         await this.user2ERC20Token.transfer(this.sqrPaymentGatewayAddress, seedData.extraDeposit2);
 
@@ -360,7 +396,7 @@ export function shouldBehaveCorrectFunding(): void {
           this.user1Address,
           seedData.deposit1,
           seedData.depositNonce1_0,
-          seedData.nowPlus1m,
+          seedData.startDatePlus1m,
         );
 
         await this.user1SQRPaymentGateway.depositSig(
@@ -368,7 +404,7 @@ export function shouldBehaveCorrectFunding(): void {
           seedData.depositTransationId1,
           this.user1Address,
           seedData.deposit1,
-          seedData.nowPlus1m,
+          seedData.startDatePlus1m,
           signature,
         );
 
@@ -395,7 +431,7 @@ export function shouldBehaveCorrectFunding(): void {
         expect(transactionItem.amount).eq(seedData.deposit1);
       });
 
-      describe('user1 depositd funds', () => {
+      describe('user1 deposit funds', () => {
         beforeEach(async function () {
           const nonce = await this.user1SQRPaymentGateway.getDepositNonce(seedData.userId1);
 
@@ -406,7 +442,7 @@ export function shouldBehaveCorrectFunding(): void {
             this.user1Address,
             seedData.deposit1,
             Number(nonce),
-            seedData.nowPlus1m,
+            seedData.startDatePlus1m,
           );
 
           await this.user1SQRPaymentGateway.depositSig(
@@ -414,7 +450,7 @@ export function shouldBehaveCorrectFunding(): void {
             seedData.depositTransationId1,
             this.user1Address,
             seedData.deposit1,
-            seedData.nowPlus1m,
+            seedData.startDatePlus1m,
             signature,
           );
         });
@@ -454,7 +490,7 @@ export function shouldBehaveCorrectFunding(): void {
             this.user1Address,
             seedData.deposit1,
             seedData.depositNonce1_1,
-            seedData.nowPlus1m,
+            seedData.startDatePlus1m,
           );
 
           await expect(
@@ -463,7 +499,7 @@ export function shouldBehaveCorrectFunding(): void {
               seedData.depositTransationId1,
               this.user1Address,
               seedData.deposit1,
-              seedData.nowPlus1m,
+              seedData.startDatePlus1m,
               signature,
             ),
           ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.usedTransactionId);
@@ -527,45 +563,45 @@ export function shouldBehaveCorrectFunding(): void {
           const signature = await signMessageForWithdraw(
             this.owner2,
             seedData.userId2,
-            seedData.withdrawTransationId1,
+            seedData.withdrawTransationId1_0,
             this.user1Address,
             seedData.extraWithdraw1,
             seedData.withdrawNonce1_0,
-            seedData.nowPlus1m,
+            seedData.startDatePlus1m,
           );
 
           await expect(
             this.user1SQRPaymentGateway.withdrawSig(
               seedData.userId1,
-              seedData.withdrawTransationId1,
+              seedData.withdrawTransationId1_0,
               this.user1Address,
               seedData.extraWithdraw1,
-              seedData.nowPlus1m,
+              seedData.startDatePlus1m,
               signature,
             ),
           ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.invalidSignature);
         });
 
         it('user1 tries to call depositSig in timeout case 1m', async function () {
-          await time.increaseTo(seedData.nowPlus1m);
+          await time.increaseTo(seedData.startDatePlus1m);
 
           const signature = await signMessageForWithdraw(
             this.owner2,
             seedData.userId1,
-            seedData.withdrawTransationId1,
+            seedData.withdrawTransationId1_0,
             this.user1Address,
             seedData.extraWithdraw1,
             seedData.withdrawNonce1_0,
-            seedData.nowPlus1m,
+            seedData.startDatePlus1m,
           );
 
           await expect(
             this.user1SQRPaymentGateway.withdrawSig(
               seedData.userId1,
-              seedData.withdrawTransationId1,
+              seedData.withdrawTransationId1_0,
               this.user1Address,
               seedData.extraWithdraw1,
-              seedData.nowPlus1m,
+              seedData.startDatePlus1m,
               signature,
             ),
           ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.timeoutBlocker);
@@ -575,20 +611,20 @@ export function shouldBehaveCorrectFunding(): void {
           const signature = await signMessageForWithdraw(
             this.owner2,
             seedData.userId2,
-            seedData.withdrawTransationId1,
+            seedData.withdrawTransationId1_0,
             this.user1Address,
             seedData.zero,
             seedData.withdrawNonce1_0,
-            seedData.nowPlus1m,
+            seedData.startDatePlus1m,
           );
 
           await expect(
             this.user1SQRPaymentGateway.withdrawSig(
               seedData.userId2,
-              seedData.withdrawTransationId1,
+              seedData.withdrawTransationId1_0,
               this.user1Address,
               seedData.zero,
-              seedData.nowPlus1m,
+              seedData.startDatePlus1m,
               signature,
             ),
           ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.amountNotZero);
@@ -598,20 +634,20 @@ export function shouldBehaveCorrectFunding(): void {
           const signature = await signMessageForWithdraw(
             this.owner2,
             seedData.userId1,
-            seedData.withdrawTransationId1,
+            seedData.withdrawTransationId1_0,
             this.user1Address,
             seedData.extraWithdraw1,
             seedData.withdrawNonce1_0,
-            seedData.nowPlus1m,
+            seedData.startDatePlus1m,
           );
 
           await expect(
             this.user1SQRPaymentGateway.withdrawSig(
               seedData.userId1,
-              seedData.withdrawTransationId1,
+              seedData.withdrawTransationId1_0,
               this.user1Address,
               seedData.extraWithdraw1,
-              seedData.nowPlus1m,
+              seedData.startDatePlus1m,
               signature,
             ),
           ).revertedWithCustomError(
@@ -624,11 +660,11 @@ export function shouldBehaveCorrectFunding(): void {
           await expect(
             this.user1SQRPaymentGateway.withdraw(
               seedData.userId1,
-              seedData.withdrawTransationId1,
+              seedData.withdrawTransationId1_0,
               this.user1Address,
               seedData.extraWithdraw1,
               seedData.withdrawNonce1_0,
-              seedData.nowPlus1m,
+              seedData.startDatePlus1m,
             ),
           )
             .revertedWithCustomError(
@@ -642,11 +678,11 @@ export function shouldBehaveCorrectFunding(): void {
           await expect(
             this.owner2SQRPaymentGateway.withdraw(
               seedData.userId1,
-              seedData.withdrawTransationId1,
+              seedData.withdrawTransationId1_0,
               this.user1Address,
               seedData.withdraw1,
               seedData.invalidNonce,
-              seedData.nowPlus1m,
+              seedData.startDatePlus1m,
             ),
           ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.invalidNonce);
         });
@@ -655,11 +691,11 @@ export function shouldBehaveCorrectFunding(): void {
           await expect(
             this.owner2SQRPaymentGateway.withdraw(
               seedData.userId1,
-              seedData.withdrawTransationId1,
+              seedData.withdrawTransationId1_0,
               this.user1Address,
               seedData.extraWithdraw1,
               seedData.withdrawNonce1_0,
-              seedData.nowPlus1m,
+              seedData.startDatePlus1m,
             ),
           ).revertedWithCustomError(
             this.owner2SQRPaymentGateway,
@@ -675,7 +711,7 @@ export function shouldBehaveCorrectFunding(): void {
             this.user1Address,
             seedData.deposit1,
             seedData.withdrawNonce1_0,
-            seedData.nowPlus1m,
+            seedData.startDatePlus1m,
           );
 
           await expect(
@@ -684,7 +720,7 @@ export function shouldBehaveCorrectFunding(): void {
               '3123',
               this.user1Address,
               seedData.deposit1,
-              seedData.nowPlus1m,
+              seedData.startDatePlus1m,
               wrongSignature,
             ),
           ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.invalidSignature);
@@ -694,20 +730,20 @@ export function shouldBehaveCorrectFunding(): void {
           const signature = await signMessageForWithdraw(
             this.owner2,
             seedData.userId1,
-            seedData.withdrawTransationId1,
+            seedData.withdrawTransationId1_0,
             this.user1Address,
             seedData.withdraw1,
             seedData.withdrawNonce1_0,
-            seedData.nowPlus1m,
+            seedData.startDatePlus1m,
           );
 
           const receipt = await waitTx(
             this.user1SQRPaymentGateway.withdrawSig(
               seedData.userId1,
-              seedData.withdrawTransationId1,
+              seedData.withdrawTransationId1_0,
               this.user1Address,
               seedData.withdraw1,
-              seedData.nowPlus1m,
+              seedData.startDatePlus1m,
               signature,
             ),
           );
@@ -725,19 +761,19 @@ export function shouldBehaveCorrectFunding(): void {
             const signature = await signMessageForWithdraw(
               this.owner2,
               seedData.userId1,
-              seedData.withdrawTransationId1,
+              seedData.withdrawTransationId1_0,
               this.user1Address,
               seedData.withdraw1,
               seedData.withdrawNonce1_0,
-              seedData.nowPlus1m,
+              seedData.startDatePlus1m,
             );
 
             await this.user1SQRPaymentGateway.withdrawSig(
               seedData.userId1,
-              seedData.withdrawTransationId1,
+              seedData.withdrawTransationId1_0,
               this.user1Address,
               seedData.withdraw1,
-              seedData.nowPlus1m,
+              seedData.startDatePlus1m,
               signature,
             );
           });
@@ -752,23 +788,56 @@ export function shouldBehaveCorrectFunding(): void {
             const signature = await signMessageForWithdraw(
               this.owner2,
               seedData.userId1,
-              seedData.withdrawTransationId1,
+              seedData.withdrawTransationId1_0,
               this.user1Address,
               seedData.withdraw1,
               seedData.withdrawNonce1_1,
-              seedData.nowPlus1m,
+              seedData.startDatePlus1m,
             );
 
             await expect(
               this.user1SQRPaymentGateway.withdrawSig(
                 seedData.userId1,
-                seedData.withdrawTransationId1,
+                seedData.withdrawTransationId1_0,
                 this.user1Address,
                 seedData.withdraw1,
-                seedData.nowPlus1m,
+                seedData.startDatePlus1m,
                 signature,
               ),
             ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.usedTransactionId);
+          });
+
+          it('user1 tries to call withdrawSig with the same transationId', async function () {
+            await this.owner2ERC20Token.transfer(
+              this.sqrPaymentGatewayAddress,
+              seedData.userInitBalance,
+            );
+
+            const extraWithdraw = seedData.extraWithdraw1 * BigInt(2);
+
+            const signature = await signMessageForWithdraw(
+              this.owner2,
+              seedData.userId1,
+              seedData.withdrawTransationId1_1,
+              this.user1Address,
+              extraWithdraw,
+              seedData.withdrawNonce1_1,
+              seedData.startDatePlus1m,
+            );
+
+            await expect(
+              this.user1SQRPaymentGateway.withdrawSig(
+                seedData.userId1,
+                seedData.withdrawTransationId1_1,
+                this.user1Address,
+                extraWithdraw,
+                seedData.startDatePlus1m,
+                signature,
+              ),
+            ).revertedWithCustomError(
+              this.owner2SQRPaymentGateway,
+              custromError.achievedWithdrawGoal,
+            );
           });
         });
       });

@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import { BigNumberish } from 'ethers';
 import { v4 as uuidv4 } from 'uuid';
 import { toUnixTime, toWei } from '~common';
 import { DeployNetworkKey } from '~types';
@@ -28,37 +27,58 @@ export const prodContractConfig: Partial<ContractConfig> = {
   balanceLimit: toWei(25_000, sqrDecimals),
 };
 
-export const testContractConfig: Partial<ContractConfig> = {
+export const mainContractConfig: Partial<ContractConfig> = {
   newOwner: '0x627Ab3fbC3979158f451347aeA288B0A3A47E1EF', //My s-owner2
   erc20Token: '0x8364a68c32E581332b962D88CdC8dBe8b3e0EE9c', //tSQR2
   coldWallet: '0x21D73A5dF25DAB8AcB73E782f71678c3b00A198F', //My s-coldWallet
   balanceLimit: toWei(1000, sqrDecimals) / priceDiv,
 };
 
-// export const testContractConfig: Partial<ContractConfig> = {
+// export const mainContractConfig: Partial<ContractConfig> = {
 //   newOwner: '0x1D5eeCbD950C22Ec2B5813Ab1D65ED5fFD83F32B', //My owner2
 //   erc20Token: '0x4072b57e9B3dA8eEB9F8998b69C868E9a1698E54', //tSQR
 //   coldWallet: '0xAca11c3Dde62ACdffE8d9279fDc8AFDD945556A7', //My coldWallet
 //   balanceLimit: toWei(1000, sqrDecimals) / priceDiv,
 // };
 
-const extContractConfig = isTest ? testContractConfig : prodContractConfig;
+const extContractConfig = isTest ? mainContractConfig : prodContractConfig;
+
+export const now = dayjs();
 
 export const contractConfig: ContractConfig = {
   newOwner: '0x627Ab3fbC3979158f451347aeA288B0A3A47E1EF',
   erc20Token: '0x4072b57e9B3dA8eEB9F8998b69C868E9a1698E54',
+  depositGoal: toWei(4_000, sqrDecimals) / priceDiv,
+  withdrawGoal: toWei(6_000, sqrDecimals) / priceDiv,
+  startDate: toUnixTime(now.add(1, 'days').toDate()),
+  closeDate: toUnixTime(now.add(2, 'days').toDate()),
   coldWallet: '0x21D73A5dF25DAB8AcB73E782f71678c3b00A198F',
   balanceLimit: toWei(1000, sqrDecimals),
   ...extContractConfig,
 };
 
-export function getContractArgs(
-  newOwner: string,
-  erc20Token: string,
-  coldWallet: string,
-  balanceLimit: BigNumberish,
-): DeployContractArgs {
-  return [newOwner, erc20Token, coldWallet, balanceLimit];
+export function getContractArgs(contractConfig: ContractConfig): DeployContractArgs {
+  const {
+    newOwner,
+    erc20Token,
+    depositGoal,
+    withdrawGoal,
+    startDate,
+    closeDate,
+    coldWallet,
+    balanceLimit,
+  } = contractConfig;
+
+  return [
+    newOwner,
+    erc20Token,
+    depositGoal,
+    withdrawGoal,
+    startDate,
+    closeDate,
+    coldWallet,
+    balanceLimit,
+  ];
 }
 
 export const tokenConfig: TokenConfig = {
@@ -79,7 +99,7 @@ export function getTokenArgs(newOnwer: string): DeployTokenArgs {
   ];
 }
 
-const userInitBalance = toWei(10_000, sqrDecimals);
+const userInitBalance = toWei(10_000, sqrDecimals) / priceDiv;
 const deposit1 = toWei(100, sqrDecimals) / priceDiv;
 const extraDeposit1 = toWei(2500, sqrDecimals) / priceDiv;
 const withdraw1 = toWei(30, sqrDecimals) / priceDiv;
@@ -92,7 +112,8 @@ const userId2 = uuidv4();
 
 const depositTransationId1 = uuidv4();
 const depositTransationId2 = uuidv4();
-const withdrawTransationId1 = uuidv4();
+const withdrawTransationId1_0 = uuidv4();
+const withdrawTransationId1_1 = uuidv4();
 const withdrawTransationId2 = uuidv4();
 
 export const seedData = {
@@ -114,12 +135,18 @@ export const seedData = {
   balanceLimit: toWei(100, sqrDecimals),
   allowance: toWei(1000000, sqrDecimals),
   balanceDelta: toWei(0.01, sqrDecimals),
-  nowPlus1m: toUnixTime(now1.add(1, 'minute').toDate()),
+  startDatePlus1m: toUnixTime(
+    dayjs(contractConfig.startDate * 1000)
+      .add(1, 'minute')
+      .toDate(),
+  ),
+  timeDelta: 50,
   userId1,
   userId2,
   depositTransationId1,
   depositTransationId2,
-  withdrawTransationId1,
+  withdrawTransationId1_0,
+  withdrawTransationId1_1,
   withdrawTransationId2,
   invalidNonce: 999,
   depositNonce1_0: 0,

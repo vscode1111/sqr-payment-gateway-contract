@@ -31,7 +31,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
       account: user1Address,
       amount: seedData.deposit1,
       nonce: Number(nonce),
-      timestamptLimit: seedData.nowPlus1m,
+      timestamptLimit: seedData.startDatePlus1m,
       signature: '',
     };
 

@@ -11,4 +11,6 @@ export const custromError = {
   userMustAllowToUseFunds: 'UserMustAllowToUseFunds',
   userMustHaveFunds: 'UserMustHaveFunds',
   invalidNonce: 'InvalidNonce',
+  achievedDepositGoal: 'AchievedDepositGoal',
+  achievedWithdrawGoal: 'AchievedWithdrawGoal',
 };

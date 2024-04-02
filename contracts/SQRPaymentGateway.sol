@@ -9,6 +9,8 @@ import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/Messa
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
+import "hardhat/console.sol";
+
 contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable {
   using SafeERC20 for IERC20;
   using MessageHashUtils for bytes32;
@@ -22,6 +24,10 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   function initialize(
     address _newOwner,
     address _erc20Token,
+    uint256 _depositGoal,
+    uint256 _withdrawGoal,
+    uint32 _startDate,
+    uint32 _closeDate,
     address _coldWallet,
     uint256 _balanceLimit
   ) public initializer {
@@ -37,7 +43,12 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
 
     __Ownable_init(_newOwner);
     __UUPSUpgradeable_init();
+
     erc20Token = IERC20(_erc20Token);
+    depositGoal = _depositGoal;
+    withdrawGoal = _withdrawGoal;
+    startDate = _startDate;
+    closeDate = _closeDate;
     coldWallet = _coldWallet;
     balanceLimit = _balanceLimit;
   }
@@ -48,6 +59,10 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
 
   IERC20 public erc20Token;
   address public coldWallet;
+  uint256 public depositGoal;
+  uint256 public withdrawGoal;
+  uint32 public startDate;
+  uint32 public closeDate;
   uint256 public balanceLimit;
   uint256 public totalDeposited;
   uint256 public totalWithdrew;
@@ -77,8 +92,14 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   error UserMustAllowToUseFunds();
   error UserMustHaveFunds();
   error InvalidNonce();
+  error AchievedDepositGoal();
+  error AchievedWithdrawGoal();
+  error TooEarly();
+  error TooLate();
 
   modifier timeoutBlocker(uint32 timestampLimit) {
+    console.log(111, block.timestamp, timestampLimit);
+
     if (block.timestamp > timestampLimit) {
       revert TimeoutBlocker();
     }
@@ -88,6 +109,18 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   modifier amountChecker(uint256 amount) {
     if (amount == 0) {
       revert AmountNotZero();
+    }
+    _;
+  }
+
+  modifier periodBlocker() {
+    console.log(222, block.timestamp, startDate, closeDate);
+
+    if (startDate > 0 && block.timestamp < startDate) {
+      revert TooEarly();
+    }
+    if (closeDate > 0 && block.timestamp > closeDate) {
+      revert TooLate();
     }
     _;
   }
@@ -161,13 +194,17 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
     uint256 amount,
     uint32 nonce,
     uint32 timestampLimit
-  ) private nonReentrant amountChecker(amount) timeoutBlocker(timestampLimit) {
+  ) private nonReentrant amountChecker(amount) timeoutBlocker(timestampLimit) periodBlocker {
     if (erc20Token.allowance(account, address(this)) < amount) {
       revert UserMustAllowToUseFunds();
     }
 
     if (erc20Token.balanceOf(account) < amount) {
       revert UserMustHaveFunds();
+    }
+
+    if (depositGoal > 0 && totalDeposited + amount > depositGoal) {
+      revert AchievedDepositGoal();
     }
 
     _setTransactionId(amount, transactionId);
@@ -277,6 +314,10 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   ) private nonReentrant amountChecker(amount) timeoutBlocker(timestampLimit) {
     if (erc20Token.balanceOf(address(this)) < amount) {
       revert ContractMustHaveSufficientFunds();
+    }
+
+    if (withdrawGoal > 0 && totalWithdrew + amount > withdrawGoal) {
+      revert AchievedWithdrawGoal();
     }
 
     _setTransactionId(amount, transactionId);
