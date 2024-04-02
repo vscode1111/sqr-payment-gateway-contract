@@ -13,6 +13,12 @@ export function shouldBehaveCorrectFetching(): void {
       expect(await this.ownerSQRPaymentGateway.erc20Token()).eq(this.erc20TokenAddress);
       expect(await this.ownerSQRPaymentGateway.coldWallet()).eq(this.coldWalletAddress);
       expect(await this.ownerSQRPaymentGateway.balanceLimit()).eq(contractConfig.balanceLimit);
+      expect(await this.ownerSQRPaymentGateway.calculateRemainDeposit()).eq(
+        contractConfig.depositGoal,
+      );
+      expect(await this.ownerSQRPaymentGateway.calculateRemainWithraw()).eq(
+        contractConfig.withdrawGoal,
+      );
     });
 
     it('should be correct balances', async function () {

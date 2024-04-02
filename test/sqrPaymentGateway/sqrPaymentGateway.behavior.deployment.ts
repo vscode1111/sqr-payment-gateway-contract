@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { ZeroAddress } from 'ethers';
 import { waitTx } from '~common';
+import { MAX_INT, ZERO } from '~constants';
 import { contractConfig, seedData } from '~seeds';
 import { getSQRPaymentGatewayContext, getUsers } from '~utils';
 import { ChangeBalanceLimitArgs, custromError } from '.';
@@ -96,6 +97,24 @@ export function shouldBehaveCorrectDeployment(): void {
         this.owner2SQRPaymentGateway,
         custromError.coldWalletNotZeroAddress,
       );
+    });
+
+    it('owner deployed with zero deposit goal', async function () {
+      const users = await getUsers();
+      const { ownerSQRPaymentGateway } = await getSQRPaymentGatewayContext(users, {
+        ...contractConfig,
+        depositGoal: ZERO,
+      });
+      expect(await ownerSQRPaymentGateway.calculateRemainDeposit()).eq(MAX_INT);
+    });
+
+    it('owner deployed with zero withdraw goal', async function () {
+      const users = await getUsers();
+      const { ownerSQRPaymentGateway } = await getSQRPaymentGatewayContext(users, {
+        ...contractConfig,
+        withdrawGoal: ZERO,
+      });
+      expect(await ownerSQRPaymentGateway.calculateRemainWithraw()).eq(MAX_INT);
     });
   });
 }

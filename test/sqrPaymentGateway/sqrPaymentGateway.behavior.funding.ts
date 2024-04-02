@@ -364,6 +364,9 @@ export function shouldBehaveCorrectFunding(): void {
           const fundItem = await this.user1SQRPaymentGateway.fetchFundItem(seedData.userId1);
           expect(fundItem.depositedAmount).eq(seedData.extraDeposit1);
           expect(await this.owner2SQRPaymentGateway.totalDeposited()).eq(seedData.extraDeposit1);
+          expect(await this.owner2SQRPaymentGateway.calculateRemainDeposit()).eq(
+            contractConfig.depositGoal - seedData.extraDeposit1,
+          );
         });
 
         it('user1 deposit extrafunds', async function () {
@@ -411,6 +414,10 @@ export function shouldBehaveCorrectFunding(): void {
           expect(fundItem.depositedAmount).eq(seedData.extraDeposit1);
 
           expect(await this.owner2SQRPaymentGateway.totalDeposited()).eq(seedData.extraDeposit1);
+
+          expect(await this.owner2SQRPaymentGateway.calculateRemainDeposit()).eq(
+            contractConfig.depositGoal - seedData.extraDeposit1,
+          );
         });
 
         it('user1 tries to deposit extra funds', async function () {
@@ -848,6 +855,9 @@ export function shouldBehaveCorrectFunding(): void {
               const fundItem = await this.user1SQRPaymentGateway.fetchFundItem(seedData.userId1);
               expect(fundItem.withdrewAmount).eq(seedData.withdraw1);
               expect(await this.owner2SQRPaymentGateway.totalWithdrew()).eq(seedData.withdraw1);
+              expect(await this.owner2SQRPaymentGateway.calculateRemainWithraw()).eq(
+                contractConfig.withdrawGoal - seedData.withdraw1,
+              );
             });
 
             it('user1 tries to call withdrawSig with the same transationId', async function () {
