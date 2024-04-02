@@ -98,8 +98,6 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   error TooLate();
 
   modifier timeoutBlocker(uint32 timestampLimit) {
-    console.log(111, block.timestamp, timestampLimit);
-
     if (block.timestamp > timestampLimit) {
       revert TimeoutBlocker();
     }
@@ -114,8 +112,6 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   }
 
   modifier periodBlocker() {
-    console.log(222, block.timestamp, startDate, closeDate);
-
     if (startDate > 0 && block.timestamp < startDate) {
       revert TooEarly();
     }

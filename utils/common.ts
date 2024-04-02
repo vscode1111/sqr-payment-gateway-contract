@@ -1,5 +1,6 @@
+import dayjs from 'dayjs';
 import { Signer } from 'ethers';
-import { signEncodedMessage } from '~common';
+import { signEncodedMessage, toUnixTime } from '~common';
 
 export async function signMessageForDeposit(
   signer: Signer,
@@ -32,5 +33,13 @@ export async function signMessageForWithdraw(
     // userId,  transactionId, to, amount, nonce, timestampLimit
     ['string', 'string', 'address', 'uint256', 'uint32', 'uint32'],
     [userId, transactionId, to, amount, nonce, timestampLimit],
+  );
+}
+
+export function addSeconsToUnixTime(date: number, seconds: number) {
+  return toUnixTime(
+    dayjs(date * 1000)
+      .add(seconds, 'seconds')
+      .toDate(),
   );
 }

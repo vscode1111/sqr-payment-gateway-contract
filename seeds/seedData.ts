@@ -1,7 +1,9 @@
 import dayjs from 'dayjs';
 import { v4 as uuidv4 } from 'uuid';
 import { toUnixTime, toWei } from '~common';
+import { MINUTES } from '~constants';
 import { DeployNetworkKey } from '~types';
+import { addSeconsToUnixTime } from '~utils';
 import { defaultNetwork } from '../hardhat.config';
 import { ContractConfig, DeployContractArgs, DeployTokenArgs, TokenConfig } from './types';
 
@@ -105,8 +107,6 @@ const extraDeposit1 = toWei(2500, sqrDecimals) / priceDiv;
 const withdraw1 = toWei(30, sqrDecimals) / priceDiv;
 const extraWithdraw1 = toWei(3000, sqrDecimals) / priceDiv;
 
-const now1 = dayjs();
-
 const userId1 = uuidv4();
 const userId2 = uuidv4();
 
@@ -135,12 +135,9 @@ export const seedData = {
   balanceLimit: toWei(100, sqrDecimals),
   allowance: toWei(1000000, sqrDecimals),
   balanceDelta: toWei(0.01, sqrDecimals),
-  startDatePlus1m: toUnixTime(
-    dayjs(contractConfig.startDate * 1000)
-      .add(1, 'minute')
-      .toDate(),
-  ),
-  timeDelta: 50,
+  startDatePlus1m: addSeconsToUnixTime(contractConfig.startDate, 1 * MINUTES),
+  closeDatePlus1m: addSeconsToUnixTime(contractConfig.closeDate, 1 * MINUTES),
+  timeShift: 10,
   userId1,
   userId2,
   depositTransationId1,

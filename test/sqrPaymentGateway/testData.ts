@@ -13,4 +13,6 @@ export const custromError = {
   invalidNonce: 'InvalidNonce',
   achievedDepositGoal: 'AchievedDepositGoal',
   achievedWithdrawGoal: 'AchievedWithdrawGoal',
+  tooEarly: 'TooEarly',
+  tooLate: 'TooLate',
 };
