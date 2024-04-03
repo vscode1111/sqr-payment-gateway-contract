@@ -3,17 +3,19 @@ import { ZeroAddress } from 'ethers';
 import { waitTx } from '~common';
 import { MAX_INT, ZERO } from '~constants';
 import { contractConfig, seedData } from '~seeds';
-import { getSQRPaymentGatewayContext, getUsers } from '~utils';
+import {
+  getSQRPaymentGatewayContext,
+  getUsers,
+  signMessageForDeposit,
+  signMessageForWithdraw,
+} from '~utils';
 import { ChangeBalanceLimitArgs, custromError } from '.';
 import { findEvent, loadSQRPaymentGatewayFixture } from './utils';
 
 export function shouldBehaveCorrectDeployment(): void {
-  describe('control', () => {
-    beforeEach(async function () {
-      await loadSQRPaymentGatewayFixture(this);
-    });
-
+  describe('deployment', () => {
     it('user1 tries to change balanceLimit', async function () {
+      await loadSQRPaymentGatewayFixture(this);
       await expect(this.user1SQRPaymentGateway.changeBalanceLimit(seedData.balanceLimit))
         .revertedWithCustomError(
           this.user1SQRPaymentGateway,
@@ -23,6 +25,7 @@ export function shouldBehaveCorrectDeployment(): void {
     });
 
     it('owner2 changes balanceLimit', async function () {
+      await loadSQRPaymentGatewayFixture(this);
       await this.owner2SQRPaymentGateway.changeBalanceLimit(seedData.balanceLimit);
 
       const receipt = await waitTx(
@@ -60,6 +63,69 @@ export function shouldBehaveCorrectDeployment(): void {
       );
     });
 
+    it('owner deployed contract using specific deposit verifier', async function () {
+      const users = await getUsers();
+      const { user3Address } = users;
+
+      await loadSQRPaymentGatewayFixture(this, {
+        startDate: 0,
+        depositVerifier: user3Address,
+      });
+
+      await this.owner2ERC20Token.transfer(this.user1Address, seedData.userInitBalance);
+      await this.user1ERC20Token.approve(this.sqrPaymentGatewayAddress, seedData.deposit1);
+
+      const signature = await signMessageForDeposit(
+        this.user3,
+        seedData.userId1,
+        seedData.depositTransationId1,
+        this.user1Address,
+        seedData.deposit1,
+        seedData.depositNonce1_0,
+        seedData.startDatePlus1m,
+      );
+
+      await this.user1SQRPaymentGateway.depositSig(
+        seedData.userId1,
+        seedData.depositTransationId1,
+        this.user1Address,
+        seedData.deposit1,
+        seedData.startDatePlus1m,
+        signature,
+      );
+    });
+
+    it('owner deployed contract using specific withdraw verifier', async function () {
+      const users = await getUsers();
+      const { user3Address } = users;
+
+      await loadSQRPaymentGatewayFixture(this, {
+        startDate: 0,
+        withdrawVerifier: user3Address,
+      });
+
+      await this.owner2ERC20Token.transfer(this.sqrPaymentGatewayAddress, seedData.deposit1);
+
+      const signature = await signMessageForWithdraw(
+        this.user3,
+        seedData.userId1,
+        seedData.withdrawTransationId1_0,
+        this.user1Address,
+        seedData.withdraw1,
+        seedData.withdrawNonce1_0,
+        seedData.startDatePlus1m,
+      );
+
+      await this.user1SQRPaymentGateway.withdrawSig(
+        seedData.userId1,
+        seedData.withdrawTransationId1_0,
+        this.user1Address,
+        seedData.withdraw1,
+        seedData.startDatePlus1m,
+        signature,
+      );
+    });
+
     it('owner tries to deploy with invalid start date', async function () {
       const users = await getUsers();
       await expect(
@@ -73,7 +139,7 @@ export function shouldBehaveCorrectDeployment(): void {
       );
     });
 
-    it('owner tries to deploy with invalid start date', async function () {
+    it('owner tries to deploy with invalid close date', async function () {
       const users = await getUsers();
       await expect(
         getSQRPaymentGatewayContext(users, {

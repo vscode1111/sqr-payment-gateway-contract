@@ -3,7 +3,9 @@ import { BigNumberish } from 'ethers';
 export interface ContractConfig {
   newOwner: string;
   erc20Token: string;
+  depositVerifier: string;
   depositGoal: bigint;
+  withdrawVerifier: string;
   withdrawGoal: bigint;
   startDate: number;
   closeDate: number;
@@ -14,7 +16,9 @@ export interface ContractConfig {
 export type DeployContractArgs = [
   newOwner: string,
   erc20Token: string,
+  depositVerifier: string,
   depositGoal: BigNumberish,
+  withdrawVerifier: string,
   withdrawGoal: BigNumberish,
   startDate: number,
   closeDate: number,

@@ -24,7 +24,9 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   function initialize(
     address _newOwner,
     address _erc20Token,
+    address _depositVerifier, //could be zero address
     uint256 _depositGoal, //0 - skip
+    address _withdrawVerifier, //could be zero address
     uint256 _withdrawGoal, //0 - skip
     uint32 _startDate, //0 - skip
     uint32 _closeDate, //0 - skip
@@ -55,7 +57,9 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
     __UUPSUpgradeable_init();
 
     erc20Token = IERC20(_erc20Token);
+    depositVerifier = _depositVerifier;
     depositGoal = _depositGoal;
+    withdrawVerifier = _withdrawVerifier;
     withdrawGoal = _withdrawGoal;
     startDate = _startDate;
     closeDate = _closeDate;
@@ -71,7 +75,9 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
 
   IERC20 public erc20Token;
   address public coldWallet;
+  address public depositVerifier;
   uint256 public depositGoal;
+  address public withdrawVerifier;
   uint256 public withdrawGoal;
   uint32 public startDate;
   uint32 public closeDate;
@@ -302,7 +308,7 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
       abi.encode(userId, transactionId, account, amount, nonce, timestampLimit)
     );
     address recover = messageHash.toEthSignedMessageHash().recover(signature);
-    return recover == owner();
+    return recover == owner() || recover == depositVerifier;
   }
 
   function depositSig(
@@ -389,7 +395,7 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
       abi.encode(userId, transactionId, to, amount, nonce, timestampLimit)
     );
     address recover = messageHash.toEthSignedMessageHash().recover(signature);
-    return recover == owner();
+    return recover == owner() || recover == withdrawVerifier;
   }
 
   function withdrawSig(

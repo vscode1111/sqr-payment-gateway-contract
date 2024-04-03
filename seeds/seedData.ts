@@ -50,7 +50,9 @@ export const now = dayjs();
 export const contractConfig: ContractConfig = {
   newOwner: '0x627Ab3fbC3979158f451347aeA288B0A3A47E1EF',
   erc20Token: '0x4072b57e9B3dA8eEB9F8998b69C868E9a1698E54',
+  depositVerifier: '0x627Ab3fbC3979158f451347aeA288B0A3A47E1EF',
   depositGoal: toWei(4_000, sqrDecimals) / priceDiv,
+  withdrawVerifier: '0x627Ab3fbC3979158f451347aeA288B0A3A47E1EF',
   withdrawGoal: toWei(6_000, sqrDecimals) / priceDiv,
   startDate: toUnixTime(now.add(1, 'days').toDate()),
   closeDate: toUnixTime(now.add(2, 'days').toDate()),
@@ -63,7 +65,9 @@ export function getContractArgs(contractConfig: ContractConfig): DeployContractA
   const {
     newOwner,
     erc20Token,
+    depositVerifier,
     depositGoal,
+    withdrawVerifier,
     withdrawGoal,
     startDate,
     closeDate,
@@ -74,7 +78,9 @@ export function getContractArgs(contractConfig: ContractConfig): DeployContractA
   return [
     newOwner,
     erc20Token,
+    depositVerifier,
     depositGoal,
+    withdrawVerifier,
     withdrawGoal,
     startDate,
     closeDate,
