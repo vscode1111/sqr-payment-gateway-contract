@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { VERSION } from '~constants';
 import { contractConfig, seedData } from '~seeds';
 import { getERC20TokenBalance, loadSQRPaymentGatewayFixture } from './utils';
 
@@ -10,6 +11,7 @@ export function shouldBehaveCorrectFetching(): void {
 
     it('should be correct init values', async function () {
       expect(await this.ownerSQRPaymentGateway.owner()).eq(this.owner2Address);
+      expect(await this.ownerSQRPaymentGateway.VERSION()).eq(VERSION);
       expect(await this.ownerSQRPaymentGateway.erc20Token()).eq(this.erc20TokenAddress);
       expect(await this.ownerSQRPaymentGateway.coldWallet()).eq(this.coldWalletAddress);
       expect(await this.ownerSQRPaymentGateway.balanceLimit()).eq(contractConfig.balanceLimit);

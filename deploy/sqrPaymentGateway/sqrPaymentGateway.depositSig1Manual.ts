@@ -3,7 +3,8 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { callWithTimerHre, toNumberDecimals, waitTx } from '~common';
 import { SQR_PAYMENT_GATEWAY_NAME } from '~constants';
 import { contractConfig, seedData } from '~seeds';
-import { getAddressesFromHre, getContext } from '~utils';
+import { getAddressesFromHre, getContext, signMessageForDeposit } from '~utils';
+import { deployParams } from './deployData';
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<void> => {
   await callWithTimerHre(async () => {
@@ -11,39 +12,86 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
     console.log(`${SQR_PAYMENT_GATEWAY_NAME} ${sqrPaymentGatewayAddress} is depositing...`);
     const erc20TokenAddress = contractConfig.erc20Token;
     const context = await getContext(erc20TokenAddress, sqrPaymentGatewayAddress);
-    const { user2Address, user1ERC20Token, user2SQRPaymentGateway } = context;
+    const {
+      depositVerifier,
+      user1Address,
+      user2ERC20Token,
+      user1SQRPaymentGateway,
+      sqrPaymentGatewayFactory,
+    } = context;
 
-    const decimals = Number(await user1ERC20Token.decimals());
+    const decimals = Number(await user2ERC20Token.decimals());
 
-    const currentAllowance = await user1ERC20Token.allowance(user2Address, sqrPaymentGatewayAddress);
+    const currentAllowance = await user2ERC20Token.allowance(
+      user1Address,
+      sqrPaymentGatewayAddress,
+    );
     console.log(`${toNumberDecimals(currentAllowance, decimals)} SQR was allowed`);
 
+    //From Postman
     const body = {
-      userId: '1065471',
-      transactionId: '6baee13d-cd19-4c25-935f-7a09fe66813e',
-      amount: 0.01,
+      userId: 'tu1-f75c73b1-0f13-46ae-88f8-2048765c5ad4',
+      transactionId: 'b7ae3413-1ccb-42d0-9edf-86e9e6d6953t+12',
+      account: '0xc109D9a3Fc3779db60af4821AE18747c708Dfcc6',
+      amount: 1.02342342323423424,
     };
 
     const response = {
       signature:
-        '0xcd5043673f5c5a602d3455da8d7ebc8097e9e54629ea2e5af01f75dd525be0d17f597debe2e811f6c3c84b630f5c2f5ae5c35a196b48e7850c7462cebc18da1e1b',
-      amountInWei: '1000000',
-      timestampNow: 1708679635,
-      timestampLimit: 1708680235,
+        '0xadccc019e4d7946069fa7149bf6c237fb59a233ceac89be01dea631f8c54c417528ccaebcf6b7a0b13c43662929839cd8a43360ff99ca85afe901f9467e4ba7e1c',
+      amountInWei: '102342342',
+      nonce: 19,
+      timestampNow: 1712582240,
+      timestampLimit: 1712668640,
     };
+
+    //Checkings
+    if (body.account !== user1Address) {
+      console.error(`Account is not correct`);
+      return;
+    }
+
+    const balance = await user2ERC20Token.balanceOf(body.account);
+    console.log(`User balance: ${toNumberDecimals(balance, decimals)} SQR`);
+    if (Number(response.amountInWei) > Number(balance)) {
+      console.error(`User balance is lower`);
+      return;
+    }
+
+    const nonce = await user1SQRPaymentGateway.getDepositNonce(body.userId);
+    console.log(`User nonce: ${nonce}`);
+    if (response.nonce !== Number(nonce)) {
+      console.error(`Nonce is not correct`);
+      // return;
+    }
+
+    const signature = await signMessageForDeposit(
+      depositVerifier,
+      body.userId,
+      body.transactionId,
+      body.account,
+      BigInt(response.amountInWei),
+      response.nonce,
+      response.timestampLimit,
+    );
+
+    if (response.signature !== signature) {
+      console.error(`Signature is not correct`);
+      return;
+    }
 
     const params = {
       userId: body.userId,
-      transationId: body.transactionId,
-      account: user2Address,
+      transactionId: body.transactionId,
+      account: body.account,
       amount: BigInt(response.amountInWei),
-      timestamptLimit: response.timestampLimit,
+      timestampLimit: response.timestampLimit,
       signature: response.signature,
     };
 
     if (params.amount > currentAllowance) {
       const askAllowance = seedData.allowance;
-      await waitTx(user1ERC20Token.approve(sqrPaymentGatewayAddress, askAllowance), 'approve');
+      await waitTx(user2ERC20Token.approve(sqrPaymentGatewayAddress, askAllowance), 'approve');
       console.log(
         `${toNumberDecimals(
           askAllowance,
@@ -54,16 +102,21 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
 
     console.table(params);
 
+    // return;
+
     await waitTx(
-      user2SQRPaymentGateway.depositSig(
+      user1SQRPaymentGateway.depositSig(
         params.userId,
-        params.transationId,
+        params.transactionId,
         params.account,
         params.amount,
-        params.timestamptLimit,
+        params.timestampLimit,
         params.signature,
       ),
       'depositSig',
+      deployParams.attemps,
+      deployParams.delay,
+      sqrPaymentGatewayFactory,
     );
   }, hre);
 };

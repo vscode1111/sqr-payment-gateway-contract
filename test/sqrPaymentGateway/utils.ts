@@ -21,6 +21,8 @@ export async function checkTotalSQRBalance(that: ContextBase) {
       that.ownerAddress,
       that.owner2Address,
       that.coldWalletAddress,
+      that.depositVerifierAddress,
+      that.withdrawVerifierAddress,
       that.erc20TokenAddress,
       that.sqrPaymentGatewayAddress,
     ]),

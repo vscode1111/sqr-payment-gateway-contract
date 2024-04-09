@@ -17,4 +17,5 @@ export const custromError = {
   tooLate: 'TooLate',
   startDateMustBeGreaterThanCurrentTime: 'StartDateMustBeGreaterThanCurrentTime',
   closeDateMustBeGreaterThanCurrentTime: 'CloseDateMustBeGreaterThanCurrentTime',
+  closeDateMustBeGreaterThanStartDate: 'CloseDateMustBeGreaterThanStartDate',
 };

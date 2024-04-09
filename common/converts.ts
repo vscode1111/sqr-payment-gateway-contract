@@ -13,6 +13,19 @@ export function toNumberDecimals(value: BigNumberish, decimals = 18): number {
   return Number(formatUnits(value, decimals));
 }
 
+export function toNumberFixed(value: StringNumber, decimals: number): number {
+  return Number(Number(value).toFixed(decimals));
+}
+
+export function toWeiWithFixed(value: BigNumberish, unitName?: BigNumberish): bigint {
+  let newValue = value;
+  if (typeof value === 'number' && typeof unitName === 'number') {
+    newValue = value.toFixed(unitName);
+  }
+
+  return BigInt(parseUnits(String(newValue), unitName));
+}
+
 export function toDec(value: string | undefined): number {
   if (!value) {
     return 0;

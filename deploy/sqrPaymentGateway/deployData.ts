@@ -12,3 +12,12 @@ export const deployData = {
   userMintAmount: 100000,
   balanceLimit: toWei(1, sqrDecimals),
 };
+
+export const deployParams = {
+  attemps: 1,
+  delay: 0,
+};
+
+// export function getDeployParams(contractFactory?: ContractFactory) {
+//   return [TX_ATTEMPS, 0, contractFactory];
+// }

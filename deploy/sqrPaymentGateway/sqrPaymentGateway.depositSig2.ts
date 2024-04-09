@@ -4,7 +4,7 @@ import { callWithTimerHre, toNumberDecimals, waitTx } from '~common';
 import { SQR_PAYMENT_GATEWAY_NAME } from '~constants';
 import { contractConfig, seedData } from '~seeds';
 import { getAddressesFromHre, getContext, signMessageForDeposit } from '~utils';
-import { deployData } from './deployData';
+import { deployData, deployParams } from './deployData';
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<void> => {
   await callWithTimerHre(async () => {
@@ -27,22 +27,22 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
 
     const params = {
       userId: deployData.userId2,
-      transationId: seedData.depositTransationId2,
+      transactionId: seedData.depositTransactionId2,
       amount: seedData.deposit2,
       account: user2Address,
       nonce: Number(nonce),
-      timestamptLimit: seedData.startDatePlus1m,
+      timestampLimit: seedData.startDatePlus1m,
       signature: '',
     };
 
     params.signature = await signMessageForDeposit(
       owner2,
       params.userId,
-      params.transationId,
+      params.transactionId,
       user2Address,
       params.amount,
       params.nonce,
-      params.timestamptLimit,
+      params.timestampLimit,
     );
 
     if (params.amount > currentAllowance) {
@@ -61,13 +61,14 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
     await waitTx(
       user2SQRPaymentGateway.depositSig(
         params.userId,
-        params.transationId,
+        params.transactionId,
         params.account,
         params.amount,
-        params.timestamptLimit,
+        params.timestampLimit,
         params.signature,
       ),
       'depositSig',
+      deployParams.attemps,
     );
   }, hre);
 };

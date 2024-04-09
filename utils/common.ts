@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { Signer } from 'ethers';
 import { signEncodedMessage, toUnixTime } from '~common';
 
@@ -36,10 +36,13 @@ export async function signMessageForWithdraw(
   );
 }
 
-export function addSeconsToUnixTime(date: number, seconds: number) {
-  return toUnixTime(
-    dayjs(date * 1000)
-      .add(seconds, 'seconds')
-      .toDate(),
-  );
+export function addSeconsToUnixTime(date: number | Dayjs, seconds: number) {
+  if (typeof date === 'number')
+    return toUnixTime(
+      dayjs(date * 1000)
+        .add(seconds, 'seconds')
+        .toDate(),
+    );
+
+  return toUnixTime(date.add(seconds, 'seconds').toDate());
 }

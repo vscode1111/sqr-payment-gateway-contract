@@ -1,6 +1,6 @@
 import { Signer } from 'ethers';
-import { SQRPaymentGateway } from '~typechain-types/contracts/SQRPaymentGateway';
 import { ERC20Token } from '~typechain-types/contracts/ERC20Token';
+import { SQRPaymentGateway } from '~typechain-types/contracts/SQRPaymentGateway';
 import { SQRPaymentGateway__factory } from '~typechain-types/factories/contracts/SQRPaymentGateway__factory';
 
 export interface Users {
@@ -16,6 +16,10 @@ export interface Users {
   owner2Address: string;
   coldWallet: Signer;
   coldWalletAddress: string;
+  depositVerifier: Signer;
+  depositVerifierAddress: string;
+  withdrawVerifier: Signer;
+  withdrawVerifierAddress: string;
 }
 
 export interface ERC20TokenContext {

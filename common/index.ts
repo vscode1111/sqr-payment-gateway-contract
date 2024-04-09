@@ -1,3 +1,4 @@
+//VERSION 0.0.2;
 export * from './account';
 export * from './config';
 export * from './converts';

@@ -49,6 +49,10 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
       revert CloseDateMustBeGreaterThanCurrentTime();
     }
 
+    if (_startDate > 0 && _closeDate > 0 && _startDate > _closeDate) {
+      revert CloseDateMustBeGreaterThanStartDate();
+    }
+
     if (_coldWallet == address(0)) {
       revert ColdWalletNotZeroAddress();
     }
@@ -71,6 +75,7 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
 
   //Variables, structs, errors, modifiers, events------------------------
 
+  string public constant VERSION = "1.0";
   uint256 public constant MAX_INT = type(uint256).max;
 
   IERC20 public erc20Token;
@@ -103,6 +108,7 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   error ERC20TokenNotZeroAddress();
   error StartDateMustBeGreaterThanCurrentTime();
   error CloseDateMustBeGreaterThanCurrentTime();
+  error CloseDateMustBeGreaterThanStartDate();
   error ColdWalletNotZeroAddress();
   error TimeoutBlocker();
   error AmountNotZero();

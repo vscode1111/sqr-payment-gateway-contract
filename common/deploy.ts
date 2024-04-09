@@ -1,10 +1,11 @@
-import { TransactionReceipt, TransactionResponse } from 'ethers';
+import { ContractFactory, TransactionReceipt, TransactionResponse } from 'ethers';
 import { ethers } from 'hardhat';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import _ from 'lodash';
 import { DeployNetworks } from '~types';
 import { DiffArray } from './DiffArray';
 import { toNumber } from './converts';
+import { sleep } from './misc';
 
 export const FRACTION_DIGITS = 5;
 
@@ -78,10 +79,6 @@ export async function callWithTimerHre(
   console.log(finishMessage);
 }
 
-export async function delay(ms: number): Promise<number> {
-  return new Promise((resolve: any) => setTimeout(resolve, ms));
-}
-
 // https://github.com/astra-net/astra-scan.backend/blob/8f9618d8d4df0976b5544b75ed5636b2ef949acd/src/indexer/rpc/transport/ws/WebSocketRPC.ts
 export function timeoutPromise(callTimeout: number) {
   return new Promise((_, reject) =>
@@ -117,7 +114,7 @@ export async function verifyContract(
       }
 
       count += 1;
-      await delay(5000);
+      await sleep(5000);
     }
   }
 
@@ -127,15 +124,25 @@ export async function verifyContract(
   }
 }
 
-export async function attempt(fn: () => Promise<any>, attempts = 3, delayMs = 1000): Promise<any> {
+export async function attempt(
+  fn: () => Promise<any>,
+  attempts = 3,
+  delay = 1000,
+  contractFactory?: ContractFactory,
+): Promise<any> {
   try {
     return await fn();
-  } catch (e) {
+  } catch (e: any) {
     if (attempts > 0) {
       console.log(e);
-      await delay(delayMs);
+      if ('data' in e) {
+        const errorFragment = contractFactory?.interface.getError(e.data);
+        console.log(333, errorFragment?.name);
+        console.log(`Error data: ${e.data} -> ${errorFragment?.name}`);
+      }
+      await sleep(delay);
       console.log(`${attempts - 1} attempts left`);
-      return await attempt(fn, attempts - 1, delayMs);
+      return await attempt(fn, attempts - 1, delay);
     } else {
       throw e;
     }
@@ -146,7 +153,8 @@ export async function waitTx(
   promise: Promise<TransactionResponse>,
   functionName?: string,
   attempts = 3,
-  delayMs = 1000,
+  delay = 1000,
+  contractFactory?: ContractFactory,
 ): Promise<TransactionReceipt> {
   return attempt(
     async () => {
@@ -176,6 +184,7 @@ export async function waitTx(
       return receipt;
     },
     attempts,
-    delayMs,
+    delay,
+    contractFactory,
   );
 }

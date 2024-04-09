@@ -1,9 +1,11 @@
 import { expect } from 'chai';
+import { Dayjs } from 'dayjs';
 import { ZeroAddress } from 'ethers';
 import { waitTx } from '~common';
 import { MAX_INT, ZERO } from '~constants';
 import { contractConfig, seedData } from '~seeds';
 import {
+  addSeconsToUnixTime,
   getSQRPaymentGatewayContext,
   getUsers,
   signMessageForDeposit,
@@ -14,8 +16,16 @@ import { findEvent, loadSQRPaymentGatewayFixture } from './utils';
 
 export function shouldBehaveCorrectDeployment(): void {
   describe('deployment', () => {
+    let chainTime: Dayjs;
+
+    beforeEach(async function () {
+      await loadSQRPaymentGatewayFixture(this, undefined, async (_chainTime, config) => {
+        chainTime = _chainTime;
+        return config;
+      });
+    });
+
     it('user1 tries to change balanceLimit', async function () {
-      await loadSQRPaymentGatewayFixture(this);
       await expect(this.user1SQRPaymentGateway.changeBalanceLimit(seedData.balanceLimit))
         .revertedWithCustomError(
           this.user1SQRPaymentGateway,
@@ -25,7 +35,6 @@ export function shouldBehaveCorrectDeployment(): void {
     });
 
     it('owner2 changes balanceLimit', async function () {
-      await loadSQRPaymentGatewayFixture(this);
       await this.owner2SQRPaymentGateway.changeBalanceLimit(seedData.balanceLimit);
 
       const receipt = await waitTx(
@@ -63,6 +72,20 @@ export function shouldBehaveCorrectDeployment(): void {
       );
     });
 
+    it('owner tries to deploy when start date is later than close one', async function () {
+      const users = await getUsers();
+      await expect(
+        getSQRPaymentGatewayContext(users, {
+          ...contractConfig,
+          startDate: addSeconsToUnixTime(chainTime, 10),
+          closeDate: addSeconsToUnixTime(chainTime, 9),
+        }),
+      ).revertedWithCustomError(
+        this.owner2SQRPaymentGateway,
+        custromError.closeDateMustBeGreaterThanStartDate,
+      );
+    });
+
     it('owner deployed contract using specific deposit verifier', async function () {
       const users = await getUsers();
       const { user3Address } = users;
@@ -78,7 +101,7 @@ export function shouldBehaveCorrectDeployment(): void {
       const signature = await signMessageForDeposit(
         this.user3,
         seedData.userId1,
-        seedData.depositTransationId1,
+        seedData.depositTransactionId1,
         this.user1Address,
         seedData.deposit1,
         seedData.depositNonce1_0,
@@ -87,7 +110,7 @@ export function shouldBehaveCorrectDeployment(): void {
 
       await this.user1SQRPaymentGateway.depositSig(
         seedData.userId1,
-        seedData.depositTransationId1,
+        seedData.depositTransactionId1,
         this.user1Address,
         seedData.deposit1,
         seedData.startDatePlus1m,
@@ -109,7 +132,7 @@ export function shouldBehaveCorrectDeployment(): void {
       const signature = await signMessageForWithdraw(
         this.user3,
         seedData.userId1,
-        seedData.withdrawTransationId1_0,
+        seedData.withdrawTransactionId1_0,
         this.user1Address,
         seedData.withdraw1,
         seedData.withdrawNonce1_0,
@@ -118,7 +141,7 @@ export function shouldBehaveCorrectDeployment(): void {
 
       await this.user1SQRPaymentGateway.withdrawSig(
         seedData.userId1,
-        seedData.withdrawTransationId1_0,
+        seedData.withdrawTransactionId1_0,
         this.user1Address,
         seedData.withdraw1,
         seedData.startDatePlus1m,

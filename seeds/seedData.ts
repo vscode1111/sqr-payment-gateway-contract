@@ -21,6 +21,7 @@ if (!isTest) {
 
 const priceDiv = BigInt(1);
 const userDiv = BigInt(2);
+export const now = dayjs();
 
 export const prodContractConfig: Partial<ContractConfig> = {
   newOwner: '0xA8B8455ad9a1FAb1d4a3B69eD30A52fBA82549Bb', //Matan
@@ -32,8 +33,12 @@ export const prodContractConfig: Partial<ContractConfig> = {
 export const mainContractConfig: Partial<ContractConfig> = {
   newOwner: '0x627Ab3fbC3979158f451347aeA288B0A3A47E1EF', //My s-owner2
   erc20Token: '0x8364a68c32E581332b962D88CdC8dBe8b3e0EE9c', //tSQR2
+  depositVerifier: '0x99FbD0Bc026128e6258BEAd542ECB1cF165Bbb98', //My s-signature
   coldWallet: '0x21D73A5dF25DAB8AcB73E782f71678c3b00A198F', //My s-coldWallet
   balanceLimit: toWei(1000, sqrDecimals) / priceDiv,
+
+  // startDate: 0,
+  // closeDate: 0,
 };
 
 // export const mainContractConfig: Partial<ContractConfig> = {
@@ -44,8 +49,6 @@ export const mainContractConfig: Partial<ContractConfig> = {
 // };
 
 const extContractConfig = isTest ? mainContractConfig : prodContractConfig;
-
-export const now = dayjs();
 
 export const contractConfig: ContractConfig = {
   newOwner: '0x627Ab3fbC3979158f451347aeA288B0A3A47E1EF',
@@ -116,11 +119,11 @@ const extraWithdraw1 = toWei(3000, sqrDecimals) / priceDiv;
 const userId1 = uuidv4();
 const userId2 = uuidv4();
 
-const depositTransationId1 = uuidv4();
-const depositTransationId2 = uuidv4();
-const withdrawTransationId1_0 = uuidv4();
-const withdrawTransationId1_1 = uuidv4();
-const withdrawTransationId2 = uuidv4();
+const depositTransactionId1 = uuidv4();
+const depositTransactionId2 = uuidv4();
+const withdrawTransactionId1_0 = uuidv4();
+const withdrawTransactionId1_1 = uuidv4();
+const withdrawTransactionId2 = uuidv4();
 
 export const seedData = {
   zero: toWei(0),
@@ -146,11 +149,11 @@ export const seedData = {
   timeShift: 10,
   userId1,
   userId2,
-  depositTransationId1,
-  depositTransationId2,
-  withdrawTransationId1_0,
-  withdrawTransationId1_1,
-  withdrawTransationId2,
+  depositTransactionId1,
+  depositTransactionId2,
+  withdrawTransactionId1_0,
+  withdrawTransactionId1_1,
+  withdrawTransactionId2,
   invalidNonce: 999,
   depositNonce1_0: 0,
   depositNonce1_1: 1,
