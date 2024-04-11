@@ -1,7 +1,8 @@
 import dayjs from 'dayjs';
+import { ZeroAddress } from 'ethers';
 import { v4 as uuidv4 } from 'uuid';
 import { toUnixTime, toWei } from '~common';
-import { MINUTES } from '~constants';
+import { MINUTES, ZERO } from '~constants';
 import { DeployNetworkKey } from '~types';
 import { addSeconsToUnixTime } from '~utils';
 import { defaultNetwork } from '../hardhat.config';
@@ -30,22 +31,27 @@ export const prodContractConfig: Partial<ContractConfig> = {
   balanceLimit: toWei(25_000, sqrDecimals),
 };
 
+//Test
 export const mainContractConfig: Partial<ContractConfig> = {
   newOwner: '0x627Ab3fbC3979158f451347aeA288B0A3A47E1EF', //My s-owner2
   erc20Token: '0x8364a68c32E581332b962D88CdC8dBe8b3e0EE9c', //tSQR2
-  depositVerifier: '0x99FbD0Bc026128e6258BEAd542ECB1cF165Bbb98', //My s-signature
+  depositVerifier: '0x99FbD0Bc026128e6258BEAd542ECB1cF165Bbb98', //My s-deposit
   coldWallet: '0x21D73A5dF25DAB8AcB73E782f71678c3b00A198F', //My s-coldWallet
   balanceLimit: toWei(1000, sqrDecimals) / priceDiv,
-
-  // startDate: 0,
-  // closeDate: 0,
 };
 
+//Read main
 // export const mainContractConfig: Partial<ContractConfig> = {
-//   newOwner: '0x1D5eeCbD950C22Ec2B5813Ab1D65ED5fFD83F32B', //My owner2
-//   erc20Token: '0x4072b57e9B3dA8eEB9F8998b69C868E9a1698E54', //tSQR
-//   coldWallet: '0xAca11c3Dde62ACdffE8d9279fDc8AFDD945556A7', //My coldWallet
-//   balanceLimit: toWei(1000, sqrDecimals) / priceDiv,
+//   newOwner: '0x627Ab3fbC3979158f451347aeA288B0A3A47E1EF', //My s-owner2
+//   erc20Token: '0x8364a68c32E581332b962D88CdC8dBe8b3e0EE9c', //tSQR2
+//   depositVerifier: '0x99FbD0Bc026128e6258BEAd542ECB1cF165Bbb98', //My s-deposit
+//   depositGoal: toWei(1_000_000, sqrDecimals),
+//   withdrawVerifier: ZeroAddress,
+//   withdrawGoal: BigInt(1),
+//   coldWallet: '0x21D73A5dF25DAB8AcB73E782f71678c3b00A198F', //My s-coldWallet
+//   balanceLimit: toWei(25_000, sqrDecimals) / priceDiv,
+//   startDate: 0,
+//   closeDate: 0,
 // };
 
 const extContractConfig = isTest ? mainContractConfig : prodContractConfig;
@@ -144,6 +150,7 @@ export const seedData = {
   balanceLimit: toWei(100, sqrDecimals),
   allowance: toWei(1000000, sqrDecimals),
   balanceDelta: toWei(0.01, sqrDecimals),
+  nowPlus1m: toUnixTime(now.add(1, 'minute').toDate()),
   startDatePlus1m: addSeconsToUnixTime(contractConfig.startDate, 1 * MINUTES),
   closeDatePlus1m: addSeconsToUnixTime(contractConfig.closeDate, 1 * MINUTES),
   timeShift: 10,

@@ -31,21 +31,21 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
     //From Postman
     const body = {
       userId: 'tu1-f75c73b1-0f13-46ae-88f8-2048765c5ad4',
-      transactionId: 'b7ae3413-1ccb-42d0-9edf-86e9e6d6953t+12',
+      transactionId: '62813e9b-bde7-40bf-adde-4cf3c3d76002+02',
       account: '0xc109D9a3Fc3779db60af4821AE18747c708Dfcc6',
-      amount: 1.02342342323423424,
+      amount: 3.568111268391984,
     };
 
     const response = {
       signature:
-        '0xadccc019e4d7946069fa7149bf6c237fb59a233ceac89be01dea631f8c54c417528ccaebcf6b7a0b13c43662929839cd8a43360ff99ca85afe901f9467e4ba7e1c',
-      amountInWei: '102342342',
-      nonce: 19,
-      timestampNow: 1712582240,
-      timestampLimit: 1712668640,
+        '0x9131481bc40adbae3597e510511d027c52b866e7e755ef04c243fdb7aa54faa963f191c27daefd9bd282f86ea35a2cf5560dae00491c950157dffc9642130c6b1c',
+      amountInWei: '356811127',
+      nonce: 21,
+      timestampNow: 1712677051,
+      timestampLimit: 1712763451,
     };
 
-    //Checkings
+    //Checks
     if (body.account !== user1Address) {
       console.error(`Account is not correct`);
       return;
