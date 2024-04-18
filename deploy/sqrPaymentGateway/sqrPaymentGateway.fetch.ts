@@ -9,7 +9,10 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
     const { sqrPaymentGatewayAddress } = await getAddressesFromHre(hre);
     console.log(`${SQR_PAYMENT_GATEWAY_NAME} ${sqrPaymentGatewayAddress} is fetching...`);
     const users = await getUsers();
-    const { ownerSQRPaymentGateway } = await getSQRPaymentGatewayContext(users, sqrPaymentGatewayAddress);
+    const { ownerSQRPaymentGateway } = await getSQRPaymentGatewayContext(
+      users,
+      sqrPaymentGatewayAddress,
+    );
 
     const result = {
       owner: await ownerSQRPaymentGateway.owner(),
@@ -20,6 +23,11 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
     };
 
     console.table(result);
+
+    const fundItem = await ownerSQRPaymentGateway.fetchFundItem(
+      'f80f623b-4e53-4769-9fe7-93d0901c7261',
+    );
+    console.log(fundItem);
   }, hre);
 };
 

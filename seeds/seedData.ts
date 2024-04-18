@@ -40,7 +40,7 @@ export const mainContractConfig: Partial<ContractConfig> = {
   balanceLimit: toWei(1000, sqrDecimals) / priceDiv,
 };
 
-//Read main
+//Real main
 // export const mainContractConfig: Partial<ContractConfig> = {
 //   newOwner: '0x627Ab3fbC3979158f451347aeA288B0A3A47E1EF', //My s-owner2
 //   erc20Token: '0x8364a68c32E581332b962D88CdC8dBe8b3e0EE9c', //tSQR2
