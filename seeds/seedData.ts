@@ -32,27 +32,27 @@ export const prodContractConfig: Partial<ContractConfig> = {
 };
 
 //Test
-export const mainContractConfig: Partial<ContractConfig> = {
-  newOwner: '0x627Ab3fbC3979158f451347aeA288B0A3A47E1EF', //My s-owner2
-  erc20Token: '0x8364a68c32E581332b962D88CdC8dBe8b3e0EE9c', //tSQR2
-  depositVerifier: '0x99FbD0Bc026128e6258BEAd542ECB1cF165Bbb98', //My s-deposit
-  coldWallet: '0x21D73A5dF25DAB8AcB73E782f71678c3b00A198F', //My s-coldWallet
-  balanceLimit: toWei(1000, sqrDecimals) / priceDiv,
-};
-
-//Real main
 // export const mainContractConfig: Partial<ContractConfig> = {
 //   newOwner: '0x627Ab3fbC3979158f451347aeA288B0A3A47E1EF', //My s-owner2
 //   erc20Token: '0x8364a68c32E581332b962D88CdC8dBe8b3e0EE9c', //tSQR2
 //   depositVerifier: '0x99FbD0Bc026128e6258BEAd542ECB1cF165Bbb98', //My s-deposit
-//   depositGoal: toWei(1_000_000, sqrDecimals),
-//   withdrawVerifier: ZeroAddress,
-//   withdrawGoal: BigInt(1),
 //   coldWallet: '0x21D73A5dF25DAB8AcB73E782f71678c3b00A198F', //My s-coldWallet
-//   balanceLimit: toWei(25_000, sqrDecimals) / priceDiv,
-//   startDate: 0,
-//   closeDate: 0,
+//   balanceLimit: toWei(1000, sqrDecimals) / priceDiv,
 // };
+
+//Real main
+export const mainContractConfig: Partial<ContractConfig> = {
+  newOwner: '0x627Ab3fbC3979158f451347aeA288B0A3A47E1EF', //My s-owner2
+  erc20Token: '0x8364a68c32E581332b962D88CdC8dBe8b3e0EE9c', //tSQR2
+  depositVerifier: '0x99FbD0Bc026128e6258BEAd542ECB1cF165Bbb98', //My s-deposit
+  depositGoal: toWei(100_000, sqrDecimals),
+  withdrawVerifier: ZeroAddress,
+  withdrawGoal: BigInt(1),
+  coldWallet: '0x21D73A5dF25DAB8AcB73E782f71678c3b00A198F', //My s-coldWallet
+  balanceLimit: toWei(25_000, sqrDecimals) / priceDiv,
+  startDate: 0,
+  closeDate: 0,
+};
 
 const extContractConfig = isTest ? mainContractConfig : prodContractConfig;
 
