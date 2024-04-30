@@ -26,7 +26,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
       user1Address,
       sqrPaymentGatewayAddress,
     );
-    console.log(`${toNumberDecimals(currentAllowance, decimals)} SQR was allowed`);
+    console.log(`${toNumberDecimals(currentAllowance, decimals)} token was allowed`);
 
     const userId = deployData.userId1;
     const nonce = await user1SQRPaymentGateway.getDepositNonce(userId);
@@ -35,8 +35,8 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
       userId,
       transationId: seedData.depositTransactionId1,
       account: user1Address,
-      // amount: seedData.deposit1,
-      amount: seedData.extraDeposit1,
+      amount: deployData.deposit1,
+      // amount: seedData.extraDeposit1,
       nonce: Number(nonce),
       timestamptLimit: seedData.nowPlus1m,
       signature: '',

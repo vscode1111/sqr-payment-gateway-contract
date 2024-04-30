@@ -59,7 +59,7 @@ export function shouldBehaveCorrectDeployment(): void {
       ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.newOwnerNotZeroAddress);
     });
 
-    it('owner tries to deploy with zero SQR token address', async function () {
+    it('owner tries to deploy with zero ERC20 token address', async function () {
       const users = await getUsers();
       await expect(
         getSQRPaymentGatewayContext(users, {

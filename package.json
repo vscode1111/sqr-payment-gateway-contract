@@ -1,11 +1,11 @@
 {
   "name": "sqr-payment-gateway-contract",
   "description": "Solidity smart contracts for SQR paymentGateway functionality",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "scripts": {
     "clean": "shx rm -rf ./dist ./artifacts ./cache ./coverage ./typechain-types ./coverage.json && yarn typechain",
     "commit": "git-cz",
-    "compile": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat compile && tsc",
+    "build": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat compile && tsc",
     "verify": "hardhat verify",
     "slither": "slither contracts/SQRPaymentGateway.sol --solc-remaps '@openzeppelin=node_modules/@openzeppelin'",
     "coverage": "cross-env COVERAGE=true hardhat coverage --solcoverjs ./.solcover.js --temp artifacts --testfiles \"test/**/*.ts\" --show-stack-traces && pnpm typechain",
@@ -30,7 +30,7 @@
     "prepublishOnly": "pinst --disable",
     "format": "prettier --config ./.prettierrc --write \"**/*.{js,json,md,sol,ts,yml}\"",
     "format:check": "prettier --check --config ./.prettierrc.yml \"**/*.{js,json,md,sol,ts,yml}\"",
-    "test": "hardhat test --network hardhat",
+    "test": "cross-env ENV=test hardhat test --network hardhat",
     "unit-test": "mocha -r ts-node/register 'common/**/*spec.ts'",
     "typechain": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain"
   },

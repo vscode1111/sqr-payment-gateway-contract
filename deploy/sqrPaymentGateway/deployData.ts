@@ -1,5 +1,5 @@
 import { toUnixTime, toWei } from '~common';
-import { sqrDecimals } from '~seeds';
+import { tokenDecimals } from '~seeds';
 
 export const verifyRequired = false;
 export const verifyArgsRequired = false;
@@ -10,7 +10,8 @@ export const deployData = {
   now: toUnixTime(),
   nullAddress: '0x0000000000000000000000000000000000000000',
   userMintAmount: 100000,
-  balanceLimit: toWei(1, sqrDecimals),
+  deposit1: toWei(0.001, tokenDecimals),
+  balanceLimit: toWei(1, tokenDecimals),
 };
 
 export const deployParams = {
