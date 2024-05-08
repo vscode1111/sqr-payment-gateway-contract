@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { toUnixTime, toWei } from '~common';
 import { MINUTES } from '~constants';
 import { DeployNetworkKey } from '~types';
-import { addSeconsToUnixTime } from '~utils';
+import { addSecondsToUnixTime } from '~utils';
 import { defaultNetwork } from '../hardhat.config';
 import { ContractConfig, DeployContractArgs, DeployTokenArgs, TokenConfig } from './types';
 
@@ -122,11 +122,11 @@ export const tokenConfig: TokenConfig = {
   decimals: tokenDecimals,
 };
 
-export function getTokenArgs(newOnwer: string): DeployTokenArgs {
+export function getTokenArgs(newOwner: string): DeployTokenArgs {
   return [
     tokenConfig.name,
     tokenConfig.symbol,
-    newOnwer,
+    newOwner,
     tokenConfig.initMint,
     tokenConfig.decimals,
   ];
@@ -167,8 +167,8 @@ export const seedData = {
   allowance: toWei(1000000, tokenDecimals),
   balanceDelta: toWei(0.01, tokenDecimals),
   nowPlus1m: toUnixTime(now.add(1, 'minute').toDate()),
-  startDatePlus1m: addSeconsToUnixTime(contractConfig.startDate, 1 * MINUTES),
-  closeDatePlus1m: addSeconsToUnixTime(contractConfig.closeDate, 1 * MINUTES),
+  startDatePlus1m: addSecondsToUnixTime(contractConfig.startDate, 1 * MINUTES),
+  closeDatePlus1m: addSecondsToUnixTime(contractConfig.closeDate, 1 * MINUTES),
   timeShift: 10,
   userId1,
   userId2,

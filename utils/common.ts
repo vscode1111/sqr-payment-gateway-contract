@@ -36,7 +36,7 @@ export async function signMessageForWithdraw(
   );
 }
 
-export function addSeconsToUnixTime(date: number | Dayjs, seconds: number) {
+export function addSecondsToUnixTime(date: number | Dayjs, seconds: number) {
   if (typeof date === 'number')
     return toUnixTime(
       dayjs(date * 1000)

@@ -188,15 +188,13 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
     if (depositGoal > 0) {
       return depositGoal - totalDeposited;
     }
-
     return MAX_INT;
   }
 
-  function calculateRemainWithraw() public view returns (uint256) {
+  function calculateRemainWithdraw() public view returns (uint256) {
     if (withdrawGoal > 0) {
       return withdrawGoal - totalWithdrew;
     }
-
     return MAX_INT;
   }
 

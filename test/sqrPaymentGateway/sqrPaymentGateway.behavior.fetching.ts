@@ -18,7 +18,7 @@ export function shouldBehaveCorrectFetching(): void {
       expect(await this.ownerSQRPaymentGateway.calculateRemainDeposit()).eq(
         contractConfig.depositGoal,
       );
-      expect(await this.ownerSQRPaymentGateway.calculateRemainWithraw()).eq(
+      expect(await this.ownerSQRPaymentGateway.calculateRemainWithdraw()).eq(
         contractConfig.withdrawGoal,
       );
     });

@@ -5,7 +5,7 @@ import { waitTx } from '~common';
 import { MAX_INT, ZERO } from '~constants';
 import { contractConfig, seedData } from '~seeds';
 import {
-  addSeconsToUnixTime,
+  addSecondsToUnixTime,
   getSQRPaymentGatewayContext,
   getUsers,
   signMessageForDeposit,
@@ -77,8 +77,8 @@ export function shouldBehaveCorrectDeployment(): void {
       await expect(
         getSQRPaymentGatewayContext(users, {
           ...contractConfig,
-          startDate: addSeconsToUnixTime(chainTime, 10),
-          closeDate: addSeconsToUnixTime(chainTime, 9),
+          startDate: addSecondsToUnixTime(chainTime, 10),
+          closeDate: addSecondsToUnixTime(chainTime, 9),
         }),
       ).revertedWithCustomError(
         this.owner2SQRPaymentGateway,
@@ -203,7 +203,7 @@ export function shouldBehaveCorrectDeployment(): void {
         ...contractConfig,
         withdrawGoal: ZERO,
       });
-      expect(await ownerSQRPaymentGateway.calculateRemainWithraw()).eq(MAX_INT);
+      expect(await ownerSQRPaymentGateway.calculateRemainWithdraw()).eq(MAX_INT);
     });
   });
 }

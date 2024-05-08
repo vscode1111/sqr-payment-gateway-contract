@@ -2,7 +2,7 @@ import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { INITIAL_POSITIVE_CHECK_TEST_TITLE, waitTx } from '~common';
 import { contractConfig, seedData } from '~seeds';
-import { addSeconsToUnixTime, signMessageForDeposit, signMessageForWithdraw } from '~utils';
+import { addSecondsToUnixTime, signMessageForDeposit, signMessageForWithdraw } from '~utils';
 import { custromError } from './testData';
 import { DepositEventArgs, ForceWithdrawEventArgs, WithdrawEventArgs } from './types';
 import {
@@ -47,7 +47,7 @@ export function shouldBehaveCorrectFunding(): void {
     });
 
     it('user1 tries to call depositSig too late', async function () {
-      await time.increaseTo(addSeconsToUnixTime(contractConfig.closeDate, seedData.timeShift));
+      await time.increaseTo(addSecondsToUnixTime(contractConfig.closeDate, seedData.timeShift));
 
       const signature = await signMessageForDeposit(
         this.owner2,
@@ -73,7 +73,7 @@ export function shouldBehaveCorrectFunding(): void {
 
     describe('set time after start date', () => {
       beforeEach(async function () {
-        await time.increaseTo(addSeconsToUnixTime(contractConfig.startDate, seedData.timeShift));
+        await time.increaseTo(addSecondsToUnixTime(contractConfig.startDate, seedData.timeShift));
       });
 
       it(INITIAL_POSITIVE_CHECK_TEST_TITLE, async function () {
@@ -855,7 +855,7 @@ export function shouldBehaveCorrectFunding(): void {
               const fundItem = await this.user1SQRPaymentGateway.fetchFundItem(seedData.userId1);
               expect(fundItem.withdrewAmount).eq(seedData.withdraw1);
               expect(await this.owner2SQRPaymentGateway.totalWithdrew()).eq(seedData.withdraw1);
-              expect(await this.owner2SQRPaymentGateway.calculateRemainWithraw()).eq(
+              expect(await this.owner2SQRPaymentGateway.calculateRemainWithdraw()).eq(
                 contractConfig.withdrawGoal - seedData.withdraw1,
               );
             });
