@@ -17,6 +17,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
     const result = {
       owner: await ownerSQRPaymentGateway.owner(),
       erc20Token: await ownerSQRPaymentGateway.erc20Token(),
+      depositGoal: await ownerSQRPaymentGateway.depositGoal(),
       coldWallet: await ownerSQRPaymentGateway.coldWallet(),
       balanceLimit: await ownerSQRPaymentGateway.balanceLimit(),
       balance: await ownerSQRPaymentGateway.getBalance(),

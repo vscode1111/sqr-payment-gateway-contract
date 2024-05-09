@@ -1,4 +1,4 @@
-export const custromError = {
+export const customError = {
   ownableUnauthorizedAccount: 'OwnableUnauthorizedAccount',
   newOwnerNotZeroAddress: 'NewOwnerNotZeroAddress',
   erc20TokenNotZeroAddress: 'ERC20TokenNotZeroAddress',

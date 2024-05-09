@@ -11,7 +11,7 @@ import {
   signMessageForDeposit,
   signMessageForWithdraw,
 } from '~utils';
-import { ChangeBalanceLimitArgs, custromError } from '.';
+import { ChangeBalanceLimitArgs, customError } from '.';
 import { findEvent, loadSQRPaymentGatewayFixture } from './utils';
 
 export function shouldBehaveCorrectDeployment(): void {
@@ -29,7 +29,7 @@ export function shouldBehaveCorrectDeployment(): void {
       await expect(this.user1SQRPaymentGateway.changeBalanceLimit(seedData.balanceLimit))
         .revertedWithCustomError(
           this.user1SQRPaymentGateway,
-          custromError.ownableUnauthorizedAccount,
+          customError.ownableUnauthorizedAccount,
         )
         .withArgs(this.user1Address);
     });
@@ -56,7 +56,7 @@ export function shouldBehaveCorrectDeployment(): void {
           ...contractConfig,
           newOwner: ZeroAddress,
         }),
-      ).revertedWithCustomError(this.owner2SQRPaymentGateway, custromError.newOwnerNotZeroAddress);
+      ).revertedWithCustomError(this.owner2SQRPaymentGateway, customError.newOwnerNotZeroAddress);
     });
 
     it('owner tries to deploy with zero ERC20 token address', async function () {
@@ -66,10 +66,7 @@ export function shouldBehaveCorrectDeployment(): void {
           ...contractConfig,
           erc20Token: ZeroAddress,
         }),
-      ).revertedWithCustomError(
-        this.owner2SQRPaymentGateway,
-        custromError.erc20TokenNotZeroAddress,
-      );
+      ).revertedWithCustomError(this.owner2SQRPaymentGateway, customError.erc20TokenNotZeroAddress);
     });
 
     it('owner tries to deploy when start date is later than close one', async function () {
@@ -82,7 +79,7 @@ export function shouldBehaveCorrectDeployment(): void {
         }),
       ).revertedWithCustomError(
         this.owner2SQRPaymentGateway,
-        custromError.closeDateMustBeGreaterThanStartDate,
+        customError.closeDateMustBeGreaterThanStartDate,
       );
     });
 
@@ -158,7 +155,7 @@ export function shouldBehaveCorrectDeployment(): void {
         }),
       ).revertedWithCustomError(
         this.owner2SQRPaymentGateway,
-        custromError.startDateMustBeGreaterThanCurrentTime,
+        customError.startDateMustBeGreaterThanCurrentTime,
       );
     });
 
@@ -171,7 +168,7 @@ export function shouldBehaveCorrectDeployment(): void {
         }),
       ).revertedWithCustomError(
         this.owner2SQRPaymentGateway,
-        custromError.closeDateMustBeGreaterThanCurrentTime,
+        customError.closeDateMustBeGreaterThanCurrentTime,
       );
     });
 
@@ -182,10 +179,7 @@ export function shouldBehaveCorrectDeployment(): void {
           ...contractConfig,
           coldWallet: ZeroAddress,
         }),
-      ).revertedWithCustomError(
-        this.owner2SQRPaymentGateway,
-        custromError.coldWalletNotZeroAddress,
-      );
+      ).revertedWithCustomError(this.owner2SQRPaymentGateway, customError.coldWalletNotZeroAddress);
     });
 
     it('owner deployed with zero deposit goal', async function () {
