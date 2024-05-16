@@ -1,3 +1,4 @@
+import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { Dayjs } from 'dayjs';
 import { ZeroAddress } from 'ethers';
@@ -188,6 +189,9 @@ export function shouldBehaveCorrectDeployment(): void {
         ...contractConfig,
         depositGoal: ZERO,
       });
+
+      expect(await ownerSQRPaymentGateway.calculateRemainDeposit()).eq(seedData.zero);
+      await time.increaseTo(addSecondsToUnixTime(contractConfig.startDate, seedData.timeShift));
       expect(await ownerSQRPaymentGateway.calculateRemainDeposit()).eq(MAX_INT);
     });
 
@@ -197,6 +201,9 @@ export function shouldBehaveCorrectDeployment(): void {
         ...contractConfig,
         withdrawGoal: ZERO,
       });
+
+      expect(await ownerSQRPaymentGateway.calculateRemainWithdraw()).eq(seedData.zero);
+      await time.increaseTo(addSecondsToUnixTime(contractConfig.startDate, seedData.timeShift));
       expect(await ownerSQRPaymentGateway.calculateRemainWithdraw()).eq(MAX_INT);
     });
   });

@@ -1,7 +1,7 @@
 import { DeployFunction } from 'hardhat-deploy/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { callWithTimerHre, toNumberDecimals, waitTx } from '~common';
-import { SQR_PAYMENT_GATEWAY_NAME } from '~constants';
+import { SQR_PAYMENT_GATEWAY_NAME, TX_OVERRIDES } from '~constants';
 import { contractConfig } from '~seeds';
 import { getAddressesFromHre, getContext } from '~utils';
 
@@ -28,7 +28,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
 
     console.table(params);
     await waitTx(
-      owner2SQRPaymentGateway.forceWithdraw(params.token, params.to, params.amount),
+      owner2SQRPaymentGateway.forceWithdraw(params.token, params.to, params.amount, TX_OVERRIDES),
       'forceWithdraw',
     );
   }, hre);

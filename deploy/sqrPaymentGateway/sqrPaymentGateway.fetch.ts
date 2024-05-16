@@ -17,7 +17,12 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
     const result = {
       owner: await ownerSQRPaymentGateway.owner(),
       erc20Token: await ownerSQRPaymentGateway.erc20Token(),
+      depositVerifier: await ownerSQRPaymentGateway.depositVerifier(),
       depositGoal: await ownerSQRPaymentGateway.depositGoal(),
+      withdrawVerifier: await ownerSQRPaymentGateway.withdrawVerifier(),
+      withdrawGoal: await ownerSQRPaymentGateway.withdrawGoal(),
+      startDate: await ownerSQRPaymentGateway.startDate(),
+      closeDate: await ownerSQRPaymentGateway.closeDate(),
       coldWallet: await ownerSQRPaymentGateway.coldWallet(),
       balanceLimit: await ownerSQRPaymentGateway.balanceLimit(),
       balance: await ownerSQRPaymentGateway.getBalance(),
@@ -29,6 +34,8 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
       'f80f623b-4e53-4769-9fe7-93d0901c7261',
     );
     console.log(fundItem);
+    const depositNonce = await ownerSQRPaymentGateway.getDepositNonce(users.user2Address);
+    console.log(depositNonce);
   }, hre);
 };
 

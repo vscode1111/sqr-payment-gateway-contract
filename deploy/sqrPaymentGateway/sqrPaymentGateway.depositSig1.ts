@@ -1,7 +1,7 @@
 import { DeployFunction } from 'hardhat-deploy/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { callWithTimerHre, toNumberDecimals, waitTx } from '~common';
-import { SQR_PAYMENT_GATEWAY_NAME } from '~constants';
+import { SQR_PAYMENT_GATEWAY_NAME, TX_OVERRIDES } from '~constants';
 import { contractConfig, seedData } from '~seeds';
 import { getAddressesFromHre, getContext, signMessageForDeposit } from '~utils';
 import { deployData, deployParams } from './deployData';
@@ -33,28 +33,31 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
 
     const params = {
       userId,
-      transationId: seedData.depositTransactionId1,
+      transactionId: seedData.depositTransactionId1,
       account: user1Address,
       amount: deployData.deposit1,
       // amount: seedData.extraDeposit1,
       nonce: Number(nonce),
-      timestamptLimit: seedData.nowPlus1m,
+      timestampLimit: seedData.nowPlus1m,
       signature: '',
     };
 
     params.signature = await signMessageForDeposit(
       depositVerifier,
       params.userId,
-      params.transationId,
+      params.transactionId,
       params.account,
       params.amount,
       params.nonce,
-      params.timestamptLimit,
+      params.timestampLimit,
     );
 
     if (params.amount > currentAllowance) {
       const askAllowance = seedData.allowance;
-      await waitTx(user1ERC20Token.approve(sqrPaymentGatewayAddress, askAllowance), 'approve');
+      await waitTx(
+        user1ERC20Token.approve(sqrPaymentGatewayAddress, askAllowance, TX_OVERRIDES),
+        'approve',
+      );
       console.log(
         `${toNumberDecimals(
           askAllowance,
@@ -68,14 +71,14 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
     await waitTx(
       user1SQRPaymentGateway.depositSig(
         params.userId,
-        params.transationId,
+        params.transactionId,
         params.account,
         params.amount,
-        params.timestamptLimit,
+        params.timestampLimit,
         params.signature,
       ),
       'depositSig',
-      deployParams.attemps,
+      deployParams.attempts,
       deployParams.delay,
       sqrPaymentGatewayFactory,
     );

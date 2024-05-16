@@ -24,6 +24,9 @@ export function shouldBehaveCorrectFunding(): void {
     });
 
     it('user1 tries to call depositSig too early', async function () {
+      expect(await this.owner2SQRPaymentGateway.calculateRemainDeposit()).eq(seedData.zero);
+      expect(await this.owner2SQRPaymentGateway.calculateRemainWithdraw()).eq(seedData.zero);
+
       const signature = await signMessageForDeposit(
         this.owner2,
         seedData.userId1,
@@ -48,6 +51,9 @@ export function shouldBehaveCorrectFunding(): void {
 
     it('user1 tries to call depositSig too late', async function () {
       await time.increaseTo(addSecondsToUnixTime(contractConfig.closeDate, seedData.timeShift));
+
+      expect(await this.owner2SQRPaymentGateway.calculateRemainDeposit()).eq(seedData.zero);
+      expect(await this.owner2SQRPaymentGateway.calculateRemainWithdraw()).eq(seedData.zero);
 
       const signature = await signMessageForDeposit(
         this.owner2,
@@ -81,6 +87,9 @@ export function shouldBehaveCorrectFunding(): void {
         expect(await this.user2SQRPaymentGateway.getDepositNonce(seedData.userId2)).eq(0);
         expect(await this.user1SQRPaymentGateway.getWithdrawNonce(seedData.userId1)).eq(0);
         expect(await this.user2SQRPaymentGateway.getWithdrawNonce(seedData.userId2)).eq(0);
+        expect(await this.owner2SQRPaymentGateway.calculateRemainDeposit()).eq(
+          contractConfig.depositGoal,
+        );
       });
 
       it('user1 tries to call depositSig with zero amount', async function () {
@@ -544,6 +553,10 @@ export function shouldBehaveCorrectFunding(): void {
             expect(await this.user2SQRPaymentGateway.getDepositNonce(seedData.userId2)).eq(0);
             expect(await this.user1SQRPaymentGateway.getWithdrawNonce(seedData.userId1)).eq(0);
             expect(await this.user2SQRPaymentGateway.getWithdrawNonce(seedData.userId2)).eq(0);
+
+            expect(await this.owner2SQRPaymentGateway.calculateRemainWithdraw()).eq(
+              contractConfig.withdrawGoal,
+            );
           });
 
           it('user1 tries to call depositSig with the same transactionId', async function () {

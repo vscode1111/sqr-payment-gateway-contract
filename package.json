@@ -1,14 +1,14 @@
 {
   "name": "sqr-payment-gateway-contract",
   "description": "Solidity smart contracts for SQR paymentGateway functionality",
-  "version": "0.0.24",
+  "version": "0.0.25",
   "scripts": {
     "clean": "shx rm -rf ./dist ./artifacts ./cache ./coverage ./typechain-types ./coverage.json && yarn typechain",
     "commit": "git-cz",
     "build": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat compile && tsc",
     "verify": "hardhat verify",
     "slither": "slither contracts/SQRPaymentGateway.sol --solc-remaps '@openzeppelin=node_modules/@openzeppelin'",
-    "coverage": "cross-env COVERAGE=true hardhat coverage --solcoverjs ./.solcover.js --temp artifacts --testfiles \"test/**/*.ts\" --show-stack-traces && pnpm typechain",
+    "coverage": "cross-env COVERAGE=true cross-env ENV=test hardhat coverage --solcoverjs ./.solcover.js --temp artifacts --testfiles \"test/**/*.ts\" --show-stack-traces && pnpm typechain",
     "deploy": "hardhat deploy",
     "deploy:accounts": "hardhat deploy --tags accounts",
     "deploy:deploy": "hardhat deploy --tags SQRPaymentGateway:deploy",

@@ -13,7 +13,7 @@ type DeployType = 'test' | 'main' | 'stage' | 'prod';
 const deployType: DeployType = (process.env.ENV as DeployType) ?? 'main';
 
 // const isSqr = ['test', 'main'].includes(deployType);
-const isSqr = false;
+const isSqr = true;
 const isProd = deployType === ('prod' as any);
 
 const chainDecimals: Record<DeployNetworkKey, number> = {
@@ -40,16 +40,17 @@ export const contractConfigDeployMap: Record<DeployType, Partial<ContractConfig>
   },
   main: {
     newOwner: '0x627Ab3fbC3979158f451347aeA288B0A3A47E1EF', //My s-owner2
-    // erc20Token: '0x8364a68c32E581332b962D88CdC8dBe8b3e0EE9c', //tSQR2
-    erc20Token: '0x55d398326f99059fF775485246999027B3197955', //USDT
+    erc20Token: isSqr
+      ? '0x8364a68c32E581332b962D88CdC8dBe8b3e0EE9c'
+      : '0x55d398326f99059fF775485246999027B3197955', //tSQR2 / USDT
     depositVerifier: '0x99FbD0Bc026128e6258BEAd542ECB1cF165Bbb98', //My s-deposit
-    depositGoal: toWei(10_000, tokenDecimals),
+    depositGoal: toWei(15_000, tokenDecimals),
     withdrawVerifier: ZeroAddress,
     withdrawGoal: BigInt(1),
     coldWallet: '0x21D73A5dF25DAB8AcB73E782f71678c3b00A198F', //My s-coldWallet
-    balanceLimit: toWei(5_000, tokenDecimals) / priceDiv,
-    startDate: 0,
-    // startDate: toUnixTime(new Date(2024, 3, 27)),
+    balanceLimit: toWei(100, tokenDecimals) / priceDiv,
+    // startDate: 0,
+    startDate: toUnixTime(new Date(2024, 4, 14, 9, 0, 0)),
     closeDate: 0,
     // closeDate: toUnixTime(new Date(2024, 3, 30)),
   },
@@ -58,18 +59,33 @@ export const contractConfigDeployMap: Record<DeployType, Partial<ContractConfig>
     erc20Token: '0x55d398326f99059fF775485246999027B3197955', //USDT
     coldWallet: '0x79734Db10D301C257093E594A8A245D384E22c68', //Andrey MultiSig
     depositVerifier: '0x99FbD0Bc026128e6258BEAd542ECB1cF165Bbb98', //My s-deposit
-    depositGoal: toWei(1, tokenDecimals),
+    depositGoal: toWei(1000, tokenDecimals),
     balanceLimit: toWei(0.1, tokenDecimals),
     withdrawVerifier: ZeroAddress,
     withdrawGoal: BigInt(1),
-    // startDate: 0,
+    startDate: 0,
     // startDate: toUnixTime(new Date(2024, 3, 27)),
-    startDate: toUnixTime(new Date(2024, 4, 1, 11, 0, 0)),
+    // startDate: toUnixTime(new Date(2024, 4, 1, 11, 0, 0)),
     // closeDate: 0,
     // closeDate: toUnixTime(new Date(2024, 3, 30)),
-    closeDate: toUnixTime(new Date(2024, 4, 3, 11, 0, 0)),
+    closeDate: toUnixTime(new Date(2034, 1, 1, 0, 0, 0)),
   },
-  prod: {},
+  prod: {
+    newOwner: '0xA8B8455ad9a1FAb1d4a3B69eD30A52fBA82549Bb', //Matan
+    erc20Token: isSqr
+      ? '0x8364a68c32E581332b962D88CdC8dBe8b3e0EE9c'
+      : '0x55d398326f99059fF775485246999027B3197955', //tSQR2 / USDT
+    coldWallet: '0x79734Db10D301C257093E594A8A245D384E22c68', //Andrey MultiSig
+    depositVerifier: '0x99FbD0Bc026128e6258BEAd542ECB1cF165Bbb98', //My s-deposit
+    depositGoal: toWei(15, tokenDecimals),
+    balanceLimit: toWei(1, tokenDecimals),
+    withdrawVerifier: ZeroAddress,
+    withdrawGoal: BigInt(1),
+    // startDate: 0,
+    startDate: toUnixTime(new Date(2024, 4, 14, 19, 0, 0)),
+    // closeDate: 0,
+    closeDate: toUnixTime(new Date(2024, 4, 14, 23, 0, 0)),
+  },
 };
 
 const extContractConfig = contractConfigDeployMap[deployType];

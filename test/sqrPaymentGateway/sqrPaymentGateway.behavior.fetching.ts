@@ -1,6 +1,8 @@
+import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { VERSION } from '~constants';
 import { contractConfig, seedData } from '~seeds';
+import { addSecondsToUnixTime } from '~utils';
 import { getERC20TokenBalance, loadSQRPaymentGatewayFixture } from './utils';
 
 export function shouldBehaveCorrectFetching(): void {
@@ -15,6 +17,16 @@ export function shouldBehaveCorrectFetching(): void {
       expect(await this.ownerSQRPaymentGateway.erc20Token()).eq(this.erc20TokenAddress);
       expect(await this.ownerSQRPaymentGateway.coldWallet()).eq(this.coldWalletAddress);
       expect(await this.ownerSQRPaymentGateway.balanceLimit()).eq(contractConfig.balanceLimit);
+
+      expect(await this.ownerSQRPaymentGateway.isTooEarly()).eq(true);
+      expect(await this.ownerSQRPaymentGateway.isTooLate()).eq(false);
+      expect(await this.ownerSQRPaymentGateway.isReady()).eq(false);
+
+      expect(await this.ownerSQRPaymentGateway.calculateRemainDeposit()).eq(seedData.zero);
+      expect(await this.ownerSQRPaymentGateway.calculateRemainWithdraw()).eq(seedData.zero);
+
+      await time.increaseTo(addSecondsToUnixTime(contractConfig.startDate, seedData.timeShift));
+
       expect(await this.ownerSQRPaymentGateway.calculateRemainDeposit()).eq(
         contractConfig.depositGoal,
       );

@@ -11,14 +11,15 @@ export const deployData = {
   nullAddress: '0x0000000000000000000000000000000000000000',
   userMintAmount: 100000,
   deposit1: toWei(0.001, tokenDecimals),
+  deposit2: toWei(0.002, tokenDecimals),
   balanceLimit: toWei(1, tokenDecimals),
 };
 
 export const deployParams = {
-  attemps: 1,
+  attempts: 1,
   delay: 0,
 };
 
 // export function getDeployParams(contractFactory?: ContractFactory) {
-//   return [TX_ATTEMPS, 0, contractFactory];
+//   return [TX_ATTEMPT, 0, contractFactory];
 // }
