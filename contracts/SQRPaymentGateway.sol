@@ -75,7 +75,7 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
 
   //Variables, structs, errors, modifiers, events------------------------
 
-  string public constant VERSION = "1.1";
+  string public constant VERSION = "1.2";
   uint256 public constant MAX_INT = type(uint256).max;
 
   IERC20 public erc20Token;
@@ -360,7 +360,7 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
     uint256 amount,
     uint32 nonce,
     uint32 timestampLimit
-  ) private nonReentrant amountChecker(amount) timeoutBlocker(timestampLimit) periodBlocker {
+  ) private nonReentrant amountChecker(amount) timeoutBlocker(timestampLimit) {
     if (erc20Token.balanceOf(address(this)) < amount) {
       revert ContractMustHaveSufficientFunds();
     }

@@ -31,13 +31,13 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
     //From Postman
     const body = {
       contractType: 'fcfs',
-      contractAddress: '0x02a1f14444d371C78212F208cdB84C3fab930e6E',
+      contractAddress: '0x57c11ef0f8fDbdc376444DE64a03d488BD3b09B8',
       // "contractAddress": "0x5D27C778759e078BBe6D11A6cd802E41459Fe852",
       userId: 'tu1-f75c73b1-0f13-46ae-88f8-2048765c5ad4',
-      transactionId: '62813e9b-bde7-40bf-adde-4cf3c3d76002+12',
+      transactionId: '62813e9b-bde7-40bf-adde-4cf3c3d76002+15',
       account: '0xc109D9a3Fc3779db60af4821AE18747c708Dfcc6',
       // "amount": 0.1234567890123456789
-      amount: 0.01,
+      amount: 0.002,
       // "amount": 0.123456789
     };
 
@@ -45,12 +45,12 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
 
     const response = {
       signature:
-        '0xcbd2ed950cf73c92572d4bb98ce97ec58e719324b6cb946dc04361f583d32fab23087432f55e0916a7eb69c744caa8c6d5174eb960d6886a03456fa657cf0abe1b',
-      amountInWei: '10000000000000000',
-      nonce: 2,
-      timestampNow: 1715778586,
-      timestampLimit: 1715778886,
-      dateLimit: '2024-05-15T13:19:49.415Z',
+        '0x901bd203ea919475be9e0b86391dbac2f388a978c4864901129604bf0c6401736277fab6f071a2c80e3bc1a35182570725d864032b2479d21347deb68cf4fac21b',
+      amountInWei: '2000000000000000',
+      nonce: 4,
+      timestampNow: 1715933776,
+      timestampLimit: 1715934076,
+      dateLimit: '2024-05-17T08:26:49.850Z',
     };
 
     //Checks
