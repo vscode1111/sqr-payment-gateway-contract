@@ -31,10 +31,10 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
     //From Postman
     const body = {
       contractType: 'fcfs',
-      contractAddress: '0x57c11ef0f8fDbdc376444DE64a03d488BD3b09B8',
-      // "contractAddress": "0x5D27C778759e078BBe6D11A6cd802E41459Fe852",
+      // "contractAddress": "0x57c11ef0f8fDbdc376444DE64a03d488BD3b09B8",
+      contractAddress: '0x5D27C778759e078BBe6D11A6cd802E41459Fe852',
       userId: 'tu1-f75c73b1-0f13-46ae-88f8-2048765c5ad4',
-      transactionId: '62813e9b-bde7-40bf-adde-4cf3c3d76002+15',
+      transactionId: '62813e9b-bde7-40bf-adde-4cf3c3d76002+20',
       account: '0xc109D9a3Fc3779db60af4821AE18747c708Dfcc6',
       // "amount": 0.1234567890123456789
       amount: 0.002,
@@ -45,14 +45,13 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
 
     const response = {
       signature:
-        '0x901bd203ea919475be9e0b86391dbac2f388a978c4864901129604bf0c6401736277fab6f071a2c80e3bc1a35182570725d864032b2479d21347deb68cf4fac21b',
-      amountInWei: '2000000000000000',
-      nonce: 4,
-      timestampNow: 1715933776,
-      timestampLimit: 1715934076,
-      dateLimit: '2024-05-17T08:26:49.850Z',
+        '0xa65a07780fea87006c42c7f602d08d8a7104fea9d716e2f2a327313ed150477f1f3aca0f2a36759f7320ae718b1f9e28d17dec17641605a1a07470e86a99c88c1c',
+      amountInWei: '200000',
+      nonce: 11,
+      timestampNow: 1716299709,
+      timestampLimit: 1716300129,
+      dateLimit: '2024-05-21T14:03:14.398Z',
     };
-
     //Checks
     if (body.account.toLowerCase() !== user1Address.toLowerCase()) {
       console.error(`Account is not correct`);

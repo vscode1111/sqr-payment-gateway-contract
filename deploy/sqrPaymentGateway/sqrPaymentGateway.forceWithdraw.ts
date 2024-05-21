@@ -34,6 +34,6 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
   }, hre);
 };
 
-func.tags = [`${SQR_PAYMENT_GATEWAY_NAME}:emergency-withdraw`];
+func.tags = [`${SQR_PAYMENT_GATEWAY_NAME}:force-withdraw`];
 
 export default func;
