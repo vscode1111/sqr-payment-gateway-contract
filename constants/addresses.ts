@@ -28,7 +28,7 @@ export const TOKENS: Record<CONTRACT_LIST, DeployNetworks> = {
     // bsc: '0x5A422c2CF95Bd3f952848442086BAf554D471b8A', //Main - sqrp-gated - 10K - Demo2
     // bsc: '0x6e622319df441962a8aff93A7Ce8Bb4E5683A87E', //Main - white-list - 10K - Demo2
     // bsc: '0x11b045028DD6bcabD740c762a889306Dcc65Daa5', //Main - white-list - 15
-    bsc: '0xEA425b1A5740c65AB3149E32d9043E0c20dd20d6', //Main - sqrp-gated - 15
+    // bsc: '0xEA425b1A5740c65AB3149E32d9043E0c20dd20d6', //Main - sqrp-gated - 15
     // bsc: '0x6FAd3a85e0D257183bA16F7cE31f5fDc6ac5c32c', //Main - fcfs - 15
 
     // bsc: '0x6fae03D2FbBAf8821DC3248ca61cA239f60A9Bac', //Stage - fcfs - depositGoal: 1 - USDT
@@ -41,5 +41,9 @@ export const TOKENS: Record<CONTRACT_LIST, DeployNetworks> = {
     // bsc: '0x7097F8E210452dE167C3E7F479BdEfbdB1ceF610', //Stage - sqrp-gated - depositGoal: 1K - USDT
 
     // bsc: '0x57c11ef0f8fDbdc376444DE64a03d488BD3b09B8', //Prod - fcfs - depositGoal: 100K - USDT
+
+    //21.05.2024
+    // bsc: '0x987C1768620F264074A7963AC68e60E429265Db6', //Prod - sqrp-gated - depositGoal: 15 - USDT
+    bsc: '0x97794e744c93eD38a6508c96DC743f73c89E2357', //Prod - fcfs - depositGoal: 15 - USDT
   },
 };
