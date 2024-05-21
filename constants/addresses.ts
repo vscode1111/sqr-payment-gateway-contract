@@ -14,7 +14,7 @@ export const TOKENS: Record<CONTRACT_LIST, DeployNetworks> = {
     // bsc: '0x82eFbC9ec9546b78aD223dE39eBD1D5F9243E18f', //Test
     // bsc: '0x258AF60a788fef0289994997c813D5933AcCd52A', //Test
 
-    bsc: '0x5D27C778759e078BBe6D11A6cd802E41459Fe852', //Main - fcfs [Upgraded]
+    // bsc: '0x5D27C778759e078BBe6D11A6cd802E41459Fe852', //Main - fcfs [Upgraded]
     // bsc: '0xe561e403093A19A770d5EE515aC1d5434275c026', //Main - sqrp-gated [Upgraded]
     // bsc: '0x8e6585Dd84c1cDc340727f66183992AaCe7Bfc18', //Main - white-list [Upgraded]
     // bsc: '0x88fD85b2621b6C9548A404eA250376AC5BEFeC13', //Main - fcfs - depositGoal: 100K [Upgraded]
@@ -36,7 +36,7 @@ export const TOKENS: Record<CONTRACT_LIST, DeployNetworks> = {
     // bsc: '0x4eB0f912ba6AbB9C1036c733D2ac0730e6C72469', //Stage - white-list - depositGoal: 1 - USDT
     // bsc: '0xFd41de115a0317Fd0Dc7F102B9f6968e99fa269b', //Stage - sqrp-gated - depositGoal: 1 - USDT - 27 Apr - 30 Apr
     // bsc: '0x44c8f558A6EE0B5935C37F6836a51CC753f9B657', //Stage - sqrp-gated - depositGoal: 1 - USDT - 1 May - 3 May
-    // bsc: '0xFbAD518E930E6BBc723067D4C8aF9392FF63fE98', //Stage - fcfs - depositGoal: 100K - USDT
+    bsc: '0xFbAD518E930E6BBc723067D4C8aF9392FF63fE98', //Stage - fcfs - depositGoal: 100K - USDT
     // bsc: '0x02a1f14444d371C78212F208cdB84C3fab930e6E', //Stage - sqrp-gated - depositGoal: 100K - USDT
     // bsc: '0x7097F8E210452dE167C3E7F479BdEfbdB1ceF610', //Stage - sqrp-gated - depositGoal: 1K - USDT
 
