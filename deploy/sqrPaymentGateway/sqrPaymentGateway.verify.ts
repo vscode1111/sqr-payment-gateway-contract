@@ -9,7 +9,11 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
   await callWithTimerHre(async () => {
     const { sqrPaymentGatewayAddress: erc20TokenAddress } = getAddressesFromHre(hre);
     console.log(`${SQR_PAYMENT_GATEWAY_NAME} ${erc20TokenAddress} is verify...`);
-    await verifyContract(erc20TokenAddress, hre, getContractArgsEx());
+    const contractArg = getContractArgsEx();
+    if (contractArg) {
+      console.table(contractArg);
+    }
+    await verifyContract(erc20TokenAddress, hre, contractArg);
   }, hre);
 };
 

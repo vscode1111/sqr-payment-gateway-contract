@@ -1,1 +1,8 @@
-export const VERSION = '1.0';
+import { TransactionRequest } from 'ethers';
+
+export const VERSION = '1.2';
+
+export const TX_OVERRIDES: TransactionRequest = {
+  // gasPrice: 3_000_000_000,
+  // gasLimit: 1_000_000,
+};

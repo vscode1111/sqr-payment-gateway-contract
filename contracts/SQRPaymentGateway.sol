@@ -75,7 +75,7 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
 
   //Variables, structs, errors, modifiers, events------------------------
 
-  string public constant VERSION = "1.0";
+  string public constant VERSION = "1.2";
   uint256 public constant MAX_INT = type(uint256).max;
 
   IERC20 public erc20Token;
@@ -138,10 +138,10 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   }
 
   modifier periodBlocker() {
-    if (startDate > 0 && block.timestamp < startDate) {
+    if (isTooEarly()) {
       revert TooEarly();
     }
-    if (closeDate > 0 && block.timestamp > closeDate) {
+    if (isTooLate()) {
       revert TooLate();
     }
     _;
@@ -154,9 +154,16 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
 
   //Read methods-------------------------------------------
 
-  function changeBalanceLimit(uint256 _balanceLimit) external onlyOwner {
-    balanceLimit = _balanceLimit;
-    emit ChangeBalanceLimit(_msgSender(), _balanceLimit);
+  function isTooEarly() public view returns (bool) {
+    return startDate > 0 && block.timestamp < startDate;
+  }
+
+  function isTooLate() public view returns (bool) {
+    return closeDate > 0 && block.timestamp > closeDate;
+  }
+
+  function isReady() public view returns (bool) {
+    return !isTooEarly() && !isTooLate();
   }
 
   function fetchFundItem(string memory userId) external view returns (FundItem memory) {
@@ -185,6 +192,9 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   }
 
   function calculateRemainDeposit() public view returns (uint256) {
+    if (!isReady()) {
+      return 0;
+    }
     if (depositGoal > 0) {
       return depositGoal - totalDeposited;
     }
@@ -192,6 +202,9 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   }
 
   function calculateRemainWithdraw() public view returns (uint256) {
+    if (!isReady()) {
+      return 0;
+    }
     if (withdrawGoal > 0) {
       return withdrawGoal - totalWithdrew;
     }
@@ -423,5 +436,10 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
     IERC20 _token = IERC20(token);
     _token.safeTransfer(to, amount);
     emit ForceWithdraw(token, to, amount);
+  }
+
+  function changeBalanceLimit(uint256 _balanceLimit) external onlyOwner {
+    balanceLimit = _balanceLimit;
+    emit ChangeBalanceLimit(_msgSender(), _balanceLimit);
   }
 }
