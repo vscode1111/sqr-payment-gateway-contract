@@ -9,8 +9,6 @@ import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/Messa
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-// import "hardhat/console.sol";
-
 contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable {
   using SafeERC20 for IERC20;
   using MessageHashUtils for bytes32;
@@ -75,7 +73,7 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
 
   //Variables, structs, errors, modifiers, events------------------------
 
-  string public constant VERSION = "1.2";
+  string public constant VERSION = "1.3";
   uint256 public constant MAX_INT = type(uint256).max;
 
   IERC20 public erc20Token;
