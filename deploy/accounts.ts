@@ -3,7 +3,8 @@ import { Signer } from 'ethers';
 import { ethers } from 'hardhat';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { FRACTION_DIGITS, getNetworkName, toNumber } from '~common';
+import { toNumber } from '~common';
+import { FRACTION_DIGITS, getNetworkName } from '~common-contract';
 import { getUsers } from '~utils';
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<void> => {

@@ -15,7 +15,7 @@ export async function expectThrowsAsync(method: () => Promise<any>, errorMessage
   }
 }
 
-export function vmEsceptionText(text: string) {
+export function vmExceptionText(text: string) {
   return `VM Exception while processing transaction: reverted with reason string '${text}'`;
 }
 

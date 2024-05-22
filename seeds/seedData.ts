@@ -10,10 +10,11 @@ import { ContractConfig, DeployContractArgs, DeployTokenArgs, TokenConfig } from
 
 type DeployType = 'test' | 'main' | 'stage' | 'prod';
 
-const deployType: DeployType = (process.env.ENV as DeployType) ?? 'main';
+const deployType: DeployType = (process.env.ENV as DeployType) ?? 'prod';
 
-// const isSqr = ['test', 'main'].includes(deployType);
-const isSqr = true;
+const isSqr = ['test', 'main'].includes(deployType);
+// const isSqr = false;
+
 // const isProd = deployType === ('prod' as any);
 // if (isProd) {
 //   throw 'Are you sure? It is PROD!';
@@ -74,16 +75,14 @@ export const contractConfigDeployMap: Record<DeployType, Partial<ContractConfig>
     erc20Token: '0x55d398326f99059fF775485246999027B3197955', //USDT
     coldWallet: '0x79734Db10D301C257093E594A8A245D384E22c68', //Andrey MultiSig
     depositVerifier: '0x99FbD0Bc026128e6258BEAd542ECB1cF165Bbb98', //My s-deposit
-    depositGoal: toWei(15, tokenDecimals),
-    balanceLimit: toWei(0.1, tokenDecimals),
+    depositGoal: toWei(24.99, tokenDecimals),
+    balanceLimit: toWei(1_000_000, tokenDecimals),
     withdrawVerifier: ZeroAddress,
     withdrawGoal: BigInt(1),
     // startDate: 0,
-    // startDate: toUnixTime(new Date(2024, 3, 27)),
-    startDate: toUnixTime(new Date(2024, 4, 21, 12, 0, 0)),
+    startDate: toUnixTime(new Date(2024, 4, 22, 15, 0, 0)),
     // closeDate: 0,
-    // closeDate: toUnixTime(new Date(2024, 3, 30)),
-    closeDate: toUnixTime(new Date(2024, 4, 23, 21, 0, 0)),
+    closeDate: toUnixTime(new Date(2024, 4, 22, 17, 0, 0)),
   },
 };
 

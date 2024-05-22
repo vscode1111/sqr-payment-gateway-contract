@@ -1,6 +1,7 @@
 import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { INITIAL_POSITIVE_CHECK_TEST_TITLE, waitTx } from '~common';
+import { INITIAL_POSITIVE_CHECK_TEST_TITLE } from '~common';
+import { waitTx } from '~common-contract';
 import { contractConfig, seedData } from '~seeds';
 import { addSecondsToUnixTime, signMessageForDeposit, signMessageForWithdraw } from '~utils';
 import { customError } from './testData';

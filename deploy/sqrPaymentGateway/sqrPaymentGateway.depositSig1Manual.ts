@@ -1,6 +1,7 @@
 import { DeployFunction } from 'hardhat-deploy/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { callWithTimerHre, toNumberDecimals, waitTx } from '~common';
+import { toNumberDecimals } from '~common';
+import { callWithTimerHre, waitTx } from '~common-contract';
 import { SQR_PAYMENT_GATEWAY_NAME, TX_OVERRIDES } from '~constants';
 import { contractConfig, seedData } from '~seeds';
 import { getAddressesFromHre, getContext, signMessageForDeposit } from '~utils';
@@ -41,8 +42,6 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
       // "amount": 0.123456789
     };
 
-    const account = body.account.toLowerCase();
-
     const response = {
       signature:
         '0xa65a07780fea87006c42c7f602d08d8a7104fea9d716e2f2a327313ed150477f1f3aca0f2a36759f7320ae718b1f9e28d17dec17641605a1a07470e86a99c88c1c',
@@ -52,7 +51,10 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
       timestampLimit: 1716300129,
       dateLimit: '2024-05-21T14:03:14.398Z',
     };
+
     //Checks
+    const account = body.account.toLowerCase();
+
     if (body.account.toLowerCase() !== user1Address.toLowerCase()) {
       console.error(`Account is not correct`);
       return;

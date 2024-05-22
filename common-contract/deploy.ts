@@ -2,10 +2,8 @@ import { ContractFactory, TransactionReceipt, TransactionResponse } from 'ethers
 import { ethers } from 'hardhat';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import _ from 'lodash';
+import { DiffArray, Promisable, sleep, toNumber } from '~common';
 import { DeployNetworks } from '~types';
-import { DiffArray } from './DiffArray';
-import { toNumber } from './converts';
-import { sleep } from './misc';
 
 export const FRACTION_DIGITS = 5;
 
@@ -77,13 +75,6 @@ export async function callWithTimerHre(
     ? finishMessageFn(diff)
     : `<-Function was finished at ${finishTime.toLocaleTimeString()} in ${diff} sec${extText}`;
   console.log(finishMessage);
-}
-
-// https://github.com/astra-net/astra-scan.backend/blob/8f9618d8d4df0976b5544b75ed5636b2ef949acd/src/indexer/rpc/transport/ws/WebSocketRPC.ts
-export function timeoutPromise(callTimeout: number) {
-  return new Promise((_, reject) =>
-    setTimeout(() => reject(new Error(`Timeout error in ${callTimeout}ms`)), callTimeout),
-  );
 }
 
 export async function verifyContract(
@@ -187,4 +178,35 @@ export async function waitTx(
     delay,
     contractFactory,
   );
+}
+
+export async function waitTxEx(
+  promise: Promise<TransactionResponse>,
+  options?: {
+    onStarted?: (tx: TransactionResponse) => Promisable<void>;
+    onSuccess?: (tx: TransactionResponse) => Promisable<void>;
+    onFail?: (err: any) => Promisable<void>;
+    skipWait?: boolean;
+  },
+): Promise<TransactionResponse | null> {
+  let tx = null;
+  try {
+    tx = await promise;
+    if (options?.onStarted) {
+      await options.onStarted(tx);
+    }
+    if (options?.skipWait) {
+      return tx;
+    }
+    await tx.wait();
+    if (options?.onSuccess) {
+      await options.onSuccess(tx);
+    }
+  } catch (e) {
+    if (options?.onFail) {
+      await options.onFail(e);
+    }
+    throw e;
+  }
+  return tx;
 }

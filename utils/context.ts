@@ -1,7 +1,7 @@
 import { DeployProxyOptions } from '@openzeppelin/hardhat-upgrades/dist/utils';
 import { ethers, upgrades } from 'hardhat';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { getNetworkName } from '~common';
+import { getNetworkName } from '~common-contract';
 import { ERC20_TOKEN_NAME, SQR_PAYMENT_GATEWAY_NAME, TOKENS, TX_OVERRIDES } from '~constants';
 import { ContractConfig, getContractArgs, getTokenArgs } from '~seeds';
 import { ERC20Token } from '~typechain-types/contracts/ERC20Token';

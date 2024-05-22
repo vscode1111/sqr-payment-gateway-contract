@@ -73,7 +73,7 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
 
   //Variables, structs, errors, modifiers, events------------------------
 
-  string public constant VERSION = "1.3";
+  string public constant VERSION = "1.4";
   uint256 public constant MAX_INT = type(uint256).max;
 
   IERC20 public erc20Token;
@@ -173,8 +173,11 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   }
 
   function balanceOf(string memory userId) external view returns (uint256) {
-    FundItem storage fund = _balances[getHash(userId)];
-    return fund.depositedAmount;
+    FundItem memory fund = _balances[getHash(userId)];
+    if (fund.depositedAmount > fund.withdrewAmount) {
+      return fund.depositedAmount - fund.withdrewAmount;
+    }
+    return 0;
   }
 
   function getHash(string memory value) private pure returns (bytes32) {

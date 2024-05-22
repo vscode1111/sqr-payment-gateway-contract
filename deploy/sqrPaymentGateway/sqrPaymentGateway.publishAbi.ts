@@ -1,7 +1,8 @@
 import appRoot from 'app-root-path';
 import { readFileSync, writeFileSync } from 'fs';
 import { DeployFunction } from 'hardhat-deploy/types';
-import { callWithTimerHre, checkFilePathSync, getParentDirectory } from '~common';
+import { checkFilePathSync, getParentDirectory } from '~common';
+import { callWithTimerHre } from '~common-contract';
 import { SQR_PAYMENT_GATEWAY_NAME } from '~constants';
 
 const func: DeployFunction = async (): Promise<void> => {

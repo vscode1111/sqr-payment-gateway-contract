@@ -1,6 +1,7 @@
 import { DeployFunction } from 'hardhat-deploy/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { callWithTimerHre, toNumberDecimals, waitTx } from '~common';
+import { toNumberDecimals } from '~common';
+import { callWithTimerHre, waitTx } from '~common-contract';
 import { SQR_PAYMENT_GATEWAY_NAME, TX_OVERRIDES } from '~constants';
 import { contractConfig, seedData } from '~seeds';
 import { getAddressesFromHre, getContext, signMessageForDeposit } from '~utils';

@@ -2,7 +2,7 @@ import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { Dayjs } from 'dayjs';
 import { ZeroAddress } from 'ethers';
-import { waitTx } from '~common';
+import { waitTx } from '~common-contract';
 import { MAX_INT, ZERO } from '~constants';
 import { contractConfig, seedData } from '~seeds';
 import {

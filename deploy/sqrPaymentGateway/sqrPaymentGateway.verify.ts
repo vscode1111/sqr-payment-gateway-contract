@@ -1,6 +1,6 @@
 import { DeployFunction } from 'hardhat-deploy/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { callWithTimerHre, verifyContract } from '~common';
+import { callWithTimerHre, verifyContract } from '~common-contract';
 import { SQR_PAYMENT_GATEWAY_NAME } from '~constants';
 import { getAddressesFromHre } from '~utils';
 import { getContractArgsEx } from './utils';
