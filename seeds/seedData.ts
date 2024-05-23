@@ -10,7 +10,7 @@ import { ContractConfig, DeployContractArgs, DeployTokenArgs, TokenConfig } from
 
 type DeployType = 'test' | 'main' | 'stage' | 'prod';
 
-const deployType: DeployType = (process.env.ENV as DeployType) ?? 'prod';
+const deployType: DeployType = (process.env.ENV as DeployType) ?? 'main';
 
 const isSqr = ['test', 'main'].includes(deployType);
 // const isSqr = false;
@@ -44,7 +44,7 @@ export const contractConfigDeployMap: Record<DeployType, Partial<ContractConfig>
       ? '0x8364a68c32E581332b962D88CdC8dBe8b3e0EE9c'
       : '0x55d398326f99059fF775485246999027B3197955', //tSQR2 / USDT
     depositVerifier: '0x99FbD0Bc026128e6258BEAd542ECB1cF165Bbb98', //My s-deposit
-    depositGoal: toWei(15_000, tokenDecimals),
+    depositGoal: toWei(15_000_000, tokenDecimals),
     withdrawVerifier: ZeroAddress,
     withdrawGoal: BigInt(1),
     coldWallet: '0x21D73A5dF25DAB8AcB73E782f71678c3b00A198F', //My s-coldWallet
