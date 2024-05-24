@@ -13,7 +13,7 @@ export const TOKENS: Record<CONTRACT_LIST, DeployNetworks> = {
     // bsc: '0x7D82090d0f7901Dfe612486E6D5A9A1d1c6e5f62', //Test
     // bsc: '0x82eFbC9ec9546b78aD223dE39eBD1D5F9243E18f', //Test
     // bsc: '0x258AF60a788fef0289994997c813D5933AcCd52A', //Test
-
+    //-------------------------------------------------------------------------------------------------------------
     // bsc: '0x5D27C778759e078BBe6D11A6cd802E41459Fe852', //Main - fcfs [Upgraded]
     // bsc: '0xe561e403093A19A770d5EE515aC1d5434275c026', //Main - sqrp-gated [Upgraded]
     // bsc: '0x8e6585Dd84c1cDc340727f66183992AaCe7Bfc18', //Main - white-list [Upgraded]
@@ -31,8 +31,8 @@ export const TOKENS: Record<CONTRACT_LIST, DeployNetworks> = {
     // bsc: '0xEA425b1A5740c65AB3149E32d9043E0c20dd20d6', //Main - sqrp-gated - 15
     // bsc: '0x6FAd3a85e0D257183bA16F7cE31f5fDc6ac5c32c', //Main - fcfs - 15
     // bsc: '0x872D661B0840aA486f851D806A7b43aC701A660a', //Main - fcfs - 15M
-    bsc: '0xc0ad64F1FBdeCc0F5855307fcB5f3e24fbb9E543', //Main - sqrp-gated - 15M
-
+    // bsc: '0xc0ad64F1FBdeCc0F5855307fcB5f3e24fbb9E543', //Main - sqrp-gated - 15M
+    //-------------------------------------------------------------------------------------------------------------
     // bsc: '0x6fae03D2FbBAf8821DC3248ca61cA239f60A9Bac', //Stage - fcfs - depositGoal: 1 - USDT
     // bsc: '0x69060bc1A054a3c60d2607aAE0D403748Ad0F48c', //Stage - sqrp-gated - depositGoal: 1 - USDT
     // bsc: '0x4eB0f912ba6AbB9C1036c733D2ac0730e6C72469', //Stage - white-list - depositGoal: 1 - USDT
@@ -41,7 +41,12 @@ export const TOKENS: Record<CONTRACT_LIST, DeployNetworks> = {
     // bsc: '0xFbAD518E930E6BBc723067D4C8aF9392FF63fE98', //Stage - fcfs - depositGoal: 100K - USDT
     // bsc: '0x02a1f14444d371C78212F208cdB84C3fab930e6E', //Stage - sqrp-gated - depositGoal: 100K - USDT
     // bsc: '0x7097F8E210452dE167C3E7F479BdEfbdB1ceF610', //Stage - sqrp-gated - depositGoal: 1K - USDT
-
+    //24.05.2024
+    // bsc: '0x723Bb34AC04e7260B3AAEDAE8CAf89B28313E4c3', //Stage - sqrp-gated - depositGoal: 1K - USDT
+    // bsc: '0xe259CE655aDAE89e81641008cC3d20A86A1bAe89', //Stage - sqrp-gated - depositGoal: 1K - USDT
+    // bsc: '0xf4423B4C4D1AA1e9E4623feD985292506AA5869a', //Stage - fcfs - depositGoal: 1K - USDT
+    bsc: '0xEE97B401eFD9E71d2a3b1860B8c3EB20498EF09e', //Stage - fcfs - depositGoal: 1K - USDT
+    //-------------------------------------------------------------------------------------------------------------
     // bsc: '0x57c11ef0f8fDbdc376444DE64a03d488BD3b09B8', //Prod - fcfs - depositGoal: 100K - USDT
 
     //21.05.2024

@@ -10,7 +10,7 @@ import { ContractConfig, DeployContractArgs, DeployTokenArgs, TokenConfig } from
 
 type DeployType = 'test' | 'main' | 'stage' | 'prod';
 
-const deployType: DeployType = (process.env.ENV as DeployType) ?? 'main';
+const deployType: DeployType = (process.env.ENV as DeployType) ?? 'stage';
 
 const isSqr = ['test', 'main'].includes(deployType);
 // const isSqr = false;
@@ -60,7 +60,7 @@ export const contractConfigDeployMap: Record<DeployType, Partial<ContractConfig>
     coldWallet: '0x79734Db10D301C257093E594A8A245D384E22c68', //Andrey MultiSig
     depositVerifier: '0x99FbD0Bc026128e6258BEAd542ECB1cF165Bbb98', //My s-deposit
     depositGoal: toWei(1000, tokenDecimals),
-    balanceLimit: toWei(0.1, tokenDecimals),
+    balanceLimit: toWei(1000, tokenDecimals),
     withdrawVerifier: ZeroAddress,
     withdrawGoal: BigInt(1),
     startDate: 0,
@@ -68,7 +68,7 @@ export const contractConfigDeployMap: Record<DeployType, Partial<ContractConfig>
     // startDate: toUnixTime(new Date(2024, 4, 1, 11, 0, 0)),
     // closeDate: 0,
     // closeDate: toUnixTime(new Date(2024, 3, 30)),
-    closeDate: toUnixTime(new Date(2034, 1, 1, 0, 0, 0)),
+    closeDate: toUnixTime(new Date(2026, 4, 24, 0, 0, 0)),
   },
   prod: {
     newOwner: '0xA8B8455ad9a1FAb1d4a3B69eD30A52fBA82549Bb', //Matan
