@@ -73,7 +73,7 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
 
   //Variables, structs, errors, modifiers, events------------------------
 
-  string public constant VERSION = "1.4";
+  string public constant VERSION = "1.5";
   uint256 public constant MAX_INT = type(uint256).max;
 
   IERC20 public erc20Token;
@@ -192,7 +192,7 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
     return _withdrawNonces[getHash(userId)];
   }
 
-  function calculateRemainDeposit() public view returns (uint256) {
+  function calculateRemainDeposit() external view returns (uint256) {
     if (!isReady()) {
       return 0;
     }
@@ -202,7 +202,7 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
     return MAX_INT;
   }
 
-  function calculateRemainWithdraw() public view returns (uint256) {
+  function calculateRemainWithdraw() external view returns (uint256) {
     if (!isReady()) {
       return 0;
     }

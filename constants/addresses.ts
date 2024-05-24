@@ -45,7 +45,8 @@ export const TOKENS: Record<CONTRACT_LIST, DeployNetworks> = {
     // bsc: '0x723Bb34AC04e7260B3AAEDAE8CAf89B28313E4c3', //Stage - sqrp-gated - depositGoal: 1K - USDT
     // bsc: '0xe259CE655aDAE89e81641008cC3d20A86A1bAe89', //Stage - sqrp-gated - depositGoal: 1K - USDT
     // bsc: '0xf4423B4C4D1AA1e9E4623feD985292506AA5869a', //Stage - fcfs - depositGoal: 1K - USDT
-    bsc: '0xEE97B401eFD9E71d2a3b1860B8c3EB20498EF09e', //Stage - fcfs - depositGoal: 1K - USDT
+    // bsc: '0xEE97B401eFD9E71d2a3b1860B8c3EB20498EF09e', //Stage - fcfs - depositGoal: 1K - USDT
+    bsc: '0xef36bCC8551C301D18FAa0C8ff092a478F39748E', //Stage - fcfs - depositGoal: 1K - USDT
     //-------------------------------------------------------------------------------------------------------------
     // bsc: '0x57c11ef0f8fDbdc376444DE64a03d488BD3b09B8', //Prod - fcfs - depositGoal: 100K - USDT
 
