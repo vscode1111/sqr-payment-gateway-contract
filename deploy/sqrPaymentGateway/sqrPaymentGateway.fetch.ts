@@ -1,8 +1,13 @@
 import { DeployFunction } from 'hardhat-deploy/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { callWithTimerHre } from '~common-contract';
+import { callWithTimerHre, printDate, printToken } from '~common-contract';
 import { SQR_PAYMENT_GATEWAY_NAME } from '~constants';
-import { getAddressesFromHre, getSQRPaymentGatewayContext, getUsers } from '~utils';
+import {
+  getAddressesFromHre,
+  getERC20TokenContext,
+  getSQRPaymentGatewayContext,
+  getUsers,
+} from '~utils';
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<void> => {
   await callWithTimerHre(async () => {
@@ -14,18 +19,25 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
       sqrPaymentGatewayAddress,
     );
 
+    const erc20Token = await ownerSQRPaymentGateway.erc20Token();
+
+    const { ownerERC20Token } = await getERC20TokenContext(users, erc20Token);
+
+    const decimals = Number(await ownerERC20Token.decimals());
+    const tokenName = await ownerERC20Token.name();
+
     const result = {
       owner: await ownerSQRPaymentGateway.owner(),
-      erc20Token: await ownerSQRPaymentGateway.erc20Token(),
+      erc20Token,
       depositVerifier: await ownerSQRPaymentGateway.depositVerifier(),
-      depositGoal: await ownerSQRPaymentGateway.depositGoal(),
+      depositGoal: printToken(await ownerSQRPaymentGateway.depositGoal(), decimals, tokenName),
       withdrawVerifier: await ownerSQRPaymentGateway.withdrawVerifier(),
-      withdrawGoal: await ownerSQRPaymentGateway.withdrawGoal(),
-      startDate: await ownerSQRPaymentGateway.startDate(),
-      closeDate: await ownerSQRPaymentGateway.closeDate(),
+      withdrawGoal: printToken(await ownerSQRPaymentGateway.withdrawGoal(), decimals, tokenName),
+      startDate: printDate(await ownerSQRPaymentGateway.startDate()),
+      closeDate: printDate(await ownerSQRPaymentGateway.closeDate()),
       coldWallet: await ownerSQRPaymentGateway.coldWallet(),
-      balanceLimit: await ownerSQRPaymentGateway.balanceLimit(),
-      balance: await ownerSQRPaymentGateway.getBalance(),
+      balanceLimit: printToken(await ownerSQRPaymentGateway.balanceLimit(), decimals, tokenName),
+      balance: printToken(await ownerSQRPaymentGateway.getBalance(), decimals, tokenName),
     };
 
     console.table(result);

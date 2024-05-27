@@ -2,9 +2,10 @@ import dayjs from 'dayjs';
 import { ZeroAddress } from 'ethers';
 import { v4 as uuidv4 } from 'uuid';
 import { toUnixTime, toWei } from '~common';
-import { MINUTES } from '~constants';
-import { DeployNetworkKey } from '~types';
+import { MINUTES, Token } from '~constants';
+import { DeployNetworkKey, TokenAddressDescription, TokenDescription } from '~types';
 import { addSecondsToUnixTime } from '~utils';
+import { getTokenDescription } from '~utils/contracts';
 import { defaultNetwork } from '../hardhat.config';
 import { ContractConfig, DeployContractArgs, DeployTokenArgs, TokenConfig } from './types';
 
@@ -20,11 +21,12 @@ if (isProd) {
   throw 'Are you sure? It is PROD!';
 }
 
-const chainDecimals: Record<DeployNetworkKey, number> = {
-  bsc: isSqr ? 8 : 18, //SQR/USDT
+export const chainTokenDescription: Record<DeployNetworkKey, TokenAddressDescription> = {
+  bsc: isSqr ? getTokenDescription(Token.tSQR) : getTokenDescription(Token.USDT), //SQR/USDT
 };
 
-export const tokenDecimals = chainDecimals[defaultNetwork];
+export const { address: tokenAddress, decimals: tokenDecimals } =
+  chainTokenDescription[defaultNetwork];
 
 const priceDiv = BigInt(1);
 const userDiv = BigInt(2);
@@ -33,16 +35,12 @@ export const now = dayjs();
 export const contractConfigDeployMap: Record<DeployType, Partial<ContractConfig>> = {
   test: {
     newOwner: '0x627Ab3fbC3979158f451347aeA288B0A3A47E1EF', //My s-owner2
-    erc20Token: '0x8364a68c32E581332b962D88CdC8dBe8b3e0EE9c', //tSQR2
     depositVerifier: '0x99FbD0Bc026128e6258BEAd542ECB1cF165Bbb98', //My s-deposit
     coldWallet: '0x21D73A5dF25DAB8AcB73E782f71678c3b00A198F', //My s-coldWallet
     balanceLimit: toWei(1000, tokenDecimals) / priceDiv,
   },
   main: {
     newOwner: '0x627Ab3fbC3979158f451347aeA288B0A3A47E1EF', //My s-owner2
-    erc20Token: isSqr
-      ? '0x8364a68c32E581332b962D88CdC8dBe8b3e0EE9c'
-      : '0x55d398326f99059fF775485246999027B3197955', //tSQR2 / USDT
     depositVerifier: '0x99FbD0Bc026128e6258BEAd542ECB1cF165Bbb98', //My s-deposit
     depositGoal: toWei(15_000_000, tokenDecimals),
     withdrawVerifier: ZeroAddress,
@@ -56,7 +54,6 @@ export const contractConfigDeployMap: Record<DeployType, Partial<ContractConfig>
   },
   stage: {
     newOwner: '0xA8B8455ad9a1FAb1d4a3B69eD30A52fBA82549Bb', //Matan
-    erc20Token: '0x55d398326f99059fF775485246999027B3197955', //USDT
     coldWallet: '0x79734Db10D301C257093E594A8A245D384E22c68', //Andrey MultiSig
     depositVerifier: '0x99FbD0Bc026128e6258BEAd542ECB1cF165Bbb98', //My s-deposit
     depositGoal: toWei(15, tokenDecimals),
@@ -64,13 +61,12 @@ export const contractConfigDeployMap: Record<DeployType, Partial<ContractConfig>
     withdrawVerifier: ZeroAddress,
     withdrawGoal: BigInt(1),
     // startDate: 0,
-    startDate: toUnixTime(new Date(2024, 4, 27, 10, 0, 0)),
+    startDate: toUnixTime(new Date(2024, 4, 27, 19, 0, 0)),
     // closeDate: 0,
-    closeDate: toUnixTime(new Date(2026, 4, 27, 15, 0, 0)),
+    closeDate: toUnixTime(new Date(2026, 4, 28, 23, 0, 0)),
   },
   prod: {
     newOwner: '0xA8B8455ad9a1FAb1d4a3B69eD30A52fBA82549Bb', //Matan
-    erc20Token: '0x55d398326f99059fF775485246999027B3197955', //USDT
     coldWallet: '0x79734Db10D301C257093E594A8A245D384E22c68', //Andrey MultiSig
     depositVerifier: '0x99FbD0Bc026128e6258BEAd542ECB1cF165Bbb98', //My s-deposit
     depositGoal: toWei(24.99, tokenDecimals),
@@ -88,7 +84,7 @@ const extContractConfig = contractConfigDeployMap[deployType];
 
 export const contractConfig: ContractConfig = {
   newOwner: '0x627Ab3fbC3979158f451347aeA288B0A3A47E1EF',
-  erc20Token: '0x4072b57e9B3dA8eEB9F8998b69C868E9a1698E54',
+  erc20Token: tokenAddress,
   depositVerifier: '0x627Ab3fbC3979158f451347aeA288B0A3A47E1EF',
   depositGoal: toWei(4_000, tokenDecimals) / priceDiv,
   withdrawVerifier: '0x627Ab3fbC3979158f451347aeA288B0A3A47E1EF',

@@ -57,13 +57,13 @@ export function secondsToDhms(seconds: number): string {
   if (d > 0) {
     result.push(`${d}d`);
   }
-  if (h > 0 || d > 0) {
+  if (d > 0 || h > 0) {
     result.push(`${h}h`);
   }
-  if (m > 0 || h > 0) {
+  if (h > 0 || m > 0) {
     result.push(`${m}m`);
   }
-  if (s > 0 || m > 0) {
+  if (m > 0 || s > 0) {
     result.push(`${s}s`);
   }
 

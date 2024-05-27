@@ -7,3 +7,5 @@ export const DAYS = 24 * HOURS;
 export const commonTestValue = {
   timeout: 15000,
 };
+
+export const MS_IN_SEC = 1000;

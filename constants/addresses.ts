@@ -7,7 +7,7 @@ export enum CONTRACT_LIST {
   SQR_PAYMENT_GATEWAY = 'SQR_PAYMENT_GATEWAY',
 }
 
-export const TOKENS: Record<CONTRACT_LIST, DeployNetworks> = {
+export const CONTRACTS: Record<CONTRACT_LIST, DeployNetworks> = {
   SQR_PAYMENT_GATEWAY: {
     // bsc: '0xC85AC922880b2eD44a2D9a78739740990B6219f5', //Test
     // bsc: '0x7D82090d0f7901Dfe612486E6D5A9A1d1c6e5f62', //Test
@@ -46,7 +46,9 @@ export const TOKENS: Record<CONTRACT_LIST, DeployNetworks> = {
     // bsc: '0xe259CE655aDAE89e81641008cC3d20A86A1bAe89', //Stage - sqrp-gated - depositGoal: 1K - USDT
     // bsc: '0xf4423B4C4D1AA1e9E4623feD985292506AA5869a', //Stage - fcfs - depositGoal: 1K - USDT
     // bsc: '0xEE97B401eFD9E71d2a3b1860B8c3EB20498EF09e', //Stage - fcfs - depositGoal: 1K - USDT
-    bsc: '0xef36bCC8551C301D18FAa0C8ff092a478F39748E', //Stage - fcfs - depositGoal: 1K - USDT
+    // bsc: '0xef36bCC8551C301D18FAa0C8ff092a478F39748E', //Stage - fcfs - depositGoal: 1K - USDT
+    //27.05.2024
+    bsc: '0x1a97FA286546c86ee9dBEfADAC8114839F47AA79', //Stage - fcfs - depositGoal: 1K - USDT
     //-------------------------------------------------------------------------------------------------------------
     // bsc: '0x57c11ef0f8fDbdc376444DE64a03d488BD3b09B8', //Prod - fcfs - depositGoal: 100K - USDT
 

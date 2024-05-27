@@ -2,7 +2,7 @@ import { DeployProxyOptions } from '@openzeppelin/hardhat-upgrades/dist/utils';
 import { ethers, upgrades } from 'hardhat';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { getNetworkName } from '~common-contract';
-import { ERC20_TOKEN_NAME, SQR_PAYMENT_GATEWAY_NAME, TOKENS, TX_OVERRIDES } from '~constants';
+import { CONTRACTS, ERC20_TOKEN_NAME, SQR_PAYMENT_GATEWAY_NAME, TX_OVERRIDES } from '~constants';
 import { ContractConfig, getContractArgs, getTokenArgs } from '~seeds';
 import { ERC20Token } from '~typechain-types/contracts/ERC20Token';
 import { SQRPaymentGateway } from '~typechain-types/contracts/SQRPaymentGateway';
@@ -24,7 +24,7 @@ const OPTIONS: DeployProxyOptions = {
 };
 
 export function getAddresses(network: keyof DeployNetworks): Addresses {
-  const sqrPaymentGatewayAddress = TOKENS.SQR_PAYMENT_GATEWAY[network];
+  const sqrPaymentGatewayAddress = CONTRACTS.SQR_PAYMENT_GATEWAY[network];
   return {
     sqrPaymentGatewayAddress,
   };
