@@ -1,9 +1,9 @@
 import dayjs from 'dayjs';
 import { ZeroAddress } from 'ethers';
 import { v4 as uuidv4 } from 'uuid';
-import { toUnixTime, toWei } from '~common';
+import { toUnixTime, toUnixTimeUtc, toWei } from '~common';
 import { MINUTES, Token } from '~constants';
-import { DeployNetworkKey, TokenAddressDescription, TokenDescription } from '~types';
+import { DeployNetworkKey, TokenAddressDescription } from '~types';
 import { addSecondsToUnixTime } from '~utils';
 import { getTokenDescription } from '~utils/contracts';
 import { defaultNetwork } from '../hardhat.config';
@@ -11,15 +11,15 @@ import { ContractConfig, DeployContractArgs, DeployTokenArgs, TokenConfig } from
 
 type DeployType = 'test' | 'main' | 'stage' | 'prod';
 
-const deployType: DeployType = (process.env.ENV as DeployType) ?? 'stage';
+const deployType: DeployType = (process.env.ENV as DeployType) ?? 'prod';
 
 const isSqr = ['test', 'main'].includes(deployType);
 // const isSqr = false;
 
-const isProd = deployType === ('prod' as any);
-if (isProd) {
-  throw 'Are you sure? It is PROD!';
-}
+// const isProd = deployType === ('prod' as any);
+// if (isProd) {
+//   throw 'Are you sure? It is PROD!';
+// }
 
 export const chainTokenDescription: Record<DeployNetworkKey, TokenAddressDescription> = {
   bsc: isSqr ? getTokenDescription(Token.tSQR) : getTokenDescription(Token.USDT), //SQR/USDT
@@ -69,14 +69,14 @@ export const contractConfigDeployMap: Record<DeployType, Partial<ContractConfig>
     newOwner: '0xA8B8455ad9a1FAb1d4a3B69eD30A52fBA82549Bb', //Matan
     coldWallet: '0x79734Db10D301C257093E594A8A245D384E22c68', //Andrey MultiSig
     depositVerifier: '0x99FbD0Bc026128e6258BEAd542ECB1cF165Bbb98', //My s-deposit
-    depositGoal: toWei(24.99, tokenDecimals),
+    depositGoal: toWei(15, tokenDecimals),
     balanceLimit: toWei(1_000_000, tokenDecimals),
     withdrawVerifier: ZeroAddress,
     withdrawGoal: BigInt(1),
     // startDate: 0,
-    startDate: toUnixTime(new Date(2024, 4, 22, 15, 0, 0)),
+    startDate: toUnixTimeUtc(new Date(2024, 4, 27, 16, 0, 0)),
     // closeDate: 0,
-    closeDate: toUnixTime(new Date(2024, 4, 22, 17, 0, 0)),
+    closeDate: toUnixTimeUtc(new Date(2024, 4, 27, 20, 0, 0)),
   },
 };
 

@@ -36,6 +36,11 @@ export function toUnixTime(value: string | Date = new Date()): number {
   return Math.floor(new Date(value).getTime() / 1000);
 }
 
+export function toUnixTimeUtc(value: string | Date = new Date()): number {
+  const date = new Date(value);
+  return Math.floor((date.getTime() - date.getTimezoneOffset() * 60000) / 1000);
+}
+
 export function numberToByteArray(value: number, bytesNumber = 4): number[] {
   var byteArray = new Array(bytesNumber).fill(0);
 
