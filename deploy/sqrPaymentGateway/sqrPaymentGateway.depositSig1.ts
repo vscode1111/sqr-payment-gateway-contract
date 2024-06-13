@@ -4,7 +4,7 @@ import { toNumberDecimals } from '~common';
 import { callWithTimerHre, waitTx } from '~common-contract';
 import { SQR_PAYMENT_GATEWAY_NAME, TX_OVERRIDES } from '~constants';
 import { contractConfig, seedData } from '~seeds';
-import { getAddressesFromHre, getContext, signMessageForDeposit } from '~utils';
+import { getAddressesFromHre, getContext, signMessageForSQRPaymentGatewayDeposit } from '~utils';
 import { deployData, deployParams } from './deployData';
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<void> => {
@@ -43,7 +43,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
       signature: '',
     };
 
-    params.signature = await signMessageForDeposit(
+    params.signature = await signMessageForSQRPaymentGatewayDeposit(
       depositVerifier,
       params.userId,
       params.transactionId,

@@ -9,8 +9,8 @@ import {
   addSecondsToUnixTime,
   getSQRPaymentGatewayContext,
   getUsers,
-  signMessageForDeposit,
-  signMessageForWithdraw,
+  signMessageForSQRPaymentGatewayDeposit,
+  signMessageForSQRPaymentGatewayWithdraw,
 } from '~utils';
 import { ChangeBalanceLimitArgs, customError } from '.';
 import { findEvent, loadSQRPaymentGatewayFixture } from './utils';
@@ -96,7 +96,7 @@ export function shouldBehaveCorrectDeployment(): void {
       await this.owner2ERC20Token.transfer(this.user1Address, seedData.userInitBalance);
       await this.user1ERC20Token.approve(this.sqrPaymentGatewayAddress, seedData.deposit1);
 
-      const signature = await signMessageForDeposit(
+      const signature = await signMessageForSQRPaymentGatewayDeposit(
         this.user3,
         seedData.userId1,
         seedData.depositTransactionId1,
@@ -127,7 +127,7 @@ export function shouldBehaveCorrectDeployment(): void {
 
       await this.owner2ERC20Token.transfer(this.sqrPaymentGatewayAddress, seedData.deposit1);
 
-      const signature = await signMessageForWithdraw(
+      const signature = await signMessageForSQRPaymentGatewayWithdraw(
         this.user3,
         seedData.userId1,
         seedData.withdrawTransactionId1_0,

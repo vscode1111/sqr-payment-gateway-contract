@@ -3,7 +3,11 @@ import { expect } from 'chai';
 import { INITIAL_POSITIVE_CHECK_TEST_TITLE } from '~common';
 import { waitTx } from '~common-contract';
 import { contractConfig, seedData } from '~seeds';
-import { addSecondsToUnixTime, signMessageForDeposit, signMessageForWithdraw } from '~utils';
+import {
+  addSecondsToUnixTime,
+  signMessageForSQRPaymentGatewayDeposit,
+  signMessageForSQRPaymentGatewayWithdraw,
+} from '~utils';
 import { customError } from './testData';
 import { DepositEventArgs, ForceWithdrawEventArgs, WithdrawEventArgs } from './types';
 import {
@@ -28,7 +32,7 @@ export function shouldBehaveCorrectFunding(): void {
       expect(await this.owner2SQRPaymentGateway.calculateRemainDeposit()).eq(seedData.zero);
       expect(await this.owner2SQRPaymentGateway.calculateRemainWithdraw()).eq(seedData.zero);
 
-      const signature = await signMessageForDeposit(
+      const signature = await signMessageForSQRPaymentGatewayDeposit(
         this.owner2,
         seedData.userId1,
         seedData.depositTransactionId1,
@@ -56,7 +60,7 @@ export function shouldBehaveCorrectFunding(): void {
       expect(await this.owner2SQRPaymentGateway.calculateRemainDeposit()).eq(seedData.zero);
       expect(await this.owner2SQRPaymentGateway.calculateRemainWithdraw()).eq(seedData.zero);
 
-      const signature = await signMessageForDeposit(
+      const signature = await signMessageForSQRPaymentGatewayDeposit(
         this.owner2,
         seedData.userId1,
         seedData.depositTransactionId1,
@@ -94,7 +98,7 @@ export function shouldBehaveCorrectFunding(): void {
       });
 
       it('user1 tries to call depositSig with zero amount', async function () {
-        const signature = await signMessageForDeposit(
+        const signature = await signMessageForSQRPaymentGatewayDeposit(
           this.owner2,
           seedData.userId1,
           seedData.depositTransactionId1,
@@ -117,7 +121,7 @@ export function shouldBehaveCorrectFunding(): void {
       });
 
       it('user1 tries to call depositSig without allowance', async function () {
-        const signature = await signMessageForDeposit(
+        const signature = await signMessageForSQRPaymentGatewayDeposit(
           this.owner2,
           seedData.userId1,
           seedData.depositTransactionId1,
@@ -145,7 +149,7 @@ export function shouldBehaveCorrectFunding(): void {
       it('user1 tries to call depositSig in timeout case 1m', async function () {
         await time.increaseTo(seedData.startDatePlus1m);
 
-        const signature = await signMessageForDeposit(
+        const signature = await signMessageForSQRPaymentGatewayDeposit(
           this.owner2,
           seedData.userId1,
           seedData.depositTransactionId1,
@@ -168,7 +172,7 @@ export function shouldBehaveCorrectFunding(): void {
       });
 
       it('user1 tries to call depositSig with wrong signature', async function () {
-        const wrongSignature = await signMessageForDeposit(
+        const wrongSignature = await signMessageForSQRPaymentGatewayDeposit(
           this.owner2,
           seedData.userId2,
           seedData.depositTransactionId1,
@@ -193,7 +197,7 @@ export function shouldBehaveCorrectFunding(): void {
       it('user1 tries to call depositSig with allowance but no funds', async function () {
         await this.user1ERC20Token.approve(this.sqrPaymentGatewayAddress, seedData.extraDeposit1);
 
-        const signature = await signMessageForDeposit(
+        const signature = await signMessageForSQRPaymentGatewayDeposit(
           this.owner2,
           seedData.userId1,
           seedData.depositTransactionId1,
@@ -216,7 +220,7 @@ export function shouldBehaveCorrectFunding(): void {
       });
 
       it('user2 tries to call depositSig without allowance', async function () {
-        const signature = await signMessageForDeposit(
+        const signature = await signMessageForSQRPaymentGatewayDeposit(
           this.owner2,
           seedData.userId2,
           seedData.depositTransactionId2,
@@ -256,7 +260,7 @@ export function shouldBehaveCorrectFunding(): void {
         });
 
         it('check hash collision for signMessageForDeposit', async function () {
-          const wrongSignature = await signMessageForDeposit(
+          const wrongSignature = await signMessageForSQRPaymentGatewayDeposit(
             this.owner2,
             '123',
             '123',
@@ -279,7 +283,7 @@ export function shouldBehaveCorrectFunding(): void {
         });
 
         it('user1 is allowed to deposit (check event)', async function () {
-          const signature = await signMessageForDeposit(
+          const signature = await signMessageForSQRPaymentGatewayDeposit(
             this.owner2,
             seedData.userId1,
             seedData.depositTransactionId1,
@@ -384,7 +388,7 @@ export function shouldBehaveCorrectFunding(): void {
 
           await this.user1ERC20Token.approve(this.sqrPaymentGatewayAddress, seedData.extraDeposit1);
 
-          const signature = await signMessageForDeposit(
+          const signature = await signMessageForSQRPaymentGatewayDeposit(
             this.owner2,
             seedData.userId1,
             seedData.depositTransactionId1,
@@ -435,7 +439,7 @@ export function shouldBehaveCorrectFunding(): void {
 
           await this.user1ERC20Token.approve(this.sqrPaymentGatewayAddress, extraDeposit);
 
-          const signature = await signMessageForDeposit(
+          const signature = await signMessageForSQRPaymentGatewayDeposit(
             this.owner2,
             seedData.userId1,
             seedData.depositTransactionId1,
@@ -465,7 +469,7 @@ export function shouldBehaveCorrectFunding(): void {
 
           await this.user1ERC20Token.approve(this.sqrPaymentGatewayAddress, seedData.extraDeposit1);
 
-          const signature = await signMessageForDeposit(
+          const signature = await signMessageForSQRPaymentGatewayDeposit(
             this.owner2,
             seedData.userId1,
             seedData.depositTransactionId1,
@@ -511,7 +515,7 @@ export function shouldBehaveCorrectFunding(): void {
           beforeEach(async function () {
             const nonce = await this.user1SQRPaymentGateway.getDepositNonce(seedData.userId1);
 
-            const signature = await signMessageForDeposit(
+            const signature = await signMessageForSQRPaymentGatewayDeposit(
               this.owner2,
               seedData.userId1,
               seedData.depositTransactionId1,
@@ -566,7 +570,7 @@ export function shouldBehaveCorrectFunding(): void {
               seedData.extraDeposit1,
             );
 
-            const signature = await signMessageForDeposit(
+            const signature = await signMessageForSQRPaymentGatewayDeposit(
               this.owner2,
               seedData.userId1,
               seedData.depositTransactionId1,
@@ -647,7 +651,7 @@ export function shouldBehaveCorrectFunding(): void {
           });
 
           it('user1 tries to call withdrawSig with wrong signature', async function () {
-            const signature = await signMessageForWithdraw(
+            const signature = await signMessageForSQRPaymentGatewayWithdraw(
               this.owner2,
               seedData.userId2,
               seedData.withdrawTransactionId1_0,
@@ -672,7 +676,7 @@ export function shouldBehaveCorrectFunding(): void {
           it('user1 tries to call depositSig in timeout case 1m', async function () {
             await time.increaseTo(seedData.startDatePlus1m);
 
-            const signature = await signMessageForWithdraw(
+            const signature = await signMessageForSQRPaymentGatewayWithdraw(
               this.owner2,
               seedData.userId1,
               seedData.withdrawTransactionId1_0,
@@ -695,7 +699,7 @@ export function shouldBehaveCorrectFunding(): void {
           });
 
           it('user1 tries to call withdrawSig with zero amount', async function () {
-            const signature = await signMessageForWithdraw(
+            const signature = await signMessageForSQRPaymentGatewayWithdraw(
               this.owner2,
               seedData.userId2,
               seedData.withdrawTransactionId1_0,
@@ -718,7 +722,7 @@ export function shouldBehaveCorrectFunding(): void {
           });
 
           it('user1 tries to call withdrawSig from contract without required funds', async function () {
-            const signature = await signMessageForWithdraw(
+            const signature = await signMessageForSQRPaymentGatewayWithdraw(
               this.owner2,
               seedData.userId1,
               seedData.withdrawTransactionId1_0,
@@ -791,7 +795,7 @@ export function shouldBehaveCorrectFunding(): void {
           });
 
           it('check hash collision for signMessageForWithdraw', async function () {
-            const wrongSignature = await signMessageForWithdraw(
+            const wrongSignature = await signMessageForSQRPaymentGatewayWithdraw(
               this.owner2,
               '123',
               '123',
@@ -814,7 +818,7 @@ export function shouldBehaveCorrectFunding(): void {
           });
 
           it('user1 is allowed to withdraw (check event)', async function () {
-            const signature = await signMessageForWithdraw(
+            const signature = await signMessageForSQRPaymentGatewayWithdraw(
               this.owner2,
               seedData.userId1,
               seedData.withdrawTransactionId1_0,
@@ -845,7 +849,7 @@ export function shouldBehaveCorrectFunding(): void {
 
           describe('user1 withdrew funds', () => {
             beforeEach(async function () {
-              const signature = await signMessageForWithdraw(
+              const signature = await signMessageForSQRPaymentGatewayWithdraw(
                 this.owner2,
                 seedData.userId1,
                 seedData.withdrawTransactionId1_0,
@@ -875,7 +879,7 @@ export function shouldBehaveCorrectFunding(): void {
             });
 
             it('user1 tries to call withdrawSig with the same transactionId', async function () {
-              const signature = await signMessageForWithdraw(
+              const signature = await signMessageForSQRPaymentGatewayWithdraw(
                 this.owner2,
                 seedData.userId1,
                 seedData.withdrawTransactionId1_0,
@@ -908,7 +912,7 @@ export function shouldBehaveCorrectFunding(): void {
 
               const extraWithdraw = seedData.extraWithdraw1 * BigInt(2);
 
-              const signature = await signMessageForWithdraw(
+              const signature = await signMessageForSQRPaymentGatewayWithdraw(
                 this.owner2,
                 seedData.userId1,
                 seedData.withdrawTransactionId1_1,

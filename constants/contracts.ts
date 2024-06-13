@@ -1,5 +1,5 @@
 import { TransactionRequest } from 'ethers';
-import { TokenDescription } from '~types';
+import { TokenDescription } from '~common-contract';
 
 export const VERSION = '1.5';
 

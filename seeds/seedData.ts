@@ -2,8 +2,9 @@ import dayjs from 'dayjs';
 import { ZeroAddress } from 'ethers';
 import { v4 as uuidv4 } from 'uuid';
 import { toUnixTime, toUnixTimeUtc, toWei } from '~common';
+import { TokenAddressDescription } from '~common-contract';
 import { MINUTES, Token } from '~constants';
-import { DeployNetworkKey, TokenAddressDescription } from '~types';
+import { DeployNetworkKey } from '~types';
 import { addSecondsToUnixTime } from '~utils';
 import { getTokenDescription } from '~utils/contracts';
 import { defaultNetwork } from '../hardhat.config';
@@ -11,7 +12,7 @@ import { ContractConfig, DeployContractArgs, DeployTokenArgs, TokenConfig } from
 
 type DeployType = 'test' | 'main' | 'stage' | 'prod';
 
-const deployType: DeployType = (process.env.ENV as DeployType) ?? 'prod';
+const deployType: DeployType = (process.env.ENV as DeployType) ?? 'main';
 
 const isSqr = ['test', 'main'].includes(deployType);
 // const isSqr = false;
@@ -74,9 +75,9 @@ export const contractConfigDeployMap: Record<DeployType, Partial<ContractConfig>
     withdrawVerifier: ZeroAddress,
     withdrawGoal: BigInt(1),
     // startDate: 0,
-    startDate: toUnixTimeUtc(new Date(2024, 4, 27, 16, 0, 0)),
+    startDate: toUnixTimeUtc(new Date(2024, 4, 31, 8, 21, 0)),
     // closeDate: 0,
-    closeDate: toUnixTimeUtc(new Date(2024, 4, 27, 20, 0, 0)),
+    closeDate: toUnixTimeUtc(new Date(2024, 5, 30, 20, 0, 0)),
   },
 };
 

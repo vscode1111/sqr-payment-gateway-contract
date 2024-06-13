@@ -31,7 +31,7 @@ export const CONTRACTS: Record<CONTRACT_LIST, DeployNetworks> = {
     // bsc: '0xEA425b1A5740c65AB3149E32d9043E0c20dd20d6', //Main - sqrp-gated - 15
     // bsc: '0x6FAd3a85e0D257183bA16F7cE31f5fDc6ac5c32c', //Main - fcfs - 15
     // bsc: '0x872D661B0840aA486f851D806A7b43aC701A660a', //Main - fcfs - 15M
-    // bsc: '0xc0ad64F1FBdeCc0F5855307fcB5f3e24fbb9E543', //Main - sqrp-gated - 15M
+    bsc: '0xc0ad64F1FBdeCc0F5855307fcB5f3e24fbb9E543', //Main - sqrp-gated - 15M
     //-------------------------------------------------------------------------------------------------------------
     // bsc: '0x6fae03D2FbBAf8821DC3248ca61cA239f60A9Bac', //Stage - fcfs - depositGoal: 1 USDT
     // bsc: '0x69060bc1A054a3c60d2607aAE0D403748Ad0F48c', //Stage - sqrp-gated - depositGoal: 1 USDT
@@ -66,6 +66,10 @@ export const CONTRACTS: Record<CONTRACT_LIST, DeployNetworks> = {
     // bsc: '0xd1A68b9c476D7fC06060E725B33F4034c2bA4c75', //Prod - sqrp-gated  - depositGoal: 100K USDT
     // bsc: '0x4fc8DeE09D8B6F93eDA287cB7617F9f5e3A896f1', //Prod - fcfs  - depositGoal: 100K USDT
     // bsc: '0xc595e399121A429F16Af5205b8e7BA5354eF513c', //Prod - fcfs  - depositGoal: 28.91 USDT
-    bsc: '0xDb88DE2d99249382A7cF3104A80646509f69E358', //Prod - fcfs  - depositGoal: 15 USDT
+    // bsc: '0xDb88DE2d99249382A7cF3104A80646509f69E358', //Prod - fcfs  - depositGoal: 15 USDT
+
+    //31.05.2024
+    // bsc: '0x070Ea0C8B9e57B929ADB0eFE408C1Fa586648268', //Prod - fcfs  - depositGoal: 15 USDT
+    // bsc: '0xc526Ce022E4979Fc9801BdE45105b54dE34ceeA6', //Prod - fcfs  - depositGoal: 15 USDT
   },
 };

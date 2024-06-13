@@ -20,9 +20,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
     );
 
     const erc20Token = await ownerSQRPaymentGateway.erc20Token();
-
     const { ownerERC20Token } = await getERC20TokenContext(users, erc20Token);
-
     const decimals = Number(await ownerERC20Token.decimals());
     const tokenName = await ownerERC20Token.name();
 
