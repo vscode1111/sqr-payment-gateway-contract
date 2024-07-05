@@ -23,6 +23,7 @@ const isSqr = ['test', 'main'].includes(deployType);
 // }
 
 export const chainTokenDescription: Record<DeployNetworkKey, TokenAddressDescription> = {
+  // bsc: isSqr ? getTokenDescription(Token.SQR) : getTokenDescription(Token.USDT), //SQR/USDT
   bsc: isSqr ? getTokenDescription(Token.tSQR) : getTokenDescription(Token.USDT), //SQR/USDT
 };
 

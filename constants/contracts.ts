@@ -10,12 +10,17 @@ export const TX_OVERRIDES: TransactionRequest = {
 
 export enum Token {
   tSQR = '0x8364a68c32E581332b962D88CdC8dBe8b3e0EE9c',
+  SQR = '0x2B72867c32CF673F7b02d208B26889fEd353B1f8',
   USDT = '0x55d398326f99059fF775485246999027B3197955',
 }
 
 export const TOKENS_DESCRIPTIONS: Record<string, TokenDescription> = {
   [Token.tSQR]: {
     tokenName: 'tSQR2',
+    decimals: 8,
+  },
+  [Token.SQR]: {
+    tokenName: 'SQR2',
     decimals: 8,
   },
   [Token.USDT]: {

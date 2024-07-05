@@ -17,7 +17,7 @@
     "deploy:fetch": "hardhat deploy --tags SQRPaymentGateway:fetch",
     "deploy:fetch2": "hardhat deploy --tags SQRPaymentGateway:fetch2",
     "deploy:deposit-sig1": "hardhat deploy --tags SQRPaymentGateway:deposit-sig1",
-    "deploy:deposit-sig1-manual": "hardhat deploy --tags SQRPaymentGateway:deposit-sig1-manual",
+    "deploy:deposit-sig-manual": "hardhat deploy --tags SQRPaymentGateway:deposit-sig-manual",
     "deploy:deposit-sig2": "hardhat deploy --tags SQRPaymentGateway:deposit-sig2",
     "deploy:force-withdraw": "hardhat deploy --tags SQRPaymentGateway:force-withdraw",
     "deploy:change-balance-limit": "hardhat deploy --tags SQRPaymentGateway:change-balance-limit",
