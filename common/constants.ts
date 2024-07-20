@@ -1,3 +1,5 @@
+export const DEFAULT_DECIMALS = 18;
+
 export const MINUTES = 60;
 
 export const HOURS = 60 * MINUTES;

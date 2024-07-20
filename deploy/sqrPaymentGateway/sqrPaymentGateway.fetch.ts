@@ -40,7 +40,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
 
     console.table(result);
 
-    const fundItem = await ownerSQRPaymentGateway.fetchFundItem(
+    const fundItem = await ownerSQRPaymentGateway.fetchUserFundItem(
       'f80f623b-4e53-4769-9fe7-93d0901c7261',
     );
     console.log(fundItem);

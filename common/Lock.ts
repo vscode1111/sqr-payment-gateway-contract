@@ -81,7 +81,8 @@ export class IdLock {
   async tryInvoke<T>(taskId: StringNumber, fn: () => Promisable<T>): Promise<T> {
     const release = await this.acquire(taskId);
     try {
-      return await fn();
+      const result = await fn();
+      return result;
     } catch (e) {
       release();
       parseError(e);

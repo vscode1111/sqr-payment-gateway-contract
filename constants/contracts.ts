@@ -1,7 +1,8 @@
 import { TransactionRequest } from 'ethers';
 import { TokenDescription } from '~common-contract';
 
-export const VERSION = '1.5';
+export const CONTRACT_VERSION = '2.0.0';
+export const CONTRACT_NAME = 'PaymentGateway';
 
 export const TX_OVERRIDES: TransactionRequest = {
   // gasPrice: 3_000_000_000,

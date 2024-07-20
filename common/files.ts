@@ -1,10 +1,17 @@
-import { existsSync, mkdirSync, readdirSync, rmSync, statSync } from 'fs';
-import { readFileSync, writeFileSync } from 'fs';
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'fs';
 import { readdir, rm } from 'fs/promises';
 import path from 'path';
 
 const LINE_SEPARATOR = '\n';
-const TAB_SEPARATOR = '\t';
+const CELL_SEPARATOR = '\t';
 
 export interface ReplaceRule {
   pattern: RegExp;
@@ -25,11 +32,11 @@ export function replaceTexts(filePath: string, rules: ReplaceRule[]) {
   rules.forEach((rule) => replaceText(filePath, rule));
 }
 
-export function convertArrayToContent(array: string[]): string {
+export function convertArrayToContent(array: string[], lineSeparator = LINE_SEPARATOR): string {
   let content = '';
   for (let i = 0; i < array.length; i++) {
     if (i !== array.length - 1) {
-      content += array[i] + LINE_SEPARATOR;
+      content += array[i] + lineSeparator;
     } else {
       content += array[i];
     }
@@ -37,11 +44,17 @@ export function convertArrayToContent(array: string[]): string {
   return content;
 }
 
-export function convertContentToArray(content: string): string[] {
-  return content.split(LINE_SEPARATOR);
+export function convertContentToArray(content: string, lineSeparator = LINE_SEPARATOR): string[] {
+  return content.split(lineSeparator);
 }
 
-export function convertArray2DToContent(array: string[][]): string {
+//tabSeparator
+
+export function convertArray2DToContent(
+  array: string[][],
+  lineSeparator = LINE_SEPARATOR,
+  cellSeparator = CELL_SEPARATOR,
+): string {
   let content = '';
   let line = '';
   for (let i = 0; i < array.length; i++) {
@@ -51,14 +64,14 @@ export function convertArray2DToContent(array: string[][]): string {
     for (let j = 0; j < lineArray.length; j++) {
       const word = lineArray[j];
       if (j !== lineArray.length - 1) {
-        line += word + TAB_SEPARATOR;
+        line += word + cellSeparator;
       } else {
         line += word;
       }
     }
 
     if (i !== array.length - 1) {
-      content += line + LINE_SEPARATOR;
+      content += line + lineSeparator;
     } else {
       content += line;
     }
@@ -66,13 +79,17 @@ export function convertArray2DToContent(array: string[][]): string {
   return content;
 }
 
-export function convertContentToArray2D(content: string): string[][] {
+export function convertContentToArray2D(
+  content: string,
+  lineSeparator = LINE_SEPARATOR,
+  cellSeparator = CELL_SEPARATOR,
+): string[][] {
   const result: string[][] = [];
 
-  const lines = content.split(LINE_SEPARATOR);
+  const lines = content.split(lineSeparator);
 
   lines.forEach((line) => {
-    result.push(line.split(TAB_SEPARATOR));
+    result.push(line.split(cellSeparator));
   });
 
   return result;

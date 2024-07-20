@@ -8,8 +8,16 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {IContractInfo} from "./IContractInfo.sol";
+import {IDepositRefund} from "./IDepositRefund.sol";
 
-contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable {
+contract SQRPaymentGateway is
+  OwnableUpgradeable,
+  UUPSUpgradeable,
+  ReentrancyGuardUpgradeable,
+  IContractInfo,
+  IDepositRefund
+{
   using SafeERC20 for IERC20;
   using MessageHashUtils for bytes32;
   using ECDSA for bytes32;
@@ -72,8 +80,6 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
   //Variables, structs, errors, modifiers, events------------------------
-
-  string public constant VERSION = "1.5";
   uint256 public constant MAX_INT = type(uint256).max;
 
   IERC20 public erc20Token;
@@ -88,14 +94,21 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   uint256 public totalDeposited;
   uint256 public totalWithdrew;
 
-  mapping(bytes32 => FundItem) private _balances;
+  mapping(bytes32 => FundItem) private _userFundItems;
+  mapping(bytes32 => address[]) private _userToAddresses;
+
+  mapping(address => FundItem) private _accountFundItems;
+  address[] private _accountAddresses;
+
   mapping(bytes32 => TransactionItem) private _transactionIds;
-  mapping(bytes32 => uint32) private _depositNonces;
-  mapping(bytes32 => uint32) private _withdrawNonces;
+  // mapping(bytes32 => uint32) private _depositNonces;
+  // mapping(bytes32 => uint32) private _withdrawNonces;
 
   struct FundItem {
     uint256 depositedAmount;
     uint256 withdrewAmount;
+    uint32 depositNonce;
+    uint32 withdrawNonce;
   }
 
   struct TransactionItem {
@@ -136,10 +149,10 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   }
 
   modifier periodBlocker() {
-    if (isTooEarly()) {
+    if (isBeforeStartDate()) {
       revert TooEarly();
     }
-    if (isTooLate()) {
+    if (isAfterCloseDate()) {
       revert TooLate();
     }
     _;
@@ -151,21 +164,95 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   event ForceWithdraw(address indexed token, address indexed to, uint256 amount);
 
   //Read methods-------------------------------------------
+  //IContractInfo implementation
+  function getContractName() external pure returns (string memory) {
+    return "PaymentGateway";
+  }
 
-  function isTooEarly() public view returns (bool) {
+  function getContractVersion() external pure returns (string memory) {
+    return "2.0.0";
+  }
+
+  //IDepositRefund implementation
+  function getBaseGoal() external view returns (uint256) {
+    return depositGoal;
+  }
+
+  function getStartDate() external view returns (uint32) {
+    return startDate;
+  }
+
+  function getCloseDate() external view returns (uint32) {
+    return closeDate;
+  }
+
+  function getDepositRefundFetchReady() external view returns (bool) {
+    return isAfterCloseDate();
+  }
+
+  function getAccountCount() public view returns (uint32) {
+    return (uint32)(_accountAddresses.length);
+  }
+
+  function getAccountByIndex(uint32 index) public view returns (address) {
+    return _accountAddresses[index];
+  }
+
+  function getDepositRefundTokensInfo() external view returns (DepositRefundTokensInfo memory) {
+    return DepositRefundTokensInfo(address(erc20Token), 0, address(erc20Token), 0); //ToDo: Fix decimals
+  }
+
+  function getDepositRefundAllocation(address account) external view returns (uint256) {
+    return calculateAccountRefund(account);
+  }
+
+  function getDepositRefundAccountInfo(
+    address account
+  ) external view returns (DepositRefundAccountInfo memory) {
+    FundItem memory accountFundItem = _accountFundItems[account];
+
+    return
+      DepositRefundAccountInfo(
+        accountFundItem.depositedAmount,
+        false,
+        calculateAccountRefund(account),
+        0,
+        0,
+        0
+      );
+  }
+
+  function getDepositRefundContractInfo() external view returns (DepositRefundContractInfo memory) {
+    return DepositRefundContractInfo(totalDeposited);
+  }
+
+  //Custom
+  function isBeforeStartDate() public view returns (bool) {
     return startDate > 0 && block.timestamp < startDate;
   }
 
-  function isTooLate() public view returns (bool) {
+  function isAfterCloseDate() public view returns (bool) {
     return closeDate > 0 && block.timestamp > closeDate;
   }
 
-  function isReady() public view returns (bool) {
-    return !isTooEarly() && !isTooLate();
+  function isDepositReady() public view returns (bool) {
+    return !isBeforeStartDate() && !isAfterCloseDate();
   }
 
-  function fetchFundItem(string memory userId) external view returns (FundItem memory) {
-    return _balances[getHash(userId)];
+  function isReachedGoal() public view returns (bool) {
+    return totalDeposited == depositGoal;
+  }
+
+  function calculateAccountRefund(address account) public view returns (uint256) {
+    FundItem memory accountFundItem = _accountFundItems[account];
+    if (!isReachedGoal()) {
+      return accountFundItem.depositedAmount;
+    }
+    return 0;
+  }
+
+  function fetchUserFundItem(string memory userId) external view returns (FundItem memory) {
+    return _userFundItems[getHash(userId)];
   }
 
   function getBalance() public view returns (uint256) {
@@ -173,9 +260,9 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   }
 
   function balanceOf(string memory userId) external view returns (uint256) {
-    FundItem memory fund = _balances[getHash(userId)];
-    if (fund.depositedAmount > fund.withdrewAmount) {
-      return fund.depositedAmount - fund.withdrewAmount;
+    FundItem memory userFundItem = _userFundItems[getHash(userId)];
+    if (userFundItem.depositedAmount > userFundItem.withdrewAmount) {
+      return userFundItem.depositedAmount - userFundItem.withdrewAmount;
     }
     return 0;
   }
@@ -185,15 +272,17 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   }
 
   function getDepositNonce(string memory userId) public view returns (uint32) {
-    return _depositNonces[getHash(userId)];
+    FundItem memory userFundItem = _userFundItems[getHash(userId)];
+    return userFundItem.depositNonce;
   }
 
   function getWithdrawNonce(string memory userId) public view returns (uint32) {
-    return _withdrawNonces[getHash(userId)];
+    FundItem memory userFundItem = _userFundItems[getHash(userId)];
+    return userFundItem.withdrawNonce;
   }
 
   function calculateRemainDeposit() external view returns (uint256) {
-    if (!isReady()) {
+    if (!isDepositReady()) {
       return 0;
     }
     if (depositGoal > 0) {
@@ -203,7 +292,7 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   }
 
   function calculateRemainWithdraw() external view returns (uint256) {
-    if (!isReady()) {
+    if (!isDepositReady()) {
       return 0;
     }
     if (withdrawGoal > 0) {
@@ -225,6 +314,7 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
     return (transactionIdHash, _transactionIds[transactionIdHash]);
   }
 
+  //Write methods-------------------------------------------
   function _setTransactionId(uint256 amount, string memory transactionId) private {
     (bytes32 transactionIdHash, TransactionItem memory transactionItem) = getTransactionItem(
       transactionId
@@ -234,8 +324,6 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
     }
     _transactionIds[transactionIdHash] = TransactionItem(amount);
   }
-
-  //Write methods-------------------------------------------
 
   function _deposit(
     string memory userId,
@@ -261,14 +349,19 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
 
     bytes32 userHash = getHash(userId);
 
-    if (_depositNonces[userHash] != nonce) {
+    FundItem storage userFundItem = _userFundItems[userHash];
+
+    if (userFundItem.depositNonce != nonce) {
       revert InvalidNonce();
     }
 
-    _depositNonces[userHash] += 1;
+    userFundItem.depositedAmount += amount;
+    userFundItem.depositNonce += 1;
 
-    FundItem storage fund = _balances[userHash];
-    fund.depositedAmount += amount;
+    FundItem storage accountFundItem = _accountFundItems[account];
+    accountFundItem.depositedAmount += amount;
+    accountFundItem.depositNonce += 1;
+
     totalDeposited += amount;
 
     uint256 contractBalance = getBalance();
@@ -357,7 +450,7 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
   function _withdraw(
     string memory userId,
     string memory transactionId,
-    address to,
+    address account,
     uint256 amount,
     uint32 nonce,
     uint32 timestampLimit
@@ -374,30 +467,35 @@ contract SQRPaymentGateway is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGua
 
     bytes32 userHash = getHash(userId);
 
-    if (_withdrawNonces[userHash] != nonce) {
+    FundItem storage userFundItem = _userFundItems[userHash];
+
+    if (userFundItem.withdrawNonce != nonce) {
       revert InvalidNonce();
     }
 
-    _withdrawNonces[userHash] += 1;
+    userFundItem.withdrewAmount += amount;
+    userFundItem.withdrawNonce += 1;
 
-    FundItem storage fund = _balances[userHash];
-    fund.withdrewAmount += amount;
+    FundItem storage accountFundItem = _accountFundItems[account];
+    accountFundItem.depositedAmount += amount;
+    accountFundItem.withdrawNonce += 1;
+
     totalWithdrew += amount;
 
-    erc20Token.safeTransfer(to, amount);
+    erc20Token.safeTransfer(account, amount);
 
-    emit Withdraw(_msgSender(), to, amount);
+    emit Withdraw(_msgSender(), account, amount);
   }
 
   function withdraw(
     string memory userId,
     string memory transactionId,
-    address to,
+    address account,
     uint256 amount,
     uint32 nonce,
     uint32 timestampLimit
   ) external onlyOwner {
-    _withdraw(userId, transactionId, to, amount, nonce, timestampLimit);
+    _withdraw(userId, transactionId, account, amount, nonce, timestampLimit);
   }
 
   function verifyWithdrawSignature(

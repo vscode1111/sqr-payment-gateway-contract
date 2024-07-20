@@ -375,7 +375,7 @@ export function shouldBehaveCorrectFunding(): void {
             seedData.extraDeposit1,
           );
 
-          const fundItem = await this.user1SQRPaymentGateway.fetchFundItem(seedData.userId1);
+          const fundItem = await this.user1SQRPaymentGateway.fetchUserFundItem(seedData.userId1);
           expect(fundItem.depositedAmount).eq(seedData.extraDeposit1);
           expect(await this.owner2SQRPaymentGateway.totalDeposited()).eq(seedData.extraDeposit1);
           expect(await this.owner2SQRPaymentGateway.calculateRemainDeposit()).eq(
@@ -424,7 +424,7 @@ export function shouldBehaveCorrectFunding(): void {
             seedData.extraDeposit1,
           );
 
-          const fundItem = await this.user1SQRPaymentGateway.fetchFundItem(seedData.userId1);
+          const fundItem = await this.user1SQRPaymentGateway.fetchUserFundItem(seedData.userId1);
           expect(fundItem.depositedAmount).eq(seedData.extraDeposit1);
 
           expect(await this.owner2SQRPaymentGateway.totalDeposited()).eq(seedData.extraDeposit1);
@@ -500,7 +500,7 @@ export function shouldBehaveCorrectFunding(): void {
             seedData.deposit1,
           );
 
-          const fundItem = await this.user1SQRPaymentGateway.fetchFundItem(seedData.userId1);
+          const fundItem = await this.user1SQRPaymentGateway.fetchUserFundItem(seedData.userId1);
           expect(fundItem.depositedAmount).eq(seedData.deposit1);
 
           expect(await this.owner2SQRPaymentGateway.totalDeposited()).eq(seedData.deposit1);
@@ -544,7 +544,7 @@ export function shouldBehaveCorrectFunding(): void {
               seedData.deposit1,
             );
 
-            const fundItem = await this.user1SQRPaymentGateway.fetchFundItem(seedData.userId1);
+            const fundItem = await this.user1SQRPaymentGateway.fetchUserFundItem(seedData.userId1);
             expect(fundItem.depositedAmount).eq(seedData.deposit1);
 
             expect(await this.owner2SQRPaymentGateway.totalDeposited()).eq(seedData.deposit1);
@@ -627,7 +627,7 @@ export function shouldBehaveCorrectFunding(): void {
               seedData.zero,
             );
 
-            const fundItem = await this.user1SQRPaymentGateway.fetchFundItem(seedData.userId1);
+            const fundItem = await this.user1SQRPaymentGateway.fetchUserFundItem(seedData.userId1);
             expect(fundItem.depositedAmount).eq(seedData.deposit1);
 
             expect(await this.owner2SQRPaymentGateway.totalDeposited()).eq(seedData.deposit1);
@@ -870,7 +870,9 @@ export function shouldBehaveCorrectFunding(): void {
             });
 
             it(INITIAL_POSITIVE_CHECK_TEST_TITLE, async function () {
-              const fundItem = await this.user1SQRPaymentGateway.fetchFundItem(seedData.userId1);
+              const fundItem = await this.user1SQRPaymentGateway.fetchUserFundItem(
+                seedData.userId1,
+              );
               expect(fundItem.withdrewAmount).eq(seedData.withdraw1);
               expect(await this.owner2SQRPaymentGateway.totalWithdrew()).eq(seedData.withdraw1);
               expect(await this.owner2SQRPaymentGateway.calculateRemainWithdraw()).eq(

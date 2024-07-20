@@ -31,6 +31,10 @@ export async function signEncodedMessage(
   return signer.signMessage(messageHashBin);
 }
 
+export function getFunction(input: string, abiInterface: Interface) {
+  return abiInterface.getFunction(input.slice(0, 10));
+}
+
 export function decodeInput<T>(input: string, abiInterface: Interface): T {
   return abiInterface.decodeFunctionData(input.slice(0, 10), input) as T;
 }
