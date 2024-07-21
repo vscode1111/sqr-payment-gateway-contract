@@ -1,9 +1,9 @@
 import dayjs from 'dayjs';
 import { ZeroAddress } from 'ethers';
 import { v4 as uuidv4 } from 'uuid';
-import { toUnixTime, toUnixTimeUtc, toWei } from '~common';
+import { MINUTES, toUnixTime, toUnixTimeUtc, toWei } from '~common';
 import { TokenAddressDescription } from '~common-contract';
-import { MINUTES, Token } from '~constants';
+import { Token } from '~constants';
 import { DeployNetworkKey } from '~types';
 import { addSecondsToUnixTime } from '~utils';
 import { getTokenDescription } from '~utils/contracts';
@@ -113,16 +113,18 @@ export function getContractArgs(contractConfig: ContractConfig): DeployContractA
   } = contractConfig;
 
   return [
-    newOwner,
-    erc20Token,
-    depositVerifier,
-    depositGoal,
-    withdrawVerifier,
-    withdrawGoal,
-    startDate,
-    closeDate,
-    coldWallet,
-    balanceLimit,
+    {
+      newOwner,
+      erc20Token,
+      depositVerifier,
+      depositGoal,
+      withdrawVerifier,
+      withdrawGoal,
+      startDate,
+      closeDate,
+      coldWallet,
+      balanceLimit,
+    },
   ];
 }
 
@@ -154,7 +156,8 @@ const userId1 = uuidv4();
 const userId2 = uuidv4();
 
 const depositTransactionId1 = uuidv4();
-const depositTransactionId2 = uuidv4();
+const depositTransactionId2_0 = uuidv4();
+const depositTransactionId2_1 = uuidv4();
 const withdrawTransactionId1_0 = uuidv4();
 const withdrawTransactionId1_1 = uuidv4();
 const withdrawTransactionId2 = uuidv4();
@@ -164,7 +167,8 @@ export const seedData = {
   userInitBalance,
   totalAccountBalance: tokenConfig.initMint,
   deposit1,
-  deposit2: deposit1 / userDiv,
+  deposit2_0: deposit1 / userDiv,
+  deposit2_1: contractConfig.depositGoal - deposit1 - deposit1 / userDiv,
   deposit3: deposit1 / userDiv / userDiv,
   extraDeposit1,
   extraDeposit2: extraDeposit1 / userDiv,
@@ -185,7 +189,8 @@ export const seedData = {
   userId1,
   userId2,
   depositTransactionId1,
-  depositTransactionId2,
+  depositTransactionId2_0,
+  depositTransactionId2_1,
   withdrawTransactionId1_0,
   withdrawTransactionId1_1,
   withdrawTransactionId2,

@@ -34,7 +34,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
 
     const params = {
       userId: deployData.userId2,
-      transactionId: seedData.depositTransactionId2,
+      transactionId: seedData.depositTransactionId2_0,
       amount: deployData.deposit2,
       account: user2Address,
       nonce: Number(nonce),

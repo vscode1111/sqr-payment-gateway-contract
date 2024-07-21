@@ -1,5 +1,6 @@
 import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
+import { ZeroAddress } from 'ethers';
 import { CONTRACT_NAME, CONTRACT_VERSION } from '~constants';
 import { contractConfig, seedData } from '~seeds';
 import { addSecondsToUnixTime } from '~utils';
@@ -15,6 +16,23 @@ export function shouldBehaveCorrectFetching(): void {
       expect(await this.ownerSQRPaymentGateway.owner()).eq(this.owner2Address);
       expect(await this.ownerSQRPaymentGateway.getContractName()).eq(CONTRACT_NAME);
       expect(await this.ownerSQRPaymentGateway.getContractVersion()).eq(CONTRACT_VERSION);
+      expect(await this.ownerSQRPaymentGateway.getBaseGoal()).eq(
+        await this.ownerSQRPaymentGateway.depositGoal(),
+      );
+      expect(await this.ownerSQRPaymentGateway.getStartDate()).eq(
+        await this.ownerSQRPaymentGateway.startDate(),
+      );
+      expect(await this.ownerSQRPaymentGateway.getCloseDate()).eq(
+        await this.ownerSQRPaymentGateway.closeDate(),
+      );
+      expect(await this.ownerSQRPaymentGateway.getDepositRefundFetchReady()).eq(false);
+      expect(await this.ownerSQRPaymentGateway.getAccountCount()).eq(0);
+
+      const { baseToken, boostToken } =
+        await this.ownerSQRPaymentGateway.getDepositRefundTokensInfo();
+      expect(baseToken).eq(await this.ownerSQRPaymentGateway.erc20Token());
+      expect(boostToken).eq(ZeroAddress);
+
       expect(await this.ownerSQRPaymentGateway.erc20Token()).eq(this.erc20TokenAddress);
       expect(await this.ownerSQRPaymentGateway.coldWallet()).eq(this.coldWalletAddress);
       expect(await this.ownerSQRPaymentGateway.balanceLimit()).eq(contractConfig.balanceLimit);
@@ -34,6 +52,9 @@ export function shouldBehaveCorrectFetching(): void {
       expect(await this.ownerSQRPaymentGateway.calculateRemainWithdraw()).eq(
         contractConfig.withdrawGoal,
       );
+
+      expect(await this.ownerSQRPaymentGateway.fetchUserAccounts(seedData.userId1)).eql([]);
+      expect(await this.ownerSQRPaymentGateway.fetchUserAccounts(seedData.userId2)).eql([]);
     });
 
     it('should be correct balances', async function () {

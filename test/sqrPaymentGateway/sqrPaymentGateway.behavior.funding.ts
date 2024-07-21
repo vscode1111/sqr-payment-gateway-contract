@@ -95,6 +95,7 @@ export function shouldBehaveCorrectFunding(): void {
         expect(await this.owner2SQRPaymentGateway.calculateRemainDeposit()).eq(
           contractConfig.depositGoal,
         );
+        expect(await this.owner2SQRPaymentGateway.getDepositRefundFetchReady()).eq(false);
       });
 
       it('user1 tries to call depositSig with zero amount', async function () {
@@ -223,9 +224,9 @@ export function shouldBehaveCorrectFunding(): void {
         const signature = await signMessageForSQRPaymentGatewayDeposit(
           this.owner2,
           seedData.userId2,
-          seedData.depositTransactionId2,
+          seedData.depositTransactionId2_0,
           this.user2Address,
-          seedData.deposit2,
+          seedData.deposit2_0,
           seedData.depositNonce2_0,
           seedData.startDatePlus1m,
         );
@@ -233,9 +234,9 @@ export function shouldBehaveCorrectFunding(): void {
         await expect(
           this.user2SQRPaymentGateway.depositSig(
             seedData.userId2,
-            seedData.depositTransactionId2,
+            seedData.depositTransactionId2_0,
             this.user2Address,
-            seedData.deposit2,
+            seedData.deposit2_0,
             seedData.startDatePlus1m,
             signature,
           ),
@@ -251,7 +252,7 @@ export function shouldBehaveCorrectFunding(): void {
           await this.user1ERC20Token.approve(this.sqrPaymentGatewayAddress, seedData.deposit1);
 
           await this.owner2ERC20Token.transfer(this.user2Address, seedData.userInitBalance);
-          await this.user2ERC20Token.approve(this.sqrPaymentGatewayAddress, seedData.deposit2);
+          await this.user2ERC20Token.approve(this.sqrPaymentGatewayAddress, seedData.deposit2_0);
         });
 
         it(INITIAL_POSITIVE_CHECK_TEST_TITLE, async function () {
@@ -375,15 +376,17 @@ export function shouldBehaveCorrectFunding(): void {
             seedData.extraDeposit1,
           );
 
-          const fundItem = await this.user1SQRPaymentGateway.fetchUserFundItem(seedData.userId1);
-          expect(fundItem.depositedAmount).eq(seedData.extraDeposit1);
+          const userFundItem = await this.user1SQRPaymentGateway.fetchUserFundItem(
+            seedData.userId1,
+          );
+          expect(userFundItem.depositedAmount).eq(seedData.extraDeposit1);
           expect(await this.owner2SQRPaymentGateway.totalDeposited()).eq(seedData.extraDeposit1);
           expect(await this.owner2SQRPaymentGateway.calculateRemainDeposit()).eq(
             contractConfig.depositGoal - seedData.extraDeposit1,
           );
         });
 
-        it('user1 deposit extrafunds', async function () {
+        it('user1 deposited extrafunds', async function () {
           expect(await getERC20TokenBalance(this, this.coldWalletAddress)).eq(seedData.zero);
 
           await this.user1ERC20Token.approve(this.sqrPaymentGatewayAddress, seedData.extraDeposit1);
@@ -424,14 +427,42 @@ export function shouldBehaveCorrectFunding(): void {
             seedData.extraDeposit1,
           );
 
-          const fundItem = await this.user1SQRPaymentGateway.fetchUserFundItem(seedData.userId1);
-          expect(fundItem.depositedAmount).eq(seedData.extraDeposit1);
+          const userFundItem = await this.user1SQRPaymentGateway.fetchUserFundItem(
+            seedData.userId1,
+          );
+          expect(userFundItem.depositedAmount).eq(seedData.extraDeposit1);
 
           expect(await this.owner2SQRPaymentGateway.totalDeposited()).eq(seedData.extraDeposit1);
 
           expect(await this.owner2SQRPaymentGateway.calculateRemainDeposit()).eq(
             contractConfig.depositGoal - seedData.extraDeposit1,
           );
+
+          expect(await this.ownerSQRPaymentGateway.getAccountCount()).eq(1);
+          expect(await this.ownerSQRPaymentGateway.getAccountByIndex(0)).eq(this.user1Address);
+
+          expect(
+            await this.ownerSQRPaymentGateway.getDepositRefundAllocation(this.user1Address),
+          ).eq(seedData.zero);
+          const {
+            baseDeposited: baseDeposited1,
+            boosted: boosted1,
+            baseAllocation: baseAllocation1,
+            baseRefund: baseRefund1,
+            boostRefund: boostRefund1,
+            nonce: nonce1,
+          } = await this.ownerSQRPaymentGateway.getDepositRefundAccountInfo(this.user1Address);
+          expect(baseDeposited1).eq(seedData.extraDeposit1);
+          expect(boosted1).eq(false);
+          expect(baseAllocation1).eq(seedData.zero);
+          expect(baseRefund1).eq(seedData.extraDeposit1);
+          expect(boostRefund1).eq(seedData.zero);
+          expect(nonce1).eq(1);
+
+          const { totalBaseDeposited } =
+            await this.ownerSQRPaymentGateway.getDepositRefundContractInfo();
+          expect(totalBaseDeposited).eq(await this.ownerSQRPaymentGateway.totalDeposited());
+          expect(await this.ownerSQRPaymentGateway.isReachedGoal()).eq(false);
         });
 
         it('user1 tries to deposit extra funds', async function () {
@@ -459,9 +490,11 @@ export function shouldBehaveCorrectFunding(): void {
               signature,
             ),
           ).revertedWithCustomError(this.owner2SQRPaymentGateway, customError.achievedDepositGoal);
+
+          expect(await this.ownerSQRPaymentGateway.getAccountCount()).eq(0);
         });
 
-        it('user1 deposits when user2 transferred tokens to contract directly', async function () {
+        it('user1 deposited after user2 transferred tokens to contract directly', async function () {
           await this.user2ERC20Token.transfer(
             this.sqrPaymentGatewayAddress,
             seedData.extraDeposit2,
@@ -500,8 +533,10 @@ export function shouldBehaveCorrectFunding(): void {
             seedData.deposit1,
           );
 
-          const fundItem = await this.user1SQRPaymentGateway.fetchUserFundItem(seedData.userId1);
-          expect(fundItem.depositedAmount).eq(seedData.deposit1);
+          const userFundItem = await this.user1SQRPaymentGateway.fetchUserFundItem(
+            seedData.userId1,
+          );
+          expect(userFundItem.depositedAmount).eq(seedData.deposit1);
 
           expect(await this.owner2SQRPaymentGateway.totalDeposited()).eq(seedData.deposit1);
 
@@ -511,7 +546,7 @@ export function shouldBehaveCorrectFunding(): void {
           expect(transactionItem.amount).eq(seedData.deposit1);
         });
 
-        describe('user1 deposit funds', () => {
+        describe('user1 deposited funds', () => {
           beforeEach(async function () {
             const nonce = await this.user1SQRPaymentGateway.getDepositNonce(seedData.userId1);
 
@@ -544,8 +579,10 @@ export function shouldBehaveCorrectFunding(): void {
               seedData.deposit1,
             );
 
-            const fundItem = await this.user1SQRPaymentGateway.fetchUserFundItem(seedData.userId1);
-            expect(fundItem.depositedAmount).eq(seedData.deposit1);
+            const userFundItem = await this.user1SQRPaymentGateway.fetchUserFundItem(
+              seedData.userId1,
+            );
+            expect(userFundItem.depositedAmount).eq(seedData.deposit1);
 
             expect(await this.owner2SQRPaymentGateway.totalDeposited()).eq(seedData.deposit1);
 
@@ -562,6 +599,32 @@ export function shouldBehaveCorrectFunding(): void {
             expect(await this.owner2SQRPaymentGateway.calculateRemainWithdraw()).eq(
               contractConfig.withdrawGoal,
             );
+
+            expect(await this.ownerSQRPaymentGateway.getAccountCount()).eq(1);
+            expect(await this.ownerSQRPaymentGateway.getAccountByIndex(0)).eq(this.user1Address);
+
+            expect(
+              await this.ownerSQRPaymentGateway.getDepositRefundAllocation(this.user1Address),
+            ).eq(seedData.zero);
+            const {
+              baseDeposited: baseDeposited1,
+              boosted: boosted1,
+              baseAllocation: baseAllocation1,
+              baseRefund: baseRefund1,
+              boostRefund: boostRefund1,
+              nonce: nonce1,
+            } = await this.ownerSQRPaymentGateway.getDepositRefundAccountInfo(this.user1Address);
+            expect(baseDeposited1).eq(seedData.deposit1);
+            expect(boosted1).eq(false);
+            expect(baseAllocation1).eq(seedData.zero);
+            expect(baseRefund1).eq(seedData.deposit1);
+            expect(boostRefund1).eq(seedData.zero);
+            expect(nonce1).eq(1);
+
+            const { totalBaseDeposited } =
+              await this.ownerSQRPaymentGateway.getDepositRefundContractInfo();
+            expect(totalBaseDeposited).eq(await this.ownerSQRPaymentGateway.totalDeposited());
+            expect(await this.ownerSQRPaymentGateway.isReachedGoal()).eq(false);
           });
 
           it('user1 tries to call depositSig with the same transactionId', async function () {
@@ -627,8 +690,10 @@ export function shouldBehaveCorrectFunding(): void {
               seedData.zero,
             );
 
-            const fundItem = await this.user1SQRPaymentGateway.fetchUserFundItem(seedData.userId1);
-            expect(fundItem.depositedAmount).eq(seedData.deposit1);
+            const userFundItem = await this.user1SQRPaymentGateway.fetchUserFundItem(
+              seedData.userId1,
+            );
+            expect(userFundItem.depositedAmount).eq(seedData.deposit1);
 
             expect(await this.owner2SQRPaymentGateway.totalDeposited()).eq(seedData.deposit1);
           });
@@ -870,14 +935,15 @@ export function shouldBehaveCorrectFunding(): void {
             });
 
             it(INITIAL_POSITIVE_CHECK_TEST_TITLE, async function () {
-              const fundItem = await this.user1SQRPaymentGateway.fetchUserFundItem(
+              const userFundItem = await this.user1SQRPaymentGateway.fetchUserFundItem(
                 seedData.userId1,
               );
-              expect(fundItem.withdrewAmount).eq(seedData.withdraw1);
+              expect(userFundItem.withdrewAmount).eq(seedData.withdraw1);
               expect(await this.owner2SQRPaymentGateway.totalWithdrew()).eq(seedData.withdraw1);
               expect(await this.owner2SQRPaymentGateway.calculateRemainWithdraw()).eq(
                 contractConfig.withdrawGoal - seedData.withdraw1,
               );
+              expect(await this.ownerSQRPaymentGateway.getAccountCount()).eq(1);
             });
 
             it('user1 tries to call withdrawSig with the same transactionId', async function () {
@@ -937,6 +1003,238 @@ export function shouldBehaveCorrectFunding(): void {
                 this.owner2SQRPaymentGateway,
                 customError.achievedWithdrawGoal,
               );
+            });
+
+            describe('set time after close date', () => {
+              beforeEach(async function () {
+                await time.increaseTo(
+                  addSecondsToUnixTime(contractConfig.closeDate, seedData.timeShift),
+                );
+              });
+
+              it(INITIAL_POSITIVE_CHECK_TEST_TITLE, async function () {
+                expect(await this.owner2SQRPaymentGateway.getDepositRefundFetchReady()).eq(true);
+              });
+            });
+          });
+
+          describe('user2 deposited funds', () => {
+            beforeEach(async function () {
+              const nonce = await this.user2SQRPaymentGateway.getDepositNonce(seedData.userId2);
+
+              const signature = await signMessageForSQRPaymentGatewayDeposit(
+                this.owner2,
+                seedData.userId2,
+                seedData.depositTransactionId2_0,
+                this.user2Address,
+                seedData.deposit2_0,
+                Number(nonce),
+                seedData.startDatePlus1m,
+              );
+
+              await this.user2SQRPaymentGateway.depositSig(
+                seedData.userId2,
+                seedData.depositTransactionId2_0,
+                this.user2Address,
+                seedData.deposit2_0,
+                seedData.startDatePlus1m,
+                signature,
+              );
+            });
+
+            it(INITIAL_POSITIVE_CHECK_TEST_TITLE, async function () {
+              expect(await getERC20TokenBalance(this, this.user2Address)).eq(
+                seedData.userInitBalance - seedData.deposit2_0,
+              );
+
+              expect(await this.owner2SQRPaymentGateway.balanceOf(seedData.userId2)).eq(
+                seedData.deposit2_0,
+              );
+
+              const userFundItem = await this.user1SQRPaymentGateway.fetchUserFundItem(
+                seedData.userId2,
+              );
+              expect(userFundItem.depositedAmount).eq(seedData.deposit2_0);
+
+              expect(await this.owner2SQRPaymentGateway.totalDeposited()).eq(
+                seedData.deposit1 + seedData.deposit2_0,
+              );
+
+              const transactionItem = await this.user2SQRPaymentGateway.fetchTransactionItem(
+                seedData.depositTransactionId2_0,
+              );
+              expect(transactionItem.amount).eq(seedData.deposit2_0);
+
+              expect(await this.user1SQRPaymentGateway.getDepositNonce(seedData.userId1)).eq(1);
+              expect(await this.user2SQRPaymentGateway.getDepositNonce(seedData.userId2)).eq(1);
+              expect(await this.user1SQRPaymentGateway.getWithdrawNonce(seedData.userId1)).eq(0);
+              expect(await this.user2SQRPaymentGateway.getWithdrawNonce(seedData.userId2)).eq(0);
+
+              expect(await this.owner2SQRPaymentGateway.calculateRemainWithdraw()).eq(
+                contractConfig.withdrawGoal,
+              );
+
+              expect(await this.ownerSQRPaymentGateway.getAccountCount()).eq(2);
+              expect(await this.ownerSQRPaymentGateway.getAccountByIndex(0)).eq(this.user1Address);
+              expect(await this.ownerSQRPaymentGateway.getAccountByIndex(1)).eq(this.user2Address);
+
+              expect(
+                await this.ownerSQRPaymentGateway.getDepositRefundAllocation(this.user1Address),
+              ).eq(seedData.zero);
+              const {
+                baseDeposited: baseDeposited1,
+                boosted: boosted1,
+                baseAllocation: baseAllocation1,
+                baseRefund: baseRefund1,
+                boostRefund: boostRefund1,
+                nonce: nonce1,
+              } = await this.ownerSQRPaymentGateway.getDepositRefundAccountInfo(this.user1Address);
+              expect(baseDeposited1).eq(seedData.deposit1);
+              expect(boosted1).eq(false);
+              expect(baseAllocation1).eq(seedData.zero);
+              expect(baseRefund1).eq(seedData.deposit1);
+              expect(boostRefund1).eq(seedData.zero);
+              expect(nonce1).eq(1);
+
+              expect(
+                await this.ownerSQRPaymentGateway.getDepositRefundAllocation(this.user2Address),
+              ).eq(seedData.zero);
+              const {
+                baseDeposited: baseDeposited2,
+                boosted: boosted2,
+                baseAllocation: baseAllocation2,
+                baseRefund: baseRefund2,
+                boostRefund: boostRefund2,
+                nonce: nonce2,
+              } = await this.ownerSQRPaymentGateway.getDepositRefundAccountInfo(this.user2Address);
+              expect(baseDeposited2).eq(seedData.deposit2_0);
+              expect(boosted2).eq(false);
+              expect(baseAllocation2).eq(seedData.zero);
+              expect(baseRefund2).eq(seedData.deposit2_0);
+              expect(boostRefund2).eq(seedData.zero);
+              expect(nonce2).eq(1);
+
+              const { totalBaseDeposited } =
+                await this.ownerSQRPaymentGateway.getDepositRefundContractInfo();
+              expect(totalBaseDeposited).eq(await this.ownerSQRPaymentGateway.totalDeposited());
+              expect(await this.ownerSQRPaymentGateway.isReachedGoal()).eq(false);
+            });
+
+            describe('user2 deposited again', () => {
+              beforeEach(async function () {
+                await this.user2ERC20Token.approve(
+                  this.sqrPaymentGatewayAddress,
+                  seedData.deposit2_1,
+                );
+
+                const nonce = await this.user2SQRPaymentGateway.getDepositNonce(seedData.userId2);
+
+                const signature = await signMessageForSQRPaymentGatewayDeposit(
+                  this.owner2,
+                  seedData.userId2,
+                  seedData.depositTransactionId2_1,
+                  this.user2Address,
+                  seedData.deposit2_1,
+                  Number(nonce),
+                  seedData.startDatePlus1m,
+                );
+
+                await this.user2SQRPaymentGateway.depositSig(
+                  seedData.userId2,
+                  seedData.depositTransactionId2_1,
+                  this.user2Address,
+                  seedData.deposit2_1,
+                  seedData.startDatePlus1m,
+                  signature,
+                );
+              });
+
+              it(INITIAL_POSITIVE_CHECK_TEST_TITLE, async function () {
+                const newDeposit2 = seedData.deposit2_0 + seedData.deposit2_1;
+                expect(await getERC20TokenBalance(this, this.user2Address)).eq(
+                  seedData.userInitBalance - newDeposit2,
+                );
+
+                expect(await this.owner2SQRPaymentGateway.balanceOf(seedData.userId2)).eq(
+                  newDeposit2,
+                );
+
+                const userFundItem = await this.user1SQRPaymentGateway.fetchUserFundItem(
+                  seedData.userId2,
+                );
+                expect(userFundItem.depositedAmount).eq(newDeposit2);
+
+                expect(await this.owner2SQRPaymentGateway.totalDeposited()).eq(
+                  seedData.deposit1 + newDeposit2,
+                );
+
+                const transactionItem = await this.user2SQRPaymentGateway.fetchTransactionItem(
+                  seedData.depositTransactionId2_1,
+                );
+                expect(transactionItem.amount).eq(seedData.deposit2_1);
+
+                expect(await this.user1SQRPaymentGateway.getDepositNonce(seedData.userId1)).eq(1);
+                expect(await this.user2SQRPaymentGateway.getDepositNonce(seedData.userId2)).eq(2);
+                expect(await this.user1SQRPaymentGateway.getWithdrawNonce(seedData.userId1)).eq(0);
+                expect(await this.user2SQRPaymentGateway.getWithdrawNonce(seedData.userId2)).eq(0);
+
+                expect(await this.owner2SQRPaymentGateway.calculateRemainWithdraw()).eq(
+                  contractConfig.withdrawGoal,
+                );
+
+                expect(await this.ownerSQRPaymentGateway.getAccountCount()).eq(2);
+                expect(await this.ownerSQRPaymentGateway.getAccountByIndex(0)).eq(
+                  this.user1Address,
+                );
+                expect(await this.ownerSQRPaymentGateway.getAccountByIndex(1)).eq(
+                  this.user2Address,
+                );
+
+                expect(
+                  await this.ownerSQRPaymentGateway.getDepositRefundAllocation(this.user1Address),
+                ).eq(seedData.deposit1);
+                const {
+                  baseDeposited: baseDeposited1,
+                  boosted: boosted1,
+                  baseAllocation: baseAllocation1,
+                  baseRefund: baseRefund1,
+                  boostRefund: boostRefund1,
+                  nonce: nonce1,
+                } = await this.ownerSQRPaymentGateway.getDepositRefundAccountInfo(
+                  this.user1Address,
+                );
+                expect(baseDeposited1).eq(seedData.deposit1);
+                expect(boosted1).eq(false);
+                expect(baseAllocation1).eq(seedData.deposit1);
+                expect(baseRefund1).eq(seedData.zero);
+                expect(boostRefund1).eq(seedData.zero);
+                expect(nonce1).eq(1);
+
+                expect(
+                  await this.ownerSQRPaymentGateway.getDepositRefundAllocation(this.user2Address),
+                ).eq(newDeposit2);
+                const {
+                  baseDeposited: baseDeposited2,
+                  boosted: boosted2,
+                  baseAllocation: baseAllocation2,
+                  baseRefund: baseRefund2,
+                  boostRefund: boostRefund2,
+                  nonce: nonce2,
+                } = await this.ownerSQRPaymentGateway.getDepositRefundAccountInfo(
+                  this.user2Address,
+                );
+                expect(baseDeposited2).eq(newDeposit2);
+                expect(boosted2).eq(false);
+                expect(baseAllocation2).eq(newDeposit2);
+                expect(baseRefund2).eq(seedData.zero);
+                expect(boostRefund2).eq(seedData.zero);
+                expect(nonce2).eq(2);
+
+                const { totalBaseDeposited } =
+                  await this.ownerSQRPaymentGateway.getDepositRefundContractInfo();
+                expect(totalBaseDeposited).eq(await this.ownerSQRPaymentGateway.totalDeposited());
+                expect(await this.ownerSQRPaymentGateway.isReachedGoal()).eq(true);
+              });
             });
           });
         });

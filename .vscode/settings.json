@@ -1,6 +1,9 @@
 {
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "always"
+  },
   "prettier.documentSelectors": ["**/*.sol"],
   "solidity.formatter": "prettier",
   "workbench.colorCustomizations": {

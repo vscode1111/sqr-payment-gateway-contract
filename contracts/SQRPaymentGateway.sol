@@ -27,54 +27,47 @@ contract SQRPaymentGateway is
     _disableInitializers();
   }
 
-  function initialize(
-    address _newOwner,
-    address _erc20Token,
-    address _depositVerifier, //could be zero address
-    uint256 _depositGoal, //0 - skip
-    address _withdrawVerifier, //could be zero address
-    uint256 _withdrawGoal, //0 - skip
-    uint32 _startDate, //0 - skip
-    uint32 _closeDate, //0 - skip
-    address _coldWallet,
-    uint256 _balanceLimit
-  ) public initializer {
-    if (_newOwner == address(0)) {
+  function initialize(ContractParams calldata contractParams) public initializer {
+    if (contractParams.newOwner == address(0)) {
       revert NewOwnerNotZeroAddress();
     }
 
-    if (_erc20Token == address(0)) {
+    if (contractParams.erc20Token == address(0)) {
       revert ERC20TokenNotZeroAddress();
     }
 
-    if (0 < _startDate && _startDate < uint32(block.timestamp)) {
+    if (0 < contractParams.startDate && contractParams.startDate < uint32(block.timestamp)) {
       revert StartDateMustBeGreaterThanCurrentTime();
     }
 
-    if (0 < _closeDate && _closeDate < uint32(block.timestamp)) {
+    if (0 < contractParams.closeDate && contractParams.closeDate < uint32(block.timestamp)) {
       revert CloseDateMustBeGreaterThanCurrentTime();
     }
 
-    if (_startDate > 0 && _closeDate > 0 && _startDate > _closeDate) {
+    if (
+      contractParams.startDate > 0 &&
+      contractParams.closeDate > 0 &&
+      contractParams.startDate > contractParams.closeDate
+    ) {
       revert CloseDateMustBeGreaterThanStartDate();
     }
 
-    if (_coldWallet == address(0)) {
+    if (contractParams.coldWallet == address(0)) {
       revert ColdWalletNotZeroAddress();
     }
 
-    __Ownable_init(_newOwner);
+    __Ownable_init(contractParams.newOwner);
     __UUPSUpgradeable_init();
 
-    erc20Token = IERC20(_erc20Token);
-    depositVerifier = _depositVerifier;
-    depositGoal = _depositGoal;
-    withdrawVerifier = _withdrawVerifier;
-    withdrawGoal = _withdrawGoal;
-    startDate = _startDate;
-    closeDate = _closeDate;
-    coldWallet = _coldWallet;
-    balanceLimit = _balanceLimit;
+    erc20Token = IERC20(contractParams.erc20Token);
+    depositVerifier = contractParams.depositVerifier;
+    depositGoal = contractParams.depositGoal;
+    withdrawVerifier = contractParams.withdrawVerifier;
+    withdrawGoal = contractParams.withdrawGoal;
+    startDate = contractParams.startDate;
+    closeDate = contractParams.closeDate;
+    coldWallet = contractParams.coldWallet;
+    balanceLimit = contractParams.balanceLimit;
   }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
@@ -95,14 +88,25 @@ contract SQRPaymentGateway is
   uint256 public totalWithdrew;
 
   mapping(bytes32 => FundItem) private _userFundItems;
-  mapping(bytes32 => address[]) private _userToAddresses;
-
   mapping(address => FundItem) private _accountFundItems;
   address[] private _accountAddresses;
+  mapping(bytes32 => address[]) private _userToAccounts;
+  mapping(address => bytes32) private _accountToUser;
 
   mapping(bytes32 => TransactionItem) private _transactionIds;
-  // mapping(bytes32 => uint32) private _depositNonces;
-  // mapping(bytes32 => uint32) private _withdrawNonces;
+
+  struct ContractParams {
+    address newOwner;
+    address erc20Token;
+    address depositVerifier; //could be zero address
+    uint256 depositGoal; //0 - skip
+    address withdrawVerifier; //could be zero address
+    uint256 withdrawGoal; //0 - skip
+    uint32 startDate; //0 - skip
+    uint32 closeDate; //0 - skip
+    address coldWallet;
+    uint256 balanceLimit;
+  }
 
   struct FundItem {
     uint256 depositedAmount;
@@ -199,11 +203,11 @@ contract SQRPaymentGateway is
   }
 
   function getDepositRefundTokensInfo() external view returns (DepositRefundTokensInfo memory) {
-    return DepositRefundTokensInfo(address(erc20Token), 0, address(erc20Token), 0); //ToDo: Fix decimals
+    return DepositRefundTokensInfo(address(erc20Token), address(0));
   }
 
   function getDepositRefundAllocation(address account) external view returns (uint256) {
-    return calculateAccountRefund(account);
+    return calculateAccountAllocation(account);
   }
 
   function getDepositRefundAccountInfo(
@@ -215,10 +219,10 @@ contract SQRPaymentGateway is
       DepositRefundAccountInfo(
         accountFundItem.depositedAmount,
         false,
+        calculateAccountAllocation(account),
         calculateAccountRefund(account),
         0,
-        0,
-        0
+        accountFundItem.depositNonce
       );
   }
 
@@ -243,6 +247,14 @@ contract SQRPaymentGateway is
     return totalDeposited == depositGoal;
   }
 
+  function calculateAccountAllocation(address account) public view returns (uint256) {
+    FundItem memory accountFundItem = _accountFundItems[account];
+    if (isReachedGoal()) {
+      return accountFundItem.depositedAmount;
+    }
+    return 0;
+  }
+
   function calculateAccountRefund(address account) public view returns (uint256) {
     FundItem memory accountFundItem = _accountFundItems[account];
     if (!isReachedGoal()) {
@@ -253,6 +265,10 @@ contract SQRPaymentGateway is
 
   function fetchUserFundItem(string memory userId) external view returns (FundItem memory) {
     return _userFundItems[getHash(userId)];
+  }
+
+  function fetchUserAccounts(string memory userId) external view returns (address[] memory) {
+    return _userToAccounts[getHash(userId)];
   }
 
   function getBalance() public view returns (uint256) {
@@ -307,7 +323,7 @@ contract SQRPaymentGateway is
     return _transactionIds[getHash(transactionId)];
   }
 
-  function getTransactionItem(
+  function _getTransactionItem(
     string memory transactionId
   ) private view returns (bytes32, TransactionItem memory) {
     bytes32 transactionIdHash = getHash(transactionId);
@@ -316,13 +332,32 @@ contract SQRPaymentGateway is
 
   //Write methods-------------------------------------------
   function _setTransactionId(uint256 amount, string memory transactionId) private {
-    (bytes32 transactionIdHash, TransactionItem memory transactionItem) = getTransactionItem(
+    (bytes32 transactionIdHash, TransactionItem memory transactionItem) = _getTransactionItem(
       transactionId
     );
     if (transactionItem.amount != 0) {
       revert UsedTransactionId();
     }
     _transactionIds[transactionIdHash] = TransactionItem(amount);
+  }
+
+  function _linkAccountToUser(
+    address account,
+    bytes32 userHash,
+    FundItem memory accountFundItem
+  ) private {
+    if (accountFundItem.depositNonce == 0 && accountFundItem.withdrawNonce == 0) {
+      _accountAddresses.push(account);
+      _accountToUser[account] = userHash;
+    }
+
+    address[] storage accounts = _userToAccounts[userHash];
+    for (uint32 i = 0; i < accounts.length; i++) {
+      if (accounts[i] == account) {
+        return;
+      }
+    }
+    accounts.push(account);
   }
 
   function _deposit(
@@ -359,6 +394,7 @@ contract SQRPaymentGateway is
     userFundItem.depositNonce += 1;
 
     FundItem storage accountFundItem = _accountFundItems[account];
+    _linkAccountToUser(account, userHash, accountFundItem);
     accountFundItem.depositedAmount += amount;
     accountFundItem.depositNonce += 1;
 
@@ -477,6 +513,7 @@ contract SQRPaymentGateway is
     userFundItem.withdrawNonce += 1;
 
     FundItem storage accountFundItem = _accountFundItems[account];
+    _linkAccountToUser(account, userHash, accountFundItem);
     accountFundItem.depositedAmount += amount;
     accountFundItem.withdrawNonce += 1;
 

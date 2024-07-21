@@ -16,9 +16,7 @@ interface IDepositRefund {
 
   struct DepositRefundTokensInfo {
     address baseToken;
-    uint8 baseDecimals;
     address boostToken;
-    uint8 boostDecimals;
   }
 
   struct DepositRefundContractInfo {

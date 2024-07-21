@@ -14,16 +14,18 @@ export interface ContractConfig {
 }
 
 export type DeployContractArgs = [
-  newOwner: string,
-  erc20Token: string,
-  depositVerifier: string,
-  depositGoal: BigNumberish,
-  withdrawVerifier: string,
-  withdrawGoal: BigNumberish,
-  startDate: number,
-  closeDate: number,
-  coldWallet: string,
-  balanceLimit: BigNumberish,
+  {
+    newOwner: string;
+    erc20Token: string;
+    depositVerifier: string;
+    depositGoal: BigNumberish;
+    withdrawVerifier: string;
+    withdrawGoal: BigNumberish;
+    startDate: number;
+    closeDate: number;
+    coldWallet: string;
+    balanceLimit: BigNumberish;
+  },
 ];
 
 export interface TokenConfig {
