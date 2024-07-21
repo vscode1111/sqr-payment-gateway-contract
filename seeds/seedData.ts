@@ -44,15 +44,15 @@ export const contractConfigDeployMap: Record<DeployType, Partial<ContractConfig>
   main: {
     newOwner: '0x627Ab3fbC3979158f451347aeA288B0A3A47E1EF', //My s-owner2
     depositVerifier: '0x99FbD0Bc026128e6258BEAd542ECB1cF165Bbb98', //My s-deposit
-    depositGoal: toWei(15_000_000, tokenDecimals),
+    depositGoal: toWei(15_000, tokenDecimals),
     withdrawVerifier: ZeroAddress,
     withdrawGoal: BigInt(1),
     coldWallet: '0x21D73A5dF25DAB8AcB73E782f71678c3b00A198F', //My s-coldWallet
     balanceLimit: toWei(100, tokenDecimals) / priceDiv,
     startDate: 0,
     // startDate: toUnixTime(new Date(2024, 4, 17, 9, 0, 0)),
-    closeDate: 0,
-    // closeDate: toUnixTime(new Date(2024, 3, 30)),
+    // closeDate: 0,
+    closeDate: toUnixTime(now.add(5, 'minutes').toDate()),
   },
   stage: {
     newOwner: '0xA8B8455ad9a1FAb1d4a3B69eD30A52fBA82549Bb', //Matan

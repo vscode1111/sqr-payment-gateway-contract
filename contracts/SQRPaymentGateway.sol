@@ -267,8 +267,20 @@ contract SQRPaymentGateway is
     return _userFundItems[getHash(userId)];
   }
 
+  function fetchAccountFundItem(address account) external view returns (FundItem memory) {
+    return _accountFundItems[account];
+  }
+
   function fetchUserAccounts(string memory userId) external view returns (address[] memory) {
     return _userToAccounts[getHash(userId)];
+  }
+
+  function fetchUserFundItemByAccount(address account) external view returns (FundItem memory) {
+    return _userFundItems[_accountToUser[account]];
+  }
+
+  function fetchSiblingAccounts(address account) external view returns (address[] memory) {
+    return _userToAccounts[_accountToUser[account]];
   }
 
   function getBalance() public view returns (uint256) {
@@ -514,7 +526,7 @@ contract SQRPaymentGateway is
 
     FundItem storage accountFundItem = _accountFundItems[account];
     _linkAccountToUser(account, userHash, accountFundItem);
-    accountFundItem.depositedAmount += amount;
+    accountFundItem.withdrewAmount += amount;
     accountFundItem.withdrawNonce += 1;
 
     totalWithdrew += amount;

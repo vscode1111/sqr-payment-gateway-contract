@@ -36,6 +36,13 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
       coldWallet: await ownerSQRPaymentGateway.coldWallet(),
       balanceLimit: printToken(await ownerSQRPaymentGateway.balanceLimit(), decimals, tokenName),
       balance: printToken(await ownerSQRPaymentGateway.getBalance(), decimals, tokenName),
+      totalDeposited: printToken(
+        await ownerSQRPaymentGateway.totalDeposited(),
+        decimals,
+        tokenName,
+      ),
+      isDepositReady: await ownerSQRPaymentGateway.isDepositReady(),
+      isFetchReady: await ownerSQRPaymentGateway.getDepositRefundFetchReady(),
     };
 
     console.table(result);
