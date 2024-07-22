@@ -1,7 +1,7 @@
 import { TransactionRequest } from 'ethers';
 import { TokenDescription } from '~common-contract';
 
-export const CONTRACT_VERSION = '2.0.0';
+export const CONTRACT_VERSION = '2.1.0';
 export const CONTRACT_NAME = 'PaymentGateway';
 
 export const TX_OVERRIDES: TransactionRequest = {

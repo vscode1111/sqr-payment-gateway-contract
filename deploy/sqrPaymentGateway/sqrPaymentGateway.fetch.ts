@@ -42,6 +42,9 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
         tokenName,
       ),
       isDepositReady: await ownerSQRPaymentGateway.isDepositReady(),
+      isReachedDepositGoal: await ownerSQRPaymentGateway.isReachedDepositGoal(),
+      isWithdrawReady: await ownerSQRPaymentGateway.isWithdrawReady(),
+      isReachedWithdrawGoal: await ownerSQRPaymentGateway.isReachedWithdrawGoal(),
       isFetchReady: await ownerSQRPaymentGateway.getDepositRefundFetchReady(),
     };
 

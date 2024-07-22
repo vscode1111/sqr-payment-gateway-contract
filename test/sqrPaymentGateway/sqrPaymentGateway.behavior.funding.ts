@@ -469,7 +469,7 @@ export function shouldBehaveCorrectFunding(): void {
           const { totalBaseDeposited } =
             await this.ownerSQRPaymentGateway.getDepositRefundContractInfo();
           expect(totalBaseDeposited).eq(await this.ownerSQRPaymentGateway.totalDeposited());
-          expect(await this.ownerSQRPaymentGateway.isReachedGoal()).eq(false);
+          expect(await this.ownerSQRPaymentGateway.isReachedDepositGoal()).eq(false);
 
           expect(await this.ownerSQRPaymentGateway.fetchUserAccounts(seedData.userId1)).eql([
             this.user1Address,
@@ -642,7 +642,7 @@ export function shouldBehaveCorrectFunding(): void {
             const { totalBaseDeposited } =
               await this.ownerSQRPaymentGateway.getDepositRefundContractInfo();
             expect(totalBaseDeposited).eq(await this.ownerSQRPaymentGateway.totalDeposited());
-            expect(await this.ownerSQRPaymentGateway.isReachedGoal()).eq(false);
+            expect(await this.ownerSQRPaymentGateway.isReachedDepositGoal()).eq(false);
 
             expect(await this.ownerSQRPaymentGateway.fetchUserAccounts(seedData.userId1)).eql([
               this.user1Address,
@@ -1150,7 +1150,7 @@ export function shouldBehaveCorrectFunding(): void {
               const { totalBaseDeposited } =
                 await this.ownerSQRPaymentGateway.getDepositRefundContractInfo();
               expect(totalBaseDeposited).eq(await this.ownerSQRPaymentGateway.totalDeposited());
-              expect(await this.ownerSQRPaymentGateway.isReachedGoal()).eq(false);
+              expect(await this.ownerSQRPaymentGateway.isReachedDepositGoal()).eq(false);
 
               expect(await this.ownerSQRPaymentGateway.fetchUserAccounts(seedData.userId1)).eql([
                 this.user1Address,
@@ -1283,7 +1283,7 @@ export function shouldBehaveCorrectFunding(): void {
                 const { totalBaseDeposited } =
                   await this.ownerSQRPaymentGateway.getDepositRefundContractInfo();
                 expect(totalBaseDeposited).eq(await this.ownerSQRPaymentGateway.totalDeposited());
-                expect(await this.ownerSQRPaymentGateway.isReachedGoal()).eq(true);
+                expect(await this.ownerSQRPaymentGateway.isReachedDepositGoal()).eq(true);
 
                 expect(await this.ownerSQRPaymentGateway.fetchUserAccounts(seedData.userId1)).eql([
                   this.user1Address,
@@ -1435,7 +1435,7 @@ export function shouldBehaveCorrectFunding(): void {
                 const { totalBaseDeposited } =
                   await this.ownerSQRPaymentGateway.getDepositRefundContractInfo();
                 expect(totalBaseDeposited).eq(await this.ownerSQRPaymentGateway.totalDeposited());
-                expect(await this.ownerSQRPaymentGateway.isReachedGoal()).eq(true);
+                expect(await this.ownerSQRPaymentGateway.isReachedDepositGoal()).eq(true);
 
                 expect(await this.ownerSQRPaymentGateway.fetchUserAccounts(seedData.userId1)).eql([
                   this.user1Address,

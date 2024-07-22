@@ -174,7 +174,7 @@ contract SQRPaymentGateway is
   }
 
   function getContractVersion() external pure returns (string memory) {
-    return "2.0.0";
+    return "2.1.0";
   }
 
   //IDepositRefund implementation
@@ -240,16 +240,30 @@ contract SQRPaymentGateway is
   }
 
   function isDepositReady() public view returns (bool) {
-    return !isBeforeStartDate() && !isAfterCloseDate();
+    return
+      !isBeforeStartDate() &&
+      !isAfterCloseDate() &&
+      (depositGoal == 0 || (depositGoal > 0 && !isReachedDepositGoal()));
   }
 
-  function isReachedGoal() public view returns (bool) {
+  function isReachedDepositGoal() public view returns (bool) {
     return totalDeposited == depositGoal;
+  }
+
+  function isWithdrawReady() public view returns (bool) {
+    return
+      !isBeforeStartDate() &&
+      !isAfterCloseDate() &&
+      (withdrawGoal == 0 || (withdrawGoal > 0 && !isReachedWithdrawGoal()));
+  }
+
+  function isReachedWithdrawGoal() public view returns (bool) {
+    return totalWithdrew == withdrawGoal;
   }
 
   function calculateAccountAllocation(address account) public view returns (uint256) {
     FundItem memory accountFundItem = _accountFundItems[account];
-    if (isReachedGoal()) {
+    if (isReachedDepositGoal()) {
       return accountFundItem.depositedAmount;
     }
     return 0;
@@ -257,7 +271,7 @@ contract SQRPaymentGateway is
 
   function calculateAccountRefund(address account) public view returns (uint256) {
     FundItem memory accountFundItem = _accountFundItems[account];
-    if (!isReachedGoal()) {
+    if (!isReachedDepositGoal()) {
       return accountFundItem.depositedAmount;
     }
     return 0;
@@ -320,7 +334,7 @@ contract SQRPaymentGateway is
   }
 
   function calculateRemainWithdraw() external view returns (uint256) {
-    if (!isDepositReady()) {
+    if (!isWithdrawReady()) {
       return 0;
     }
     if (withdrawGoal > 0) {

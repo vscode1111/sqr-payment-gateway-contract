@@ -37,7 +37,8 @@ export const CONTRACTS: Record<CONTRACT_LIST, DeployNetworks> = {
     // bsc: '0xfDEE990b559c196011a2354a0494659F87ff285B', //Main - sqrp-gated - 15K
     // bsc: '0x1B8B3Ff894E912E2d859Ad71974776540ABDA8D9', //Main - sqrp-gated - 15K
     // bsc: '0xbC16409BDe4942a7a0d654AA08d457c5eE58D4Dd', //Main - sqrp-gated - 15K
-    bsc: '0x30c526Ea466e35346685e410A04112422ee531CD', //Main - sqrp-gated - 15K
+    // bsc: '0x30c526Ea466e35346685e410A04112422ee531CD', //Main - sqrp-gated - 15K
+    bsc: '0xEf094C9c1c767b31d33a982E8DB0eeDE9564Af63', //Main - sqrp-gated - 15K
     //-------------------------------------------------------------------------------------------------------------
     // bsc: '0x6fae03D2FbBAf8821DC3248ca61cA239f60A9Bac', //Stage - fcfs - depositGoal: 1 USDT
     // bsc: '0x69060bc1A054a3c60d2607aAE0D403748Ad0F48c', //Stage - sqrp-gated - depositGoal: 1 USDT
