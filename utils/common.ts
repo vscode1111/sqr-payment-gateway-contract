@@ -23,7 +23,7 @@ export async function signMessageForSQRPaymentGatewayWithdraw(
   signer: Signer,
   userId: string,
   transactionId: string,
-  to: string,
+  account: string,
   amount: bigint,
   nonce: number,
   timestampLimit: number,
@@ -32,7 +32,7 @@ export async function signMessageForSQRPaymentGatewayWithdraw(
     signer,
     // userId,  transactionId, to, amount, nonce, timestampLimit
     ['string', 'string', 'address', 'uint256', 'uint32', 'uint32'],
-    [userId, transactionId, to, amount, nonce, timestampLimit],
+    [userId, transactionId, account, amount, nonce, timestampLimit],
   );
 }
 

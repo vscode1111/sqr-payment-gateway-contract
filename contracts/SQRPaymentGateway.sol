@@ -174,7 +174,7 @@ contract SQRPaymentGateway is
   }
 
   function getContractVersion() external pure returns (string memory) {
-    return "2.1.0";
+    return "2.2.0";
   }
 
   //IDepositRefund implementation
@@ -564,14 +564,14 @@ contract SQRPaymentGateway is
   function verifyWithdrawSignature(
     string memory userId,
     string memory transactionId,
-    address to,
+    address account,
     uint256 amount,
     uint32 nonce,
     uint32 timestampLimit,
     bytes memory signature
   ) private view returns (bool) {
     bytes32 messageHash = keccak256(
-      abi.encode(userId, transactionId, to, amount, nonce, timestampLimit)
+      abi.encode(userId, transactionId, account, amount, nonce, timestampLimit)
     );
     address recover = messageHash.toEthSignedMessageHash().recover(signature);
     return recover == owner() || recover == withdrawVerifier;
@@ -580,18 +580,26 @@ contract SQRPaymentGateway is
   function withdrawSig(
     string memory userId,
     string memory transactionId,
-    address to,
+    address account,
     uint256 amount,
     uint32 timestampLimit,
     bytes memory signature
   ) external {
     uint32 nonce = getWithdrawNonce(userId);
     if (
-      !verifyWithdrawSignature(userId, transactionId, to, amount, nonce, timestampLimit, signature)
+      !verifyWithdrawSignature(
+        userId,
+        transactionId,
+        account,
+        amount,
+        nonce,
+        timestampLimit,
+        signature
+      )
     ) {
       revert InvalidSignature();
     }
-    _withdraw(userId, transactionId, to, amount, nonce, timestampLimit);
+    _withdraw(userId, transactionId, account, amount, nonce, timestampLimit);
   }
 
   function forceWithdraw(address token, address to, uint256 amount) external onlyOwner {
