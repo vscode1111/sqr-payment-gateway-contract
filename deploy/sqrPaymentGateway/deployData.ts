@@ -4,7 +4,7 @@ import { tokenDecimals } from '~seeds';
 export const verifyRequired = false;
 export const verifyArgsRequired = false;
 
-const isTiny = false;
+const isTiny = true;
 
 export const deployData = {
   userId1: 'tu1-f75c73b1-0f13-46ae-88f8-2048765c5ad4',

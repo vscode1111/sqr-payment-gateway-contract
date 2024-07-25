@@ -73,6 +73,7 @@ contract SQRPaymentGateway is
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
   //Variables, structs, errors, modifiers, events------------------------
+  string public constant VERSION = "2.2.1";
   uint256 public constant MAX_INT = type(uint256).max;
 
   IERC20 public erc20Token;
@@ -174,7 +175,7 @@ contract SQRPaymentGateway is
   }
 
   function getContractVersion() external pure returns (string memory) {
-    return "2.2.0";
+    return VERSION;
   }
 
   //IDepositRefund implementation

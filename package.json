@@ -1,7 +1,7 @@
 {
   "name": "sqr-payment-gateway-contract",
   "description": "Solidity smart contracts for SQR payment gateway functionality",
-  "version": "0.0.42",
+  "version": "0.0.43",
   "scripts": {
     "clean": "shx rm -rf ./dist ./artifacts ./cache ./coverage ./typechain-types ./coverage.json && yarn typechain",
     "commit": "git-cz",
@@ -22,6 +22,7 @@
     "deploy:force-withdraw": "hardhat deploy --tags SQRPaymentGateway:force-withdraw",
     "deploy:change-balance-limit": "hardhat deploy --tags SQRPaymentGateway:change-balance-limit",
     "deploy:publish-abi": "hardhat deploy --tags SQRPaymentGateway:publish-abi",
+    "deploy:transfer-ownership": "hardhat deploy --tags SQRPaymentGateway:transfer-ownership",
     "lint": "yarn lint:sol && yarn lint:ts && yarn prettier:check",
     "lint:sol": "solhint --config ./.solhint.json --max-warnings 0 \"contracts/**/*.sol\"",
     "lint:ts": "eslint --config ./.eslintrc.yml --ignore-path ./.eslintignore --ext .js,.ts .",

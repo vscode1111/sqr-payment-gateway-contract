@@ -39,7 +39,7 @@ export const CONTRACTS: Record<CONTRACT_LIST, DeployNetworks> = {
     // bsc: '0xbC16409BDe4942a7a0d654AA08d457c5eE58D4Dd', //Main - sqrp-gated - 15K
     // bsc: '0x30c526Ea466e35346685e410A04112422ee531CD', //Main - sqrp-gated - 15K
     // bsc: '0xEf094C9c1c767b31d33a982E8DB0eeDE9564Af63', //Main - sqrp-gated - 15K
-    bsc: '0x5696fa3DD95486590dAE95b9070b0760eF57BfCe', //Main - sqrp-gated - 15K
+    // bsc: '0x5696fa3DD95486590dAE95b9070b0760eF57BfCe', //Main - sqrp-gated - 15K
     //-------------------------------------------------------------------------------------------------------------
     // bsc: '0x6fae03D2FbBAf8821DC3248ca61cA239f60A9Bac', //Stage - fcfs - depositGoal: 1 USDT
     // bsc: '0x69060bc1A054a3c60d2607aAE0D403748Ad0F48c', //Stage - sqrp-gated - depositGoal: 1 USDT
@@ -67,17 +67,25 @@ export const CONTRACTS: Record<CONTRACT_LIST, DeployNetworks> = {
     // bsc: '0x97794e744c93eD38a6508c96DC743f73c89E2357', //Prod - fcfs - depositGoal: 15 USDT
 
     //22.05.2024
-    // bsc: '0xFf553F7283eA652e88e8F64E6556B6bb2Fcb5D7C', //Prod - sqrp-gated  - depositGoal: 15 USDT
-    // bsc: '0x4604A13bA4Aa4A61CD4E00905554aecfe31470a2', //Prod - fcfs  - depositGoal: 24.99 USDT
+    // bsc: '0xFf553F7283eA652e88e8F64E6556B6bb2Fcb5D7C', //Prod - sqrp-gated - depositGoal: 15 USDT
+    // bsc: '0x4604A13bA4Aa4A61CD4E00905554aecfe31470a2', //Prod - fcfs - depositGoal: 24.99 USDT
 
     //27.05.2024
-    // bsc: '0xd1A68b9c476D7fC06060E725B33F4034c2bA4c75', //Prod - sqrp-gated  - depositGoal: 100K USDT
-    // bsc: '0x4fc8DeE09D8B6F93eDA287cB7617F9f5e3A896f1', //Prod - fcfs  - depositGoal: 100K USDT
-    // bsc: '0xc595e399121A429F16Af5205b8e7BA5354eF513c', //Prod - fcfs  - depositGoal: 28.91 USDT
-    // bsc: '0xDb88DE2d99249382A7cF3104A80646509f69E358', //Prod - fcfs  - depositGoal: 15 USDT
+    // bsc: '0xd1A68b9c476D7fC06060E725B33F4034c2bA4c75', //Prod - sqrp-gated - depositGoal: 100K USDT
+    // bsc: '0x4fc8DeE09D8B6F93eDA287cB7617F9f5e3A896f1', //Prod - fcfs - depositGoal: 100K USDT
+    // bsc: '0xc595e399121A429F16Af5205b8e7BA5354eF513c', //Prod - fcfs - depositGoal: 28.91 USDT
+    // bsc: '0xDb88DE2d99249382A7cF3104A80646509f69E358', //Prod - fcfs - depositGoal: 15 USDT
 
     //31.05.2024
-    // bsc: '0x070Ea0C8B9e57B929ADB0eFE408C1Fa586648268', //Prod - fcfs  - depositGoal: 15 USDT
-    // bsc: '0xc526Ce022E4979Fc9801BdE45105b54dE34ceeA6', //Prod - fcfs  - depositGoal: 15 USDT
+    // bsc: '0x070Ea0C8B9e57B929ADB0eFE408C1Fa586648268', //Prod - fcfs - depositGoal: 15 USDT
+    // bsc: '0xc526Ce022E4979Fc9801BdE45105b54dE34ceeA6', //Prod - fcfs - depositGoal: 15 USDT
+
+    //25.07.2024
+    // bsc: '0x73ee8C0cb385a663A411D306b7aa249b59c18d7d', //Prod - fcfs - depositGoal: 25К USDT - Members Exclusive
+    // bsc: '0x46A49a705d8E7a7765dce7e5F4016fBC44DF3fA3', //Prod - sqrp-gated - depositGoal: 25К USDT - Members Exclusive with SQRp
+    // bsc: '0xd4F4c2eE273c0F3611f7f93EA8e8eED4fef6906F', //Prod - fcfs - depositGoal: 25К USDT - Road-to-IDO Exclusive
+    // bsc: '0xf98844b0103a68E58B5ce99415879A1e30AFCAAC', //Prod - fcfs - depositGoal: 12.5К USDT - Public FCFS
+    // bsc: '0x99518a992cC4d9c51f0ae4B269D45F4e9e33b0b2', //Prod - sqrp-gated - depositGoal: 12.5К USDT - Public FCFS with SQRp
+    bsc: '0x097F154bA5b83DA37a51752D9435b12EbE231689', //Prod - fcfs - depositGoal: 15 USDT - Test
   },
 };
