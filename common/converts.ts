@@ -70,3 +70,7 @@ export function toBoolean(value: string | undefined): boolean {
 export function toBoolean2(value: StringNumber | boolean): boolean {
   return !!value;
 }
+
+export function booleanToStringNumber(value: boolean): string {
+  return String(Number(value));
+}

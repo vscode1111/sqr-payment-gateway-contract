@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { ZeroAddress } from 'ethers';
 import { v4 as uuidv4 } from 'uuid';
 import { MINUTES, toUnixTime, toUnixTimeUtc, toWei } from '~common';
-import { TokenAddressDescription } from '~common-contract';
+import { MATAN_WALLET, TokenAddressDescription } from '~common-contract';
 import { Token } from '~constants';
 import { DeployNetworkKey } from '~types';
 import { addSecondsToUnixTime } from '~utils';
@@ -54,7 +54,7 @@ export const contractConfigDeployMap: Record<DeployType, Partial<ContractConfig>
     closeDate: toUnixTimeUtc(new Date(2024, 6, 26, 11, 0, 0)),
   },
   stage: {
-    // newOwner: '0xA8B8455ad9a1FAb1d4a3B69eD30A52fBA82549Bb', //Matan
+    // newOwner: MATAN_WALLET,
     newOwner: '0x627Ab3fbC3979158f451347aeA288B0A3A47E1EF', //My s-owner2
     coldWallet: '0x79734Db10D301C257093E594A8A245D384E22c68', //Andrey MultiSig
     depositVerifier: '0x99FbD0Bc026128e6258BEAd542ECB1cF165Bbb98', //My s-deposit
@@ -68,17 +68,17 @@ export const contractConfigDeployMap: Record<DeployType, Partial<ContractConfig>
     closeDate: toUnixTimeUtc(new Date(2024, 6, 26, 11, 0, 0)),
   },
   prod: {
-    newOwner: '0xA8B8455ad9a1FAb1d4a3B69eD30A52fBA82549Bb', //Matan
+    newOwner: MATAN_WALLET,
     coldWallet: '0x79734Db10D301C257093E594A8A245D384E22c68', //Andrey MultiSig
     depositVerifier: '0x99FbD0Bc026128e6258BEAd542ECB1cF165Bbb98', //My s-deposit
-    depositGoal: toWei(10_000, tokenDecimals),
+    depositGoal: toWei(25_000, tokenDecimals),
     balanceLimit: toWei(1_000_000, tokenDecimals),
     withdrawVerifier: ZeroAddress,
     withdrawGoal: BigInt(1),
     // startDate: 0,
-    startDate: toUnixTimeUtc(new Date(2024, 6, 29, 11, 0, 0)),
+    startDate: toUnixTimeUtc(new Date(2024, 7, 7, 11, 0, 0)),
     // closeDate: 0,
-    closeDate: toUnixTimeUtc(new Date(2024, 6, 30, 7, 0, 0)),
+    closeDate: toUnixTimeUtc(new Date(2024, 7, 8, 7, 0, 0)),
   },
 };
 

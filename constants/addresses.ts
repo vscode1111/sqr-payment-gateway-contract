@@ -89,10 +89,14 @@ export const CONTRACTS: Record<CONTRACT_LIST, DeployNetworks> = {
     // bsc: '0x99518a992cC4d9c51f0ae4B269D45F4e9e33b0b2', //Prod - sqrp-gated - depositGoal: 12.5К USDT - Public FCFS with SQRp
     // bsc: '0x097F154bA5b83DA37a51752D9435b12EbE231689', //Prod - fcfs - depositGoal: 15 USDT - Test
 
-    //26.07.2024
-    bsc: '0x86984D533C8d3218f79Bc8F7b409595EFB87699c', //Prod - fcfs - depositGoal: 20K USDT
+    //26.07.2024 - Storm Trade
+    // bsc: '0x86984D533C8d3218f79Bc8F7b409595EFB87699c', //Prod - fcfs - depositGoal: 20K USDT
     // bsc: '0x167E081862c48994c7DE9f6B150fF9DBF4211db8', //Prod - fcfs - depositGoal: 45K USDT
     // bsc: '0x0EE5010bb73A1d27EfcB948cdb3531Ddb4f92d18', //Prod - sqrp-gated - depositGoal: 25K USDT
     // bsc: '0x04Ba9deFD82ea04C5b669010b39486B7d76007D8', //Prod - sqrp-gated - depositGoal: 10K USDT
+
+    //06.06.2024 - Fanton
+    // bsc: '0x5b8dA26A342411DafA2795951EB6331BcFDcefd2', //Prod - sqrp-gated - depositGoal: 50K USDT
+    bsc: '0xEaF29e48AF71c23bB4Ca6bd233a3F48c3fec0642', //Prod - fcfs - depositGoal: 25K USDT
   },
 };
