@@ -97,6 +97,10 @@ export const CONTRACTS: Record<CONTRACT_LIST, DeployNetworks> = {
 
     //06.06.2024 - Fanton
     // bsc: '0x5b8dA26A342411DafA2795951EB6331BcFDcefd2', //Prod - sqrp-gated - depositGoal: 50K USDT
-    bsc: '0xEaF29e48AF71c23bB4Ca6bd233a3F48c3fec0642', //Prod - fcfs - depositGoal: 25K USDT
+    // bsc: '0xEaF29e48AF71c23bB4Ca6bd233a3F48c3fec0642', //Prod - fcfs - depositGoal: 25K USDT
+
+    //15.06.2024 - Goodcryptox
+    // bsc: '0xa143c54371838eb1ba4efEb3caaEb7DdC28d036B', //Prod - sqrp-gated - depositGoal: 25K USDT
+    bsc: '0xC9ca3630C378c967ce6D17265BcBD668a8CacDF3', //Prod - fcfs - depositGoal: 25K USDT
   },
 };

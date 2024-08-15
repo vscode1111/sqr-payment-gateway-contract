@@ -76,9 +76,9 @@ export const contractConfigDeployMap: Record<DeployType, Partial<ContractConfig>
     withdrawVerifier: ZeroAddress,
     withdrawGoal: BigInt(1),
     // startDate: 0,
-    startDate: toUnixTimeUtc(new Date(2024, 7, 7, 11, 0, 0)),
+    startDate: toUnixTimeUtc(new Date(2024, 7, 20, 11, 0, 0)),
     // closeDate: 0,
-    closeDate: toUnixTimeUtc(new Date(2024, 7, 8, 7, 0, 0)),
+    closeDate: toUnixTimeUtc(new Date(2024, 7, 21, 7, 0, 0)),
   },
 };
 
