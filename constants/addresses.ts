@@ -95,12 +95,16 @@ export const CONTRACTS: Record<CONTRACT_LIST, DeployNetworks> = {
     // bsc: '0x0EE5010bb73A1d27EfcB948cdb3531Ddb4f92d18', //Prod - sqrp-gated - depositGoal: 25K USDT
     // bsc: '0x04Ba9deFD82ea04C5b669010b39486B7d76007D8', //Prod - sqrp-gated - depositGoal: 10K USDT
 
-    //06.06.2024 - Fanton
+    //06.07.2024 - Fanton
     // bsc: '0x5b8dA26A342411DafA2795951EB6331BcFDcefd2', //Prod - sqrp-gated - depositGoal: 50K USDT
     // bsc: '0xEaF29e48AF71c23bB4Ca6bd233a3F48c3fec0642', //Prod - fcfs - depositGoal: 25K USDT
 
-    //15.06.2024 - Goodcryptox
+    //15.08.2024 - Goodcryptox
     // bsc: '0xa143c54371838eb1ba4efEb3caaEb7DdC28d036B', //Prod - sqrp-gated - depositGoal: 25K USDT
-    bsc: '0xC9ca3630C378c967ce6D17265BcBD668a8CacDF3', //Prod - fcfs - depositGoal: 25K USDT
+    // bsc: '0xC9ca3630C378c967ce6D17265BcBD668a8CacDF3', //Prod - fcfs - depositGoal: 25K USDT
+
+    //09.09.2024 - Autolayer
+    // bsc: '0x55F68D74A08d003067a7b459161c528Fa974f065', //Prod - fcfs - depositGoal: 50K USDT
+    bsc: '0x0fDA8a735Fc0a0be54Ea00E4B8c26935365161e8', //Prod - fcfs - depositGoal: 50K USDT
   },
 };

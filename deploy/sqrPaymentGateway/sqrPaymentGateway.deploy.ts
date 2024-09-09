@@ -2,7 +2,7 @@ import { DeployFunction } from 'hardhat-deploy/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { MS_IN_SEC, sleep } from '~common';
 import { callWithTimerHre, verifyContract } from '~common-contract';
-import { SQR_PAYMENT_GATEWAY_NAME } from '~constants';
+import { CONTRACT_NAME, CONTRACT_VERSION, SQR_PAYMENT_GATEWAY_NAME } from '~constants';
 import { contractConfig } from '~seeds';
 import { getSQRPaymentGatewayContext, getUsers } from '~utils';
 import { verifyRequired } from './deployData';
@@ -13,6 +13,7 @@ const pauseTime = 10;
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<void> => {
   await callWithTimerHre(async () => {
     console.log(`${SQR_PAYMENT_GATEWAY_NAME} is deploying...`);
+    console.log(`${CONTRACT_NAME} v${CONTRACT_VERSION}`);
     console.table(formatContractConfig(contractConfig));
     console.log(`Pause ${pauseTime} sec to make sure...`);
     await sleep(pauseTime * MS_IN_SEC);

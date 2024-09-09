@@ -71,14 +71,14 @@ export const contractConfigDeployMap: Record<DeployType, Partial<ContractConfig>
     newOwner: MATAN_WALLET,
     coldWallet: '0x79734Db10D301C257093E594A8A245D384E22c68', //Andrey MultiSig
     depositVerifier: '0x99FbD0Bc026128e6258BEAd542ECB1cF165Bbb98', //My s-deposit
-    depositGoal: toWei(25_000, tokenDecimals),
+    depositGoal: toWei(50_000, tokenDecimals),
     balanceLimit: toWei(1_000_000, tokenDecimals),
     withdrawVerifier: ZeroAddress,
     withdrawGoal: BigInt(1),
     // startDate: 0,
-    startDate: toUnixTimeUtc(new Date(2024, 7, 20, 11, 0, 0)),
+    startDate: toUnixTimeUtc(new Date(2024, 8, 12, 13, 0, 0)),
     // closeDate: 0,
-    closeDate: toUnixTimeUtc(new Date(2024, 7, 21, 7, 0, 0)),
+    closeDate: toUnixTimeUtc(new Date(2024, 8, 13, 8, 0, 0)),
   },
 };
 
