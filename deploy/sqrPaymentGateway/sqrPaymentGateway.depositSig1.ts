@@ -69,6 +69,16 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
 
     console.table(params);
 
+    const gas = await user1SQRPaymentGateway.depositSig.estimateGas(
+      params.userId,
+      params.transactionId,
+      params.account,
+      params.amount,
+      params.timestampLimit,
+      params.signature,
+    );
+    console.log(111, gas);
+
     await waitTx(
       user1SQRPaymentGateway.depositSig(
         params.userId,
