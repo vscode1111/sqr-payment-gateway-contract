@@ -1,1 +1,1 @@
-export * from './sqrPaymentGateway';
+export * from './web3PaymentGateway';

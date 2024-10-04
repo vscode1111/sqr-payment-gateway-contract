@@ -1,20 +1,20 @@
 import { DeployFunction } from 'hardhat-deploy/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { callWithTimerHre, waitTx } from '~common-contract';
-import { SQR_PAYMENT_GATEWAY_NAME, TX_OVERRIDES } from '~constants';
+import { WEB3_PAYMENT_GATEWAY_NAME, TX_OVERRIDES } from '~constants';
 import { contractConfig } from '~seeds';
 import { getAddressesFromHre, getContext } from '~utils';
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<void> => {
   await callWithTimerHre(async () => {
-    const { sqrPaymentGatewayAddress } = getAddressesFromHre(hre);
+    const { web3PaymentGatewayAddress } = getAddressesFromHre(hre);
     console.log(
-      `${SQR_PAYMENT_GATEWAY_NAME} ${sqrPaymentGatewayAddress} is transferring ownership ...`,
+      `${WEB3_PAYMENT_GATEWAY_NAME} ${web3PaymentGatewayAddress} is transferring ownership ...`,
     );
     const erc20TokenAddress = contractConfig.erc20Token;
-    const { owner2SQRPaymentGateway } = await getContext(
+    const { owner2WEB3PaymentGateway } = await getContext(
       erc20TokenAddress,
-      sqrPaymentGatewayAddress,
+      web3PaymentGatewayAddress,
     );
 
     const params = {
@@ -23,12 +23,12 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
 
     console.table(params);
     await waitTx(
-      owner2SQRPaymentGateway.transferOwnership(params.newOwner, TX_OVERRIDES),
+      owner2WEB3PaymentGateway.transferOwnership(params.newOwner, TX_OVERRIDES),
       'transferOwnership',
     );
   }, hre);
 };
 
-func.tags = [`${SQR_PAYMENT_GATEWAY_NAME}:transfer-ownership`];
+func.tags = [`${WEB3_PAYMENT_GATEWAY_NAME}:transfer-ownership`];
 
 export default func;

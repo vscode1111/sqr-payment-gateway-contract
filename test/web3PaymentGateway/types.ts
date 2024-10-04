@@ -3,7 +3,7 @@ import {
   DepositEvent,
   ForceWithdrawEvent,
   WithdrawEvent,
-} from '~typechain-types/contracts/SQRPaymentGateway';
+} from '~typechain-types/contracts/WEB3PaymentGateway';
 import { ContextBase } from '~types';
 
 type Fixture<T> = () => Promise<T>;

@@ -2,7 +2,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { Signer } from 'ethers';
 import { signEncodedMessage, toUnixTime } from '~common';
 
-export async function signMessageForSQRPaymentGatewayDeposit(
+export async function signMessageForWEB3PaymentGatewayDeposit(
   signer: Signer,
   userId: string,
   transactionId: string,
@@ -19,7 +19,7 @@ export async function signMessageForSQRPaymentGatewayDeposit(
   );
 }
 
-export async function signMessageForSQRPaymentGatewayWithdraw(
+export async function signMessageForWEB3PaymentGatewayWithdraw(
   signer: Signer,
   userId: string,
   transactionId: string,

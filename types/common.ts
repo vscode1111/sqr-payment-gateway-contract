@@ -3,7 +3,7 @@ export interface DeployNetworks {
 }
 
 export interface Addresses {
-  sqrPaymentGatewayAddress: string;
+  web3PaymentGatewayAddress: string;
 }
 
 export type StringNumber = string | number;

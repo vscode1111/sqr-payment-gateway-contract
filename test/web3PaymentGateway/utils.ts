@@ -6,15 +6,15 @@ import { Context } from 'mocha';
 import { ContractConfig, seedData } from '~seeds';
 import { ContextBase } from '~types';
 import { loadFixture } from './loadFixture';
-import { deploySQRPaymentGatewayContractFixture } from './sqrPaymentGateway.fixture';
+import { deployWEB3PaymentGatewayContractFixture } from './web3PaymentGateway.fixture';
 
 export async function getERC20TokenBalance(that: ContextBase, address: string) {
   return that.owner2ERC20Token.balanceOf(address);
 }
 
-export async function checkTotalSQRBalance(that: ContextBase) {
+export async function checkTotalWEB3Balance(that: ContextBase) {
   expect(
-    await getTotalSQRBalance(that, [
+    await getTotalWEB3Balance(that, [
       that.user1Address,
       that.user2Address,
       that.user3Address,
@@ -24,12 +24,12 @@ export async function checkTotalSQRBalance(that: ContextBase) {
       that.depositVerifierAddress,
       that.withdrawVerifierAddress,
       that.erc20TokenAddress,
-      that.sqrPaymentGatewayAddress,
+      that.web3PaymentGatewayAddress,
     ]),
   ).eq(seedData.totalAccountBalance);
 }
 
-export async function getTotalSQRBalance(that: ContextBase, accounts: string[]): Promise<bigint> {
+export async function getTotalWEB3Balance(that: ContextBase, accounts: string[]): Promise<bigint> {
   const result = await Promise.all(accounts.map((address) => getERC20TokenBalance(that, address)));
   return result.reduce((acc, cur) => acc + cur, seedData.zero);
 }
@@ -43,7 +43,7 @@ export async function getChainTime() {
   return dayjs(chainTime * 1000);
 }
 
-export async function loadSQRPaymentGatewayFixture(
+export async function loadWEB3PaymentGatewayFixture(
   that: Context,
   contractConfig?: Partial<ContractConfig>,
   onNewSnapshot?: (
@@ -52,7 +52,7 @@ export async function loadSQRPaymentGatewayFixture(
   ) => Promise<Partial<ContractConfig> | undefined>,
 ) {
   const fixture = await loadFixture(
-    deploySQRPaymentGatewayContractFixture,
+    deployWEB3PaymentGatewayContractFixture,
     contractConfig,
     async (config) => {
       const chainTime = await getChainTime();
@@ -68,5 +68,5 @@ export async function loadSQRPaymentGatewayFixture(
     that[field] = fixture[field as keyof ContextBase];
   }
 
-  await checkTotalSQRBalance(that);
+  await checkTotalWEB3Balance(that);
 }

@@ -1,8 +1,8 @@
 import { ContractConfig, contractConfig } from '~seeds';
 import { ContextBase } from '~types';
-import { getERC20TokenContext, getSQRPaymentGatewayContext, getUsers } from '~utils';
+import { getERC20TokenContext, getWEB3PaymentGatewayContext, getUsers } from '~utils';
 
-export async function deploySQRPaymentGatewayContractFixture(
+export async function deployWEB3PaymentGatewayContractFixture(
   contractConfigParam?: Partial<ContractConfig>,
 ): Promise<ContextBase> {
   const users = await getUsers();
@@ -19,11 +19,11 @@ export async function deploySQRPaymentGatewayContractFixture(
     coldWallet: coldWalletAddress,
   };
 
-  const sqrPaymentGatewayContext = await getSQRPaymentGatewayContext(users, config);
+  const web3PaymentGatewayContext = await getWEB3PaymentGatewayContext(users, config);
 
   return {
     ...users,
     ...erc20TokenContext,
-    ...sqrPaymentGatewayContext,
+    ...web3PaymentGatewayContext,
   };
 }

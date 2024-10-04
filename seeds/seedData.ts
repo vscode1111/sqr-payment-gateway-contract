@@ -14,8 +14,8 @@ type DeployType = 'test' | 'main' | 'stage' | 'prod';
 
 const deployType: DeployType = (process.env.ENV as DeployType) ?? 'main';
 
-const isSqr = ['test', 'main'].includes(deployType);
-// const isSqr = false;
+const isWeb3 = ['test', 'main'].includes(deployType);
+// const isWeb3 = false;
 
 // const isProd = deployType === ('prod' as any);
 // if (isProd) {
@@ -23,8 +23,8 @@ const isSqr = ['test', 'main'].includes(deployType);
 // }
 
 export const chainTokenDescription: Record<DeployNetworkKey, TokenAddressDescription> = {
-  // bsc: isSqr ? getTokenDescription(Token.SQR) : getTokenDescription(Token.USDT), //SQR/USDT
-  bsc: isSqr ? getTokenDescription(Token.tSQR) : getTokenDescription(Token.USDT), //SQR/USDT
+  // bsc: isWeb3 ? getTokenDescription(Token.WEB3) : getTokenDescription(Token.USDT), //WEB3/USDT
+  bsc: isWeb3 ? getTokenDescription(Token.tWEB3) : getTokenDescription(Token.USDT), //WEB3/USDT
 };
 
 export const { address: tokenAddress, decimals: tokenDecimals } =

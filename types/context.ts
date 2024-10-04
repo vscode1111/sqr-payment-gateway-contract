@@ -1,7 +1,7 @@
 import { Signer } from 'ethers';
 import { ERC20Token } from '~typechain-types/contracts/ERC20Token';
-import { SQRPaymentGateway } from '~typechain-types/contracts/SQRPaymentGateway';
-import { SQRPaymentGateway__factory } from '~typechain-types/factories/contracts/SQRPaymentGateway__factory';
+import { WEB3PaymentGateway } from '~typechain-types/contracts/WEB3PaymentGateway';
+import { WEB3PaymentGateway__factory } from '~typechain-types/factories/contracts/WEB3PaymentGateway__factory';
 
 export interface Users {
   owner: Signer;
@@ -32,16 +32,16 @@ export interface ERC20TokenContext {
   coldWalletERC20Token: ERC20Token;
 }
 
-export interface SQRPaymentGatewayContext {
-  sqrPaymentGatewayFactory: SQRPaymentGateway__factory;
-  owner2SqrPaymentGatewayFactory: SQRPaymentGateway__factory;
-  sqrPaymentGatewayAddress: string;
-  ownerSQRPaymentGateway: SQRPaymentGateway;
-  user1SQRPaymentGateway: SQRPaymentGateway;
-  user2SQRPaymentGateway: SQRPaymentGateway;
-  user3SQRPaymentGateway: SQRPaymentGateway;
-  owner2SQRPaymentGateway: SQRPaymentGateway;
-  coldWalletSQRPaymentGateway: SQRPaymentGateway;
+export interface WEB3PaymentGatewayContext {
+  web3PaymentGatewayFactory: WEB3PaymentGateway__factory;
+  owner2Web3PaymentGatewayFactory: WEB3PaymentGateway__factory;
+  web3PaymentGatewayAddress: string;
+  ownerWEB3PaymentGateway: WEB3PaymentGateway;
+  user1WEB3PaymentGateway: WEB3PaymentGateway;
+  user2WEB3PaymentGateway: WEB3PaymentGateway;
+  user3WEB3PaymentGateway: WEB3PaymentGateway;
+  owner2WEB3PaymentGateway: WEB3PaymentGateway;
+  coldWalletWEB3PaymentGateway: WEB3PaymentGateway;
 }
 
-export type ContextBase = Users & ERC20TokenContext & SQRPaymentGatewayContext;
+export type ContextBase = Users & ERC20TokenContext & WEB3PaymentGatewayContext;

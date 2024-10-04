@@ -4,9 +4,9 @@ import { CONTRACTS } from '~constants';
 import { Addresses, DeployNetworks } from '~types';
 
 export function getAddresses(network: keyof DeployNetworks): Addresses {
-  const sqrPaymentGatewayAddress = CONTRACTS.SQR_PAYMENT_GATEWAY[network];
+  const web3PaymentGatewayAddress = CONTRACTS.WEB3_PAYMENT_GATEWAY[network];
   return {
-    sqrPaymentGatewayAddress,
+    web3PaymentGatewayAddress,
   };
 }
 

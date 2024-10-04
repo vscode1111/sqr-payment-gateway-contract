@@ -1,4 +1,4 @@
-# Solidity smart contracts for SQR payment gateway functionality
+# Solidity smart contracts for WEB3 payment gateway functionality
 
 ## Getting Started
 

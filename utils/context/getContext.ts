@@ -1,22 +1,22 @@
 import { ContextBase } from '~types';
 import { getERC20TokenContext } from './getERC20TokenContext';
-import { getSQRPaymentGatewayContext } from './getSQRPaymentGatewayContext';
+import { getWEB3PaymentGatewayContext } from './getWEB3PaymentGatewayContext';
 import { getUsers } from './getUsers';
 
 export async function getContext(
   erc20TokenAddress: string,
-  sqrPaymentGatewayAddress: string,
+  web3PaymentGatewayAddress: string,
 ): Promise<ContextBase> {
   const users = await getUsers();
   const erc20TokenContext = await getERC20TokenContext(users, erc20TokenAddress);
-  const sqrPaymentGatewayContext = await getSQRPaymentGatewayContext(
+  const web3PaymentGatewayContext = await getWEB3PaymentGatewayContext(
     users,
-    sqrPaymentGatewayAddress,
+    web3PaymentGatewayAddress,
   );
 
   return {
     ...users,
     ...erc20TokenContext,
-    ...sqrPaymentGatewayContext,
+    ...web3PaymentGatewayContext,
   };
 }

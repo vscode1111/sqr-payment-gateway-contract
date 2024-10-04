@@ -2,35 +2,35 @@ import { DeployFunction } from 'hardhat-deploy/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { toNumberDecimals } from '~common';
 import { callWithTimerHre, waitTx } from '~common-contract';
-import { SQR_PAYMENT_GATEWAY_NAME, TX_OVERRIDES } from '~constants';
+import { WEB3_PAYMENT_GATEWAY_NAME, TX_OVERRIDES } from '~constants';
 import { contractConfig, seedData } from '~seeds';
 import {
   getAddressesFromHre,
   getContext,
-  signMessageForSQRPaymentGatewayDeposit as signMessageForPaymentGatewayDeposit,
+  signMessageForWEB3PaymentGatewayDeposit as signMessageForPaymentGatewayDeposit,
 } from '~utils';
 import { deployParams } from './deployData';
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<void> => {
   await callWithTimerHre(async () => {
-    const { sqrPaymentGatewayAddress } = getAddressesFromHre(hre);
-    console.log(`${SQR_PAYMENT_GATEWAY_NAME} ${sqrPaymentGatewayAddress} is depositing...`);
+    const { web3PaymentGatewayAddress } = getAddressesFromHre(hre);
+    console.log(`${WEB3_PAYMENT_GATEWAY_NAME} ${web3PaymentGatewayAddress} is depositing...`);
     const erc20TokenAddress = contractConfig.erc20Token;
     console.log(`Token address ${erc20TokenAddress}`);
-    const context = await getContext(erc20TokenAddress, sqrPaymentGatewayAddress);
+    const context = await getContext(erc20TokenAddress, web3PaymentGatewayAddress);
     const {
       depositVerifier,
       user1Address,
       user1ERC20Token,
-      user1SQRPaymentGateway,
-      sqrPaymentGatewayFactory,
+      user1WEB3PaymentGateway,
+      web3PaymentGatewayFactory,
     } = context;
 
     const decimals = Number(await user1ERC20Token.decimals());
 
     const currentAllowance = await user1ERC20Token.allowance(
       user1Address,
-      sqrPaymentGatewayAddress,
+      web3PaymentGatewayAddress,
     );
     console.log(`${toNumberDecimals(currentAllowance, decimals)} tokens was allowed`);
 
@@ -56,7 +56,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
     //Checks
     const account = body.account.toLowerCase();
 
-    if (body.contractAddress.toLowerCase() !== sqrPaymentGatewayAddress.toLowerCase()) {
+    if (body.contractAddress.toLowerCase() !== web3PaymentGatewayAddress.toLowerCase()) {
       console.error(`Contract address is not correct`);
       return;
     }
@@ -73,7 +73,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
       return;
     }
 
-    const nonce = await user1SQRPaymentGateway.getDepositNonce(body.userId);
+    const nonce = await user1WEB3PaymentGateway.getDepositNonce(body.userId);
     console.log(`User nonce: ${nonce}`);
     if (response.nonce !== Number(nonce)) {
       console.error(`Nonce is not correct`);
@@ -107,14 +107,14 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
     if (params.amount > currentAllowance) {
       const askAllowance = seedData.allowance;
       await waitTx(
-        user1ERC20Token.approve(sqrPaymentGatewayAddress, askAllowance, TX_OVERRIDES),
+        user1ERC20Token.approve(web3PaymentGatewayAddress, askAllowance, TX_OVERRIDES),
         'approve',
       );
       console.log(
         `${toNumberDecimals(
           askAllowance,
           decimals,
-        )} SQR was approved to ${sqrPaymentGatewayAddress}`,
+        )} WEB3 was approved to ${web3PaymentGatewayAddress}`,
       );
     }
 
@@ -123,7 +123,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
     // return;
 
     await waitTx(
-      user1SQRPaymentGateway.depositSig(
+      user1WEB3PaymentGateway.depositSig(
         params.userId,
         params.transactionId,
         account,
@@ -135,11 +135,11 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
       'depositSig',
       deployParams.attempts,
       deployParams.delay,
-      sqrPaymentGatewayFactory,
+      web3PaymentGatewayFactory,
     );
   }, hre);
 };
 
-func.tags = [`${SQR_PAYMENT_GATEWAY_NAME}:deposit-sig-manual`];
+func.tags = [`${WEB3_PAYMENT_GATEWAY_NAME}:deposit-sig-manual`];
 
 export default func;

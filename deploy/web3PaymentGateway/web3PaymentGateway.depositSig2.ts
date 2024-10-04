@@ -2,22 +2,22 @@ import { DeployFunction } from 'hardhat-deploy/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { toNumberDecimals } from '~common';
 import { callWithTimerHre, waitTx } from '~common-contract';
-import { SQR_PAYMENT_GATEWAY_NAME, TX_OVERRIDES } from '~constants';
+import { WEB3_PAYMENT_GATEWAY_NAME, TX_OVERRIDES } from '~constants';
 import { contractConfig, seedData } from '~seeds';
-import { getAddressesFromHre, getContext, signMessageForSQRPaymentGatewayDeposit } from '~utils';
+import { getAddressesFromHre, getContext, signMessageForWEB3PaymentGatewayDeposit } from '~utils';
 import { deployData, deployParams } from './deployData';
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<void> => {
   await callWithTimerHre(async () => {
-    const { sqrPaymentGatewayAddress } = getAddressesFromHre(hre);
-    console.log(`${SQR_PAYMENT_GATEWAY_NAME} ${sqrPaymentGatewayAddress} is depositing...`);
+    const { web3PaymentGatewayAddress } = getAddressesFromHre(hre);
+    console.log(`${WEB3_PAYMENT_GATEWAY_NAME} ${web3PaymentGatewayAddress} is depositing...`);
     const erc20TokenAddress = contractConfig.erc20Token;
-    const context = await getContext(erc20TokenAddress, sqrPaymentGatewayAddress);
+    const context = await getContext(erc20TokenAddress, web3PaymentGatewayAddress);
     const {
       user2Address,
       user2ERC20Token,
-      user2SQRPaymentGateway,
-      sqrPaymentGatewayFactory,
+      user2WEB3PaymentGateway,
+      web3PaymentGatewayFactory,
       depositVerifier,
     } = context;
 
@@ -25,12 +25,12 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
 
     const currentAllowance = await user2ERC20Token.allowance(
       user2Address,
-      sqrPaymentGatewayAddress,
+      web3PaymentGatewayAddress,
     );
     console.log(`${toNumberDecimals(currentAllowance, decimals)} tokens was allowed`);
 
     const userId = deployData.userId2;
-    const nonce = await user2SQRPaymentGateway.getDepositNonce(userId);
+    const nonce = await user2WEB3PaymentGateway.getDepositNonce(userId);
 
     const params = {
       userId: deployData.userId2,
@@ -42,7 +42,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
       signature: '',
     };
 
-    params.signature = await signMessageForSQRPaymentGatewayDeposit(
+    params.signature = await signMessageForWEB3PaymentGatewayDeposit(
       depositVerifier,
       params.userId,
       params.transactionId,
@@ -54,19 +54,19 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
 
     if (params.amount > currentAllowance) {
       const askAllowance = seedData.allowance;
-      await waitTx(user2ERC20Token.approve(sqrPaymentGatewayAddress, askAllowance), 'approve');
+      await waitTx(user2ERC20Token.approve(web3PaymentGatewayAddress, askAllowance), 'approve');
       console.log(
         `${toNumberDecimals(
           askAllowance,
           decimals,
-        )} SQR was approved to ${sqrPaymentGatewayAddress}`,
+        )} WEB3 was approved to ${web3PaymentGatewayAddress}`,
       );
     }
 
     console.table(params);
 
     await waitTx(
-      user2SQRPaymentGateway.depositSig(
+      user2WEB3PaymentGateway.depositSig(
         params.userId,
         params.transactionId,
         params.account,
@@ -78,11 +78,11 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment): Promise<voi
       'depositSig',
       deployParams.attempts,
       deployParams.delay,
-      sqrPaymentGatewayFactory,
+      web3PaymentGatewayFactory,
     );
   }, hre);
 };
 
-func.tags = [`${SQR_PAYMENT_GATEWAY_NAME}:deposit-sig2`];
+func.tags = [`${WEB3_PAYMENT_GATEWAY_NAME}:deposit-sig2`];
 
 export default func;

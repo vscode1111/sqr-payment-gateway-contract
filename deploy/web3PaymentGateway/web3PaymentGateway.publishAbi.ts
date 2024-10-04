@@ -3,12 +3,12 @@ import { readFileSync, writeFileSync } from 'fs';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { checkFilePathSync, getParentDirectory } from '~common';
 import { callWithTimerHre } from '~common-contract';
-import { SQR_PAYMENT_GATEWAY_NAME } from '~constants';
+import { WEB3_PAYMENT_GATEWAY_NAME } from '~constants';
 
 const func: DeployFunction = async (): Promise<void> => {
   await callWithTimerHre(async () => {
     const root = appRoot.toString();
-    const contractName = 'SQRPaymentGateway';
+    const contractName = 'WEB3PaymentGateway';
     const sourcePath = `${root}/artifacts/contracts/${contractName}.sol/${contractName}.json`;
 
     const file = readFileSync(sourcePath, { encoding: 'utf8', flag: 'r' });
@@ -23,6 +23,6 @@ const func: DeployFunction = async (): Promise<void> => {
   });
 };
 
-func.tags = [`${SQR_PAYMENT_GATEWAY_NAME}:publish-abi`];
+func.tags = [`${WEB3_PAYMENT_GATEWAY_NAME}:publish-abi`];
 
 export default func;
