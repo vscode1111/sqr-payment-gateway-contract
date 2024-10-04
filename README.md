@@ -1,4 +1,4 @@
-# Solidity smart contracts for WEB3 payment gateway functionality
+# Solidity smart contracts for payment gateway functionality
 
 ## Getting Started
 
